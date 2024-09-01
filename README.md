@@ -77,7 +77,28 @@ python main.py
 To run the test suite, run the following command from the root directory of the project:
 
 ```bash
+pytest
+```
 
+To get a detailed report of the test coverage, run the following commands:
+
+```bash
+coverage run --source=src -m pytest
+coverage html
+```
+
+Next, open the `htmlcov/index.html` file in your browser to view the
+detailed coverage report. In linux and Mac, you can use the following command:
+
+```bash
+open htmlcov/index.html
+```
+
+You might want to clean up the coverage files before running the tests again. To do this, run the following commands:
+
+```bash
+coverage erase
+rm -rf htmlcov
 ```
 
 ## Team
