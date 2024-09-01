@@ -31,12 +31,12 @@ NEATtactics is a project that aims to implement the NEAT (NeuroEvolution of Augm
 
 Our project takes inspiration from SethBling's MarI/O video, where he demonstrates a neural network learning to play Super Mario World using the NEAT algorithm. You can watch the video [here](https://www.youtube.com/watch?v=qv6UVOQ0F44) to get a better understanding of the principles behind our approach.
 
-To implement this, we are basing our work on the foundational research paper, "Evolving Neural Networks through Augmenting Topologies" by Kenneth O. Stanley and Risto Miikkulainen. This paper introduces the NEAT algorithm, which evolves neural network topologies along with weights to create more efficient and sophisticated solutions.
+To implement this, we are basing our work on the foundational [research paper](https://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf), "Evolving Neural Networks through Augmenting Topologies" by Kenneth O. Stanley and Risto Miikkulainen. This paper introduces the NEAT algorithm, which evolves neural network topologies along with weights to create more efficient and sophisticated solutions.
 
 In this project, we will:
 
 - Implement the NEAT algorithm from scratch, following the guidelines from the original research paper.
-- Use a simulation environment based on a classic Super Mario-style platformer where our AI agent will learn to navigate and play the game.
+- Use a simulation environment based on a classic Super Mario platformer where our AI agent will learn to navigate and play the game.
 - Continuously evolve the agent's neural network to enhance its performance, aiming for progressively better gameplay as it learns from experience.
 
 Join us in exploring the fascinating world of neuroevolution and AI-driven gameplay!
@@ -49,11 +49,8 @@ Join us in exploring the fascinating world of neuroevolution and AI-driven gamep
 <!-- TODO: Describe how to configure the project (environment variables, config files, etc.).
 
 ### Configuration
-Create a `.env` file in the root directory of the project and add the following environment variables:
 
-```bash
-OPENAI_API_KEY = 'your_openai_api_key'
-MONGODB_URI = 'your_secret_key'
+```zsh
 ```
 -->
 
