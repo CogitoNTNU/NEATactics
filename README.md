@@ -2,9 +2,9 @@
 
 <div align="center">
 
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/CogitoNTNU/TEMPLATE-README/ci.yml)
-![GitHub top language](https://img.shields.io/github/languages/top/CogitoNTNU/TEMPLATE-README)
-![GitHub language count](https://img.shields.io/github/languages/count/CogitoNTNU/TEMPLATE-README)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/CogitoNTNU/NEATtactics/ci.yml)
+![GitHub top language](https://img.shields.io/github/languages/top/CogitoNTNU/NEATtactics)
+![GitHub language count](https://img.shields.io/github/languages/count/CogitoNTNU/NEATtactics)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Version](https://img.shields.io/badge/version-0.0.1-blue)](https://img.shields.io/badge/version-0.0.1-blue)
 
