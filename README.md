@@ -25,8 +25,21 @@
 
 </details>
 
-## Description 
-<!-- TODO: Provide a brief overview of what this project does and its key features. Please add pictures or videos of the application -->
+## Description
+
+NEATtactics is a project that aims to implement the NEAT (NeuroEvolution of Augmenting Topologies) algorithm to train a neural network to play a classic platformer game inspired by Super Mario. The idea is to evolve a neural network using NEAT, allowing an AI agent to learn and improve its gameplay strategies over time, starting from scratch and evolving through generations.
+
+Our project takes inspiration from SethBling's MarI/O video, where he demonstrates a neural network learning to play Super Mario World using the NEAT algorithm. You can watch the video [here](https://www.youtube.com/watch?v=qv6UVOQ0F44) to get a better understanding of the principles behind our approach.
+
+To implement this, we are basing our work on the foundational research paper, "Evolving Neural Networks through Augmenting Topologies" by Kenneth O. Stanley and Risto Miikkulainen. This paper introduces the NEAT algorithm, which evolves neural network topologies along with weights to create more efficient and sophisticated solutions.
+
+In this project, we will:
+
+- Implement the NEAT algorithm from scratch, following the guidelines from the original research paper.
+- Use a simulation environment based on a classic Super Mario-style platformer where our AI agent will learn to navigate and play the game.
+- Continuously evolve the agent's neural network to enhance its performance, aiming for progressively better gameplay as it learns from experience.
+
+Join us in exploring the fascinating world of neuroevolution and AI-driven gameplay!
 
 
 ## Getting started
