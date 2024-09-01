@@ -41,7 +41,6 @@ In this project, we will:
 
 Join us in exploring the fascinating world of neuroevolution and AI-driven gameplay!
 
-
 ## Getting started
 <!-- TODO: In this Section you describe how to install this project in its intended environment.(i.e. how to get it to run)  
 -->
@@ -64,41 +63,77 @@ For example: OS version, programs, libraries, etc.
 -->
 - Ensure that git is installed on your machine. [Download Git](https://git-scm.com/downloads)
 
-
-
 ## Usage
-To run the project, run the following command from the root directory of the project:
-```bash
 
+To run the project, run the following command from the root directory of the project:
+
+```bash
+python main.py
 ```
 <!-- TODO: Instructions on how to run the project and use its features. -->
 
 ## Testing
+
 To run the test suite, run the following command from the root directory of the project:
+
 ```bash
 
 ```
 
 ## Team
-This project would not have been possible without the hard work and dedication of all of the contributors. Thank you for the time and effort you have put into making this project a reality.
 
+This project would not have been possible without the hard work and dedication of all of the contributors. Thank you for the time and effort you have put into making this project a reality.
 
 <table align="center">
     <tr>
-        <!--
         <td align="center">
-            <a href="https://github.com/NAME_OF_MEMBER">
-              <img src="https://github.com/NAME_OF_MEMBER.png?size=100" width="100px;" alt="NAME OF MEMBER"/><br />
-              <sub><b>NAME OF MEMBER</b></sub>
+            <a href="https://github.com/ChristianFredrikJohnsen">
+              <img src="./docs/images/christian.jpg" width="100px;" alt="Christian Fredrik"/><br />
+              <sub><b>Christian Fredrik</b></sub>
             </a>
         </td>
-        -->
+        <td align="center">
+            <a href="https://github.com/BrageHK">
+              <img src="./docs/images/brage.jpg" width="100px;" alt="Brage"/><br />
+              <sub><b>Brage</b></sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/kristiancarlenius">
+              <img src="./docs/images/kristian.jpg" width="100px;" alt="Kristian"/><br />
+              <sub><b>Kristian</b></sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/ludvigovrevik">
+              <img src="./docs/images/ludvig.jpg" width="100px;" alt="Ludvig"/><br />
+              <sub><b>Ludvig</b></sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/kapi0okapi">
+              <img src="./docs/images/generic1.png" width="100px;" alt="Kacper"/><br />
+              <sub><b>Kacper</b></sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/Vetlets05">
+              <img src="./docs/images/generic2.png" width="100px;" alt="Vetle"/><br />
+              <sub><b>Vetle</b></sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/Hako2807">
+              <img src="./docs/images/generic3.png" width="100px;" alt="Håkon"/><br />
+              <sub><b>Håkon</b></sub>
+            </a>
+        </td>
     </tr>
 </table>
 
-![Group picture](docs/img/team.png)
-
+![Group picture](docs/images/team.png)
 
 ### License
+
 ------
 Distributed under the MIT License. See `LICENSE` for more information.
