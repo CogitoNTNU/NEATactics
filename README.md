@@ -1,6 +1,4 @@
-<!-- TODO: CHANGE ALL INSTANCES OF "TEMPLATE-README" IN ENTIRE PROJECT TO YOUR PROJECT TITLE-->
-# TEMPLATE-README
-
+# NEATtactics
 
 <div align="center">
 
@@ -13,11 +11,10 @@
 <img src="docs/images/project-logo.webp" width="50%" alt="Cogito Project Logo" style="display: block; margin-left: auto; margin-right: auto;">
 </div>
 
-
 <details> 
 <summary><b>📋 Table of contents </b></summary>
 
-- [TEMPLATE-README](#template-readme)
+- [NEATtactics](#neattactics)
   - [Description](#description)
   - [Getting started](#getting-started)
     - [Prerequisites](#prerequisites)
