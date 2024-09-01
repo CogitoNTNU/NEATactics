@@ -1,23 +1,20 @@
-<!-- TODO: CHANGE ALL INSTANCES OF "TEMPLATE-README" IN ENTIRE PROJECT TO YOUR PROJECT TITLE-->
-# TEMPLATE-README
-
+# NEATtactics
 
 <div align="center">
 
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/CogitoNTNU/TEMPLATE-README/ci.yml)
-![GitHub top language](https://img.shields.io/github/languages/top/CogitoNTNU/TEMPLATE-README)
-![GitHub language count](https://img.shields.io/github/languages/count/CogitoNTNU/TEMPLATE-README)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/CogitoNTNU/NEATtactics/ci.yml)
+![GitHub top language](https://img.shields.io/github/languages/top/CogitoNTNU/NEATtactics)
+![GitHub language count](https://img.shields.io/github/languages/count/CogitoNTNU/NEATtactics)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Project Version](https://img.shields.io/badge/version-0.0.1-blue)](https://img.shields.io/badge/version-0.0.1-blue)
 
 <img src="docs/images/project-logo.webp" width="50%" alt="Cogito Project Logo" style="display: block; margin-left: auto; margin-right: auto;">
 </div>
 
-
 <details> 
 <summary><b>📋 Table of contents </b></summary>
 
-- [TEMPLATE-README](#template-readme)
+- [NEATtactics](#neattactics)
   - [Description](#description)
   - [Getting started](#getting-started)
     - [Prerequisites](#prerequisites)
