@@ -12,3 +12,4 @@ setuptools==74.1.1
 sympy==1.13.2
 torch==2.4.0
 typing_extensions==4.12.2
+coverage==7.6.1
