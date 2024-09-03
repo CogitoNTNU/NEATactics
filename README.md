@@ -31,7 +31,7 @@ NEATtactics is a project that aims to implement the NEAT (NeuroEvolution of Augm
 
 Our project takes inspiration from SethBling's MarI/O video, where he demonstrates a neural network learning to play Super Mario World using the NEAT algorithm. You can watch the video [here](https://www.youtube.com/watch?v=qv6UVOQ0F44) to get a better understanding of the principles behind our approach.
 
-To implement this, we are basing our work on the foundational [research paper](https://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf), "Evolving Neural Networks through Augmenting Topologies" by Kenneth O. Stanley and Risto Miikkulainen. This paper introduces the NEAT algorithm, which evolves neural network topologies along with weights to create more efficient and sophisticated solutions.
+To implement this, we are basing our work on the [research paper](https://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf) "Evolving Neural Networks through Augmenting Topologies" by Kenneth O. Stanley and Risto Miikkulainen. This paper introduces the NEAT algorithm, which evolves neural network topologies along with weights to create more efficient and sophisticated solutions.
 
 In this project, we will:
 
