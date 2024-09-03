@@ -1,5 +1,10 @@
+class Node:
+    def __init__(self, id: int, type: str):
+        self.id = id
+        self.type = type
+
 class Connections:
-    def __init__(self, in_node, out_node, weight, is_enabeled, innovation_number):
+    def __init__(self, in_node: Node, out_node: Node, weight: float, is_enabeled: bool, innovation_number: int):
         self.in_node = in_node
         self.out_node = out_node
         self.weight = weight
