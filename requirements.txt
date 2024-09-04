@@ -19,6 +19,7 @@ pillow==10.4.0
 pluggy==1.5.0
 pyglet==1.5.21
 pytest==8.3.2
+setuptools==74.1.1
 sympy==1.13.2
 tomli==2.0.1
 torch==2.4.1
