@@ -17,9 +17,11 @@
 - [NEATtactics](#neattactics)
   - [Description](#description)
   - [Getting started](#getting-started)
+    - [Note on venv](#note-on-venv)
     - [Prerequisites](#prerequisites)
   - [Usage](#usage)
   - [Testing](#testing)
+    - [Test execution environment](#test-execution-environment)
   - [Team](#team)
     - [License](#license)
 
@@ -45,20 +47,52 @@ Join us in exploring the fascinating world of neuroevolution and AI-driven gamep
 <!-- TODO: In this Section you describe how to install this project in its intended environment.(i.e. how to get it to run)  
 -->
 
-<!-- TODO: Describe how to configure the project (environment variables, config files, etc.).
+Start off by cloning the repository to your local machine.
 
-### Configuration
-
-```zsh
+```bash
+git clone https://github.com/CogitoNTNU/NEATactics
 ```
--->
+
+Next, navigate to the project directory:
+
+```bash
+cd NEATtactics
+```
+
+Create a virtual environment to manage the project dependencies:
+
+```bash
+python -m venv venv
+```
+
+Activate the virtual environment:
+
+```bash
+source venv/bin/activate
+```
+
+Install the project dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Now you are ready to run the project!
+
+### Note on venv
+
+You will need to activate the virtual environment for each new shell session.
+If you want to deactivate the virtual environment, you can do so by either closing the terminal or
+running the following command:
+
+```bash
+deactivate
+```
 
 ### Prerequisites
-<!-- TODO: In this section you put what is needed for the program to run.
-For example: OS version, programs, libraries, etc.  
 
--->
 - Ensure that git is installed on your machine. [Download Git](https://git-scm.com/downloads)
+- Ensure that you are using python version==3.8.x. [Download Python](https://www.python.org/downloads/)
 
 ## Usage
 
@@ -97,6 +131,17 @@ You might want to clean up the coverage files before running the tests again. To
 coverage erase
 rm -rf htmlcov
 ```
+
+### Test execution environment
+
+When first installing the project, it is advised to run the following tests:
+
+```bash
+pytest -m "environment"
+```
+
+Which will check for CUDA compatibility and the current OS.
+Specifically, if you are running on Windows, you might have troubles installing the `gym_super_mario_bros` package.
 
 ## Team
 
