@@ -65,12 +65,16 @@ Create a virtual environment to manage the project dependencies:
 python -m venv venv
 ```
 
-Activate the virtual environment:
+Activate the virtual environment on Mac/Linux:
 
 ```bash
 source venv/bin/activate
 ```
+Alternatively use this command on windows:
 
+```bash
+venv\Scripts\activate
+```
 Install the project dependencies:
 
 ```bash
