@@ -7,7 +7,7 @@ def test_gym_environment():
 
     env = gym_super_mario_bros.make(ENV_NAME)
     env = JoypadSpace(env, SIMPLE_MOVEMENT)
-    env.metadata['render_fps'] = 10000
+    env.metadata['render_fps'] = 144
     env.metadata["render_modes"] = "human"
     env.reset()
 
