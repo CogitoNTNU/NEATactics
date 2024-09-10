@@ -9,10 +9,15 @@ class MarioJoypadSpace(JoypadSpace):
 
     def reset(self) -> np.ndarray:
         """Reset the environment, and return the initial state."""
-        return np.array(super().reset())
+        return self.interpret_state(np.array(super().reset()))
     
     def step(self, action: int) -> StepResult:
         """Perform an action, and get the next frame."""
         state, reward, done, info = super().step(action)
+        # Convert to greyscale and downsample, cut image.
+        # state = self.interpret_state()
         return StepResult(state, reward, done, info)
+    
+    def interpret_state(self, state: np.ndarray) -> np.ndarray:
+        raise NotImplementedError
     
