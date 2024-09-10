@@ -44,8 +44,6 @@ In this project, we will:
 Join us in exploring the fascinating world of neuroevolution and AI-driven gameplay!
 
 ## Getting started
-<!-- TODO: In this Section you describe how to install this project in its intended environment.(i.e. how to get it to run)  
--->
 
 Start off by cloning the repository to your local machine.
 
@@ -70,11 +68,13 @@ Activate the virtual environment on Mac/Linux:
 ```bash
 source venv/bin/activate
 ```
+
 Alternatively use this command on windows:
 
 ```bash
 venv\Scripts\activate
 ```
+
 Install the project dependencies:
 
 ```bash
