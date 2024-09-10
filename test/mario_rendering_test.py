@@ -7,6 +7,8 @@ def test_gym_environment():
 
     env = gym_super_mario_bros.make(ENV_NAME)
     env = MarioJoypadSpace(env, SIMPLE_MOVEMENT)
+    env.metadata['render_modes'] = "rgb_array"
+    env.metadata['render_fps'] = 60
     env.reset()
 
     for _ in range(100):
