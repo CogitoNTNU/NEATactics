@@ -7,7 +7,6 @@ class Genome:
     Represents some neural network.
     It has a unique id, and contains a set of nodes and connections. 
     """
-
     def __init__(self, id: int):
         self.id = id
         self.nodes: list[Node] = []
@@ -24,10 +23,17 @@ class Genome:
         connection.is_enabled = False
     
     def add_node_mutation(self, connection:'ConnectionGene', node_id: int, node_type, global_innovation_number: int):
-        new_node = self.Node(node_id, node_type)
-        self.add_node(new_node)
         node1 = connection.in_node
         node2 = connection.out_node
+        
+        # Checking to see if you can add the new node or not
+        if node1.layer_number > node2.layer_number:
+            return
+        
+        new_node_layer_number = node1.layer_number * 0.5 + node2.layer_number * 0.5 
+        new_node = self.Node(node_id, node_type, new_node_layer_number)
+        self.add_node(new_node)
+        
         connection1 = ConnectionGene(node1, new_node, 1, True, global_innovation_number)
         # global_innovation_number += 1, Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
         connection2 = ConnectionGene(new_node, node2, connection.weight, True, global_innovation_number )
@@ -57,9 +63,10 @@ class Genome:
             return False
         elif node1.type == "input" and node2.type == "input":
             return False
-        elif node1.id in node2.connected_nodes: # TODO Hva skjer hvis connectionen er disabled?
-             return False
-        #TODO: if ininite loop: return False
+        elif node1.id in node2.connected_nodes: # TODO Hva skjer hvis connectionen er disabled? svar: enable og oppdater vekten 
+            return False
+        elif node1.layer_number > node2.layer_number:
+            return False
         else:
             return True
 
@@ -72,10 +79,11 @@ class Node:
     A node in a neural network.
     Has a unique id and a type.
     """
-    def __init__(self, id: int, type: str):
+    def __init__(self, id: int, type: str, layer_number: float):
         self.id = id
         self.type = type
         self.connected_nodes = []
+        self.layer_number = layer_number
         """
         Type is one of the following:
         - Input
