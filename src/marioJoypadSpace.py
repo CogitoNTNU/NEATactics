@@ -1,18 +1,54 @@
 import numpy as np
 from nes_py.wrappers import JoypadSpace
 from collections import namedtuple
+import matplotlib.pyplot as plt
 
 StepResult = namedtuple('StepResult', ['state', 'reward', 'done', 'info'])
 
 class MarioJoypadSpace(JoypadSpace):
     """A custom JoypadSpace makes the type hinter happy :)"""
+    def __init__(self, env, actions):
+        super().__init__(env, actions)
+        self.i = 0
 
     def reset(self) -> np.ndarray:
         """Reset the environment, and return the initial state."""
         return np.array(super().reset())
+        ## return self.interpret_state(np.array(super().reset()))
     
     def step(self, action: int) -> StepResult:
         """Perform an action, and get the next frame."""
         state, reward, done, info = super().step(action)
+        # Convert to greyscale and downsample, cut image.
+        state = self.interpret_state(state)
         return StepResult(state, reward, done, info)
+    
+
+
+    
+    def interpret_state(self, state: np.ndarray) -> np.ndarray:
+        # We get a np.ndarray with shape (240, 256, 3)
+
+        # Show picture
+        # Cut picture
+        state = state[80:216]
+        # Convert to greyscale
+        state = np.dot(state[...,:3], [0.2989, 0.5870, 0.1140])
+        state = state.astype(np.uint8)
+        ## state = np.dot(state[:, :,:3], [0.2989, 0.5870, 0.1140])
+        
+        plt.imsave(f"frame{self.i}.png", state, cmap='gray')
+        self.i += 1
+        # Reduce pixel count
+        
+        
+        return np.array(state)
+
+    def show_picture(self, state: np.ndarray) -> None:
+        """
+         
+        
+        """
+        raise NotImplementedError
+    
     

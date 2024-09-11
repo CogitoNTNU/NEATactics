@@ -3,12 +3,13 @@ from marioJoypadSpace import StepResult
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 import numpy as np
+import time
 from typing import Tuple
 
 def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment. Returns the environment."
 
-    ENV_NAME = "SuperMarioBros-v0"
+    ENV_NAME = "SuperMarioBros-v2"
     env = gym_super_mario_bros.make(ENV_NAME)
     env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
     env.metadata['render_modes'] = "human"
@@ -20,12 +21,19 @@ def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
 def test_gym_environment(env: MarioJoypadSpace):
     """Simulates 100 frames where your only action is to move right."""
 
-    for _ in range(100): # Simulate 100 frames.
-
+    for i in range(400): # Simulate 100 frames.
+        
         action = SIMPLE_MOVEMENT.index(["right"]) # Choose to go right
         sr = env.step(action) # State, Reward, Done, Info
-
+        time.sleep(0.02)
+        print(sr.state.shape)
+        if sr.info["life"] == 2:
+            print(f"Lost a life at frame {i}.")
+        if sr.info["life"] == 0:
+            print(f"Zero lives at fram: {i}.")
         if sr.done:
+            print(f"Game over at frame {i}.")
+            break
             _ = env.reset() # Discard the new initial state if done.
 
         env.render()
