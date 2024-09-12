@@ -34,7 +34,7 @@ scikit-image==0.21.0
 scipy==1.10.1
 six==1.16.0
 sympy==1.13.2
-tifffile==2023.7.10
+tifffile==2024.8.30
 tomli==2.0.1
 torch==2.4.1
 torchaudio==2.4.1
