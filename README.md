@@ -155,50 +155,50 @@ This project would not have been possible without the hard work and dedication o
     <tr>
         <td align="center">
             <a href="https://github.com/ChristianFredrikJohnsen">
-              <img src="./docs/images/christian.jpg" width="100px;" alt="Christian Fredrik"/><br />
+              <img src="./docs/images/team/christian.jpg" width="100px;" alt="Christian Fredrik"/><br />
               <sub><b>Christian Fredrik</b></sub>
             </a>
         </td>
         <td align="center">
             <a href="https://github.com/BrageHK">
-              <img src="./docs/images/brage.jpg" width="100px;" alt="Brage"/><br />
+              <img src="./docs/images/team/brage.jpg" width="100px;" alt="Brage"/><br />
               <sub><b>Brage</b></sub>
             </a>
         </td>
         <td align="center">
             <a href="https://github.com/kristiancarlenius">
-              <img src="./docs/images/kristian.jpg" width="100px;" alt="Kristian"/><br />
+              <img src="./docs/images/team/kristian.jpg" width="100px;" alt="Kristian"/><br />
               <sub><b>Kristian</b></sub>
             </a>
         </td>
         <td align="center">
             <a href="https://github.com/ludvigovrevik">
-              <img src="./docs/images/ludvig.jpg" width="100px;" alt="Ludvig"/><br />
+              <img src="./docs/images/team/ludvig.jpg" width="100px;" alt="Ludvig"/><br />
               <sub><b>Ludvig</b></sub>
             </a>
         </td>
         <td align="center">
             <a href="https://github.com/kapi0okapi">
-              <img src="./docs/images/generic1.png" width="100px;" alt="Kacper"/><br />
+              <img src="./docs/images/team/generic1.png" width="100px;" alt="Kacper"/><br />
               <sub><b>Kacper</b></sub>
             </a>
         </td>
         <td align="center">
             <a href="https://github.com/Vetlets05">
-              <img src="./docs/images/generic2.png" width="100px;" alt="Vetle"/><br />
+              <img src="./docs/images/team/generic2.png" width="100px;" alt="Vetle"/><br />
               <sub><b>Vetle</b></sub>
             </a>
         </td>
         <td align="center">
             <a href="https://github.com/Hako2807">
-              <img src="./docs/images/generic3.png" width="100px;" alt="Håkon"/><br />
+              <img src="./docs/images/team/generic3.png" width="100px;" alt="Håkon"/><br />
               <sub><b>Håkon</b></sub>
             </a>
         </td>
     </tr>
 </table>
 
-![Group picture](docs/images/team.png)
+![Group picture](docs/images/team/team.png)
 
 ### License
 
