@@ -1,6 +1,7 @@
-
-import random
+import random  
 # TODO: Rudimentary NN structure which can interact with the environment.
+
+global_innovation_number = 0
 
 class Genome:
     """
@@ -22,30 +23,35 @@ class Genome:
         #self.connections.remove(connection)
         connection.is_enabled = False
     
-    def add_node_mutation(self, connection:'ConnectionGene', node_id: int, node_type, global_innovation_number: int):
+    def add_node_mutation(self, connection:'ConnectionGene', node_id: int, node_type):#, global_innovation_number: int):
         node1 = connection.in_node
         node2 = connection.out_node
-        
-        # Checking to see if you can add the new node or not
-        if node1.layer_number > node2.layer_number:
-            return
-        
-        new_node_layer_number = node1.layer_number * 0.5 + node2.layer_number * 0.5 
-        new_node = self.Node(node_id, node_type, new_node_layer_number)
+        new_node = self.Node(node_id)
         self.add_node(new_node)
         
         connection1 = ConnectionGene(node1, new_node, 1, True, global_innovation_number)
-        # global_innovation_number += 1, Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
-        connection2 = ConnectionGene(new_node, node2, connection.weight, True, global_innovation_number )
+        global_innovation_number += 1 #Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
+        connection2 = ConnectionGene(new_node, node2, connection.weight, True, global_innovation_number)
+        global_innovation_number += 1
         self.disable_connection(connection)
         self.add_connection(connection1)    
         self.add_connection(connection2)
+        node2.add_connection(new_node.id)
+        node1.add_connection(new_node.id)
+        new_node.add_connection(node1.id)
+        new_node.add_connection(node2.id)
     
-    def add_connection_mutation(self, node1: 'Node', node2: 'Node', global_innovation_number: int):
+    def add_connection_mutation(self, node1: 'Node', node2: 'Node'):#, global_innovation_number: int):
         weight = self.get_weight()
         if self.is_valid_connection(self, node1, node2):
             connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
-        self.add_connection(connection)
+            global_innovation_number += 1
+            self.add_connection(connection)
+            node2.add_connection(node1.id)
+            node1.add_connection(node2.id)
+            return True
+        else:
+            return False
     
     def get_weight():
         return 2*random.random() - 1  #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
@@ -55,17 +61,15 @@ class Genome:
 
     def is_valid_connection(self, node1: 'Node', node2: 'Node') -> bool:
         # check if it is valid to add a connection between two nodes
-        # not valid if both are outputs, both are inputs, there exists a previous connection between them
-        # or other setrictions
+        # not valid if node1 is output, node2 is input or if they are the same node.
+        # (Maybe other restrictions) 
         if node1.id == node2.id:
             return False
-        elif node1.type == "output" and node2.type == "output":
+        elif node1.type == "output":
             return False
-        elif node1.type == "input" and node2.type == "input":
+        elif node2.type == "input":
             return False
         elif node1.id in node2.connected_nodes: # TODO Hva skjer hvis connectionen er disabled? svar: enable og oppdater vekten 
-            return False
-        elif node1.layer_number > node2.layer_number:
             return False
         else:
             return True
@@ -79,11 +83,12 @@ class Node:
     A node in a neural network.
     Has a unique id and a type.
     """
-    def __init__(self, id: int, type: str, layer_number: float):
+    def __init__(self, id: int, type: str):
         self.id = id
         self.type = type
         self.connected_nodes = []
-        self.layer_number = layer_number
+        self.value = 0
+        
         """
         Type is one of the following:
         - Input
