@@ -1,16 +1,16 @@
 import numpy as np
 from nes_py.wrappers import JoypadSpace
 from collections import namedtuple
-import matplotlib.pyplot as plt
 from skimage.transform import resize
 
 StepResult = namedtuple('StepResult', ['state', 'reward', 'done', 'info'])
 
 class MarioJoypadSpace(JoypadSpace):
     """A custom JoypadSpace makes the type hinter happy :)"""
+
     def __init__(self, env, actions):
         super().__init__(env, actions)
-        self.i = 0
+        # Potentially add extra variables here.
 
     def reset(self) -> np.ndarray:
         """Reset the environment, and return the initial state."""
@@ -24,9 +24,6 @@ class MarioJoypadSpace(JoypadSpace):
         state = self.interpret_state(state)
         return StepResult(state, reward, done, info)
     
-
-
-    
     def interpret_state(self, state: np.ndarray) -> np.ndarray:
         # We get a np.ndarray with shape (240, 256, 3)
 
@@ -36,24 +33,8 @@ class MarioJoypadSpace(JoypadSpace):
         # Convert to grayscale
         state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140])  # Grayscale conversion
         state = state.astype(np.uint8)
-
         # Reduce pixel count
         state = resize(state, (26, 104), anti_aliasing=True, preserve_range=True).astype(np.uint8)
-
-        # Save the grayscale image
-        plt.imsave(f"frame{self.i}.png", state, cmap='gray')
-        
-        self.i += 1
-        
         
         
         return np.array(state)
-
-    def show_picture(self, state: np.ndarray) -> None:
-        """
-         
-        
-        """
-        raise NotImplementedError
-    
-    
