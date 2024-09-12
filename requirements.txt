@@ -3,7 +3,7 @@ contourpy==1.1.1
 coverage==7.6.1
 cycler==0.12.1
 exceptiongroup==1.2.2
-filelock==3.15.4
+filelock==3.16.0
 fonttools==4.53.1
 fsspec==2024.6.1
 gym==0.24.1
