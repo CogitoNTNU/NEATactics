@@ -14,7 +14,10 @@ def test_gym_environment():
     for _ in range(100):
         action = SIMPLE_MOVEMENT.index(["right"])
         sr = env.step(action) # State, Reward, Done, Info
+        
         if sr.done:
             _ = env.reset() # Discarding the new state
         env.render()
     env.close()
+
+test_gym_environment()
