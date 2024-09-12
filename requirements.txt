@@ -30,7 +30,7 @@ pyparsing==3.1.4
 pytest==8.3.2
 python-dateutil==2.9.0.post0
 PyWavelets==1.4.1
-scikit-image==0.21.0
+scikit-image==0.24.0
 scipy==1.10.1
 six==1.16.0
 sympy==1.13.2
