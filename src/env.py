@@ -5,6 +5,7 @@ from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 import numpy as np
 import time
 from typing import Tuple
+from utils import save_state_as_png
 
 def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment. Returns the environment."
@@ -21,10 +22,11 @@ def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
 def test_gym_environment(env: MarioJoypadSpace):
     """Simulates 100 frames where your only action is to move right."""
 
-    for i in range(400): # Simulate 100 frames.
+    for i in range(200): # Simulate 200 frames.
         
         action = SIMPLE_MOVEMENT.index(["right"]) # Choose to go right
         sr = env.step(action) # State, Reward, Done, Info
+        save_state_as_png(i + 1, sr.state) 
         time.sleep(0.02)
         print(sr.state.shape)
         if sr.info["life"] == 2:
