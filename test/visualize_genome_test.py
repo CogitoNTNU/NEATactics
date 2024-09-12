@@ -17,6 +17,6 @@ def test_visualize_genome():
     for i in list_of_connections:
         genome.add_connection(i)
     visualize_genome(genome)
-test_visualize_genome()
+
 
     

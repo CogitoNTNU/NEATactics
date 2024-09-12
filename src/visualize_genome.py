@@ -1,7 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from src.nodes import Genome
-from networkx.drawing.nx_pydot import graphviz_layout
 
 def create_custom_layout(G, layers):
     """
@@ -17,10 +16,14 @@ def create_custom_layout(G, layers):
     
     # Loop through layers and assign positions
     for layer_idx, layer in enumerate(layers):
-        y_pos = -layer_idx * layer_gap  # Move each layer vertically
-        x_start = -(len(layer) - 1) * node_gap / 2  # Center the layer horizontally
-        for i, node in enumerate(layer):
-            pos[node] = (x_start + i * node_gap, y_pos)
+        x_pos = layer_idx * layer_gap  # Move each layer horizontally
+        
+        # Sort nodes by their ID (or any other property) to place the smallest at the top
+        sorted_layer = sorted(layer)  # Sorting based on node ID by default
+        
+        y_start = -(len(sorted_layer) - 1) * node_gap / 2  # Center the layer vertically
+        for i, node in enumerate(sorted_layer):
+            pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically, shift horizontally by layer
     
     return pos
 
@@ -31,6 +34,9 @@ def visualize_genome(genome: Genome):
     for connection in genome.connections:
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
-    pos = create_custom_layout(G, 2)
+    layers = [[] for _ in range(max([node.layer_number for node in genome.nodes]) + 1)]
+    for node in genome.nodes:
+        layers[node.layer_number].append(node.id)
+    pos = create_custom_layout(G, layers)
     nx.draw(G, pos, with_labels=True)
     plt.show()
