@@ -29,12 +29,12 @@ class MarioJoypadSpace(JoypadSpace):
 
         # Cut the picture
         state = state[80:216]
-
+        
         # Convert to grayscale
         state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140])  # Grayscale conversion
         state = state.astype(np.uint8)
         # Reduce pixel count
-        state = resize(state, (26, 104), anti_aliasing=True, preserve_range=True).astype(np.uint8)
+        state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8)
         
         
         return np.array(state)
