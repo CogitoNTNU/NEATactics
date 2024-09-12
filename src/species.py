@@ -1,4 +1,4 @@
-class Species:
+class Species: # Made by Copilot
     def __init__(self, representative):
         self.representative = representative
         self.members = [representative]

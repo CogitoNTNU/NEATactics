@@ -12,9 +12,12 @@ class Genome:
         self.id = id
         self.nodes: list[Node] = []
         self.connections: list[ConnectionGene] = []
+        self.output_nodes = []
 
     def add_node(self, node: 'Node'):
         self.nodes.append(node)
+        if node.type == 'output':
+            self.output_nodes.append(node)
 
     def add_connection(self, connection: 'ConnectionGene'):
         self.connections.append(connection)
