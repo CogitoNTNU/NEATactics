@@ -1,6 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from nodes import Genome
+from src.nodes import Genome
 
 def visualize_genome(genome: Genome):
     G = nx.DiGraph()
