@@ -36,6 +36,10 @@ class Genome:
         self.disable_connection(connection)
         self.add_connection(connection1)    
         self.add_connection(connection2)
+        node2.add_connection(new_node.id)
+        node1.add_connection(new_node.id)
+        new_node.add_connection(node1.id)
+        new_node.add_connection(node2.id)
     
     def add_connection_mutation(self, node1: 'Node', node2: 'Node'):#, global_innovation_number: int):
         weight = self.get_weight()
@@ -43,6 +47,8 @@ class Genome:
             connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
             global_innovation_number += 1
             self.add_connection(connection)
+            node2.add_connection(node1.id)
+            node1.add_connection(node2.id)
             return True
         else:
             return False
@@ -63,8 +69,8 @@ class Genome:
             return False
         elif node2.type == "input":
             return False
-        #elif node1.id in node2.connected_nodes: # TODO Hva skjer hvis connectionen er disabled? svar: enable og oppdater vekten 
-        #    return False
+        elif node1.id in node2.connected_nodes: # TODO Hva skjer hvis connectionen er disabled? svar: enable og oppdater vekten 
+            return False
         else:
             return True
 
@@ -80,7 +86,7 @@ class Node:
     def __init__(self, id: int, type: str):
         self.id = id
         self.type = type
-        #self.connected_nodes = []
+        self.connected_nodes = []
         self.value = 0
         
         """
