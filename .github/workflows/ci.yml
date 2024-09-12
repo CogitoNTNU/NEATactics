@@ -4,9 +4,9 @@
 name: CI
 on:
   push:
-    branches: ["main", "ci-github-actions"]
+    branches: ["main"]
   pull_request:
-    branches: ["main", "ci-github-actions"]
+    branches: ["main"]
 
 permissions:
   contents: read
