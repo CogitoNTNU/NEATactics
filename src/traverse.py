@@ -13,6 +13,8 @@ class Traverse:
         all its incoming connections traversed before it.
         """
         order_of_traversal = self.kahns_algorithm()
+        if not order_of_traversal:
+            return None
         for node in order_of_traversal:
             for connection in node.connections:
                 if connection.is_enabled:
@@ -23,6 +25,8 @@ class Traverse:
     def kahns_algorithm(self) -> list[nodes.Node]:
         """
         Kahns algorithm for topological sorting of the genome
+
+        Returns a list with nodes.
         """
         order_of_traversal = []
         in_degree = {} # How many connections are coming into the node
