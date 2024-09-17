@@ -11,21 +11,38 @@ def create_custom_layout(G, layers):
     :return: A dictionary with node positions suitable for visualization.
     """
     pos = {}
-    layer_gap = 5  # Vertical gap between layers
-    node_gap = 2   # Horizontal gap between nodes in the same layer
+    layer_gap = 5  # Horizontal gap between layers
+    node_gap = 2   # Vertical gap between nodes in the same layer
+    input_layer_nodes_per_row = 20  # Define input layer as a 20x10 grid
+    
+    # Total number of layers
+    total_layers = len(layers)
     
     # Loop through layers and assign positions
     for layer_idx, layer in enumerate(layers):
-        x_pos = layer_idx * layer_gap  # Move each layer horizontally
-        
-        # Sort nodes by their ID (or any other property) to place the smallest at the top
-        sorted_layer = sorted(layer)  # Sorting based on node ID by default
-        
-        y_start = -(len(sorted_layer) - 1) * node_gap / 2  # Center the layer vertically
-        for i, node in enumerate(sorted_layer):
-            pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically, shift horizontally by layer
+        # Special case for the input layer (first layer)
+        if layer_idx == 0:
+            x_pos = 0  # Input layer starts at the far left
+            # Organize the first layer into a 20x10 grid, starting from top-left (0,0)
+            for i, node in enumerate(layer):
+                row = i % 10  # There are 10 rows, so row is determined by i % 10
+                col = i // 10  # Columns are determined by i // 10
+                pos[node] = (x_pos + col * 0.5, -row * node_gap)  # Adjust x (columns) and y (rows)
+        elif layer_idx == total_layers - 1:  # Output layer case
+            x_pos = total_layers * layer_gap  # Place output nodes at the farthest right
+            y_start = -(len(layer) - 1) * node_gap * 2   # Center the output nodes vertically
+            for i, node in enumerate(layer):
+                pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically
+        else:
+            # Hidden layers are placed regularly between the input and output layers
+            x_pos = layer_idx * layer_gap  # Horizontal position for hidden layers
+            y_start = -(len(layer) - 1) * node_gap / 2  # Center the layer vertically
+            for i, node in enumerate(layer):
+                pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically
     
     return pos
+
+
 
 def visualize_genome(genome: Genome):
     G = nx.DiGraph()
@@ -34,9 +51,25 @@ def visualize_genome(genome: Genome):
     for connection in genome.connections:
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
+    colors_node = []
+    for node in genome.nodes:
+        if node.type == 'input':
+            if node.value < 0.25:
+                colors_node.append('b')
+            elif node.value < 0.5:
+                colors_node.append('g')
+            elif node.value < 0.75:
+                colors_node.append('y')
+            else:
+                colors_node.append('r')
+        else:
+            colors_node.append('g')
+    
+
+
     layers = [[] for _ in range(max([node.layer_number for node in genome.nodes]) + 1)]
     for node in genome.nodes:
         layers[node.layer_number].append(node.id)
     pos = create_custom_layout(G, layers)
-    nx.draw(G, pos, with_labels=True)
+    nx.draw(G, pos, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
     plt.show()

@@ -79,11 +79,12 @@ class Node:
     A node in a neural network.
     Has a unique id and a type.
     """
-    def __init__(self, id: int, type: str, layer_number: float):
+    def __init__(self, id: int, type: str, layer_number: float, value: float = 0.):
         self.id = id
         self.type = type
         self.connected_nodes = []
         self.layer_number = layer_number
+        self.value = 0.
         """
         Type is one of the following:
         - Input
