@@ -20,7 +20,7 @@ class Traverse:
         action = self.output(True)
         return action
     
-    def kahns_algorithm(self) -> None:
+    def kahns_algorithm(self) -> list[nodes.Node]:
         """
         Kahns algorithm for topological sorting of the genome
         """
@@ -44,7 +44,13 @@ class Traverse:
                     in_degree[connection.out_node.id] -= 1
                     if in_degree[connection.out_node.id] == 0:
                         queue.append(connection.out_node)
-        return order_of_traversal
+        
+            # If the topological sort includes all nodes, return it
+        if len(order_of_traversal) == len(self.genome.nodes):
+            return order_of_traversal
+        else:
+            # If not all nodes are processed, there's a cycle
+            return []
         
         
     
