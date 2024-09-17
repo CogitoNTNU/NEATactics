@@ -14,6 +14,7 @@ class Genome:
         self.connections: list[ConnectionGene] = []
         self.output_nodes = []
 
+
     def add_node(self, node: 'Node'):
         self.nodes.append(node)
         if node.type == 'output':
@@ -26,7 +27,7 @@ class Genome:
         #self.connections.remove(connection)
         connection.is_enabled = False
     
-    def add_node_mutation(self, connection:'ConnectionGene', node_id: int, node_type):#, global_innovation_number: int):
+    def add_node_mutation(self, connection:'ConnectionGene', node_id: int):#, global_innovation_number: int):
         node1 = connection.in_node
         node2 = connection.out_node
         new_node = self.Node(node_id)
@@ -44,7 +45,22 @@ class Genome:
         new_node.add_connection(node1.id)
         new_node.add_connection(node2.id)
     
-    def add_connection_mutation(self, node1: 'Node', node2: 'Node'):#, global_innovation_number: int):
+
+    def add_connection_mutation(self, node1: 'Node', node2: 'Node'):
+        """
+        Attempts to create a new connection between two nodes (node1 and node2).
+        
+        The method checks if the connection is valid, assigns it a random weight, 
+        and adds it to the network if valid. The connection is marked with a unique 
+        global innovation number and enabled by default.
+
+        Parameters:
+        - node1 (Node): Starting node of the connection. Pick from Genomes nodes list
+        - node2 (Node): Target node of the connection. Pick from Genomes nodes list
+
+        Returns:
+        - bool: True if the connection was successfully added, False otherwise.
+        """
         weight = self.get_weight()
         if self.is_valid_connection(self, node1, node2):
             connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
@@ -90,7 +106,7 @@ class Node:
         self.id = id
         self.type = type
         self.connected_nodes = []
-        self.value = 0
+        self.value = 0.0
         
         """
         Type is one of the following:

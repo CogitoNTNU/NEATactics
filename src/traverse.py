@@ -8,20 +8,45 @@ class Traverse:
     def traverse(self, genome: 'nodes.Genome') -> None:
         """
         Traverse through the genome and returns an action
+        Using Kahns alorithm to traverse through the genome 
+        and insuring that the node that is being traversed has 
+        all its incoming connections traversed before it.
         """
-
-        for node in genome.nodes:
-            print(node.id)
-            print(node.connections)
-            print(node.type)
-            print(node.value)
+        order_of_traversal = self.kahns_algorithm()
+        for node in order_of_traversal:
+            for connection in node.connections:
+                if connection.is_enabled:
+                    self.update_out_node(connection)
+        action = self.output(True)
+        return action
+    
+    def kahns_algorithm(self) -> None:
+        """
+        Kahns algorithm for topological sorting of the genome
+        """
+        order_of_traversal = []
+        in_degree = {} # How many connections are coming into the node
+        for node in self.genome.nodes:
+            in_degree[node.id] = 0
+        for connection in self.genome.connections:
+            if connection.is_enabled:
+                in_degree[connection.out_node.id] += 1
+        queue = []
+        for node in self.genome.nodes:
+            if in_degree[node.id] == 0:
+                queue.append(node)
+                
+        while queue:
+            current_node = queue.pop(0)
+            order_of_traversal.append(current_node)
+            for connection in current_node.connections:
+                if connection.is_enabled:
+                    in_degree[connection.out_node.id] -= 1
+                    if in_degree[connection.out_node.id] == 0:
+                        queue.append(connection.out_node)
+        return order_of_traversal
         
-        for connection in genome.connections:
-            print(connection.in_node)
-            print(connection.out_node)
-            print(connection.weight)
-            print(connection.is_enabled)
-            print(connection.innovation_number)
+        
     
     def output(self, done: bool) -> int:
         """
