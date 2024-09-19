@@ -13,13 +13,14 @@ class Traverse:
         all its incoming connections traversed before it.
         """
         order_of_traversal = self.kahns_algorithm()
+        print(order_of_traversal)
         if not order_of_traversal:
             return None
         for node in order_of_traversal:
-            for connection in node.connections:
+            for connection in node.connections_to_output:
                 if connection.is_enabled:
-                    self.update_out_node(connection)
-        action = self.output(True)
+                    self.update_out_node_value(connection)
+        action = self.output()
         return action
     
     def kahns_algorithm(self) -> list[nodes.Node]:
@@ -44,7 +45,7 @@ class Traverse:
             current_node = queue.pop(0)
             order_of_traversal.append(current_node)
 
-            for connection in current_node.connections:
+            for connection in current_node.connections_to_output:
                 if connection.is_enabled:
                     in_degree[connection.out_node.id] -= 1
                     if in_degree[connection.out_node.id] == 0:
@@ -59,34 +60,43 @@ class Traverse:
         
         
     
-    def output(self, done: bool) -> int:
+    def output(self) -> int:
         """
         Returns the output-node with the highest value after the traversal is done
         """
         output = -1
         highest_value = 0
-        if done:
-            for node in self.genome.output_nodes:
-                if node.value > highest_value:
-                    highest_value = node.value
-                    output = node.id
-        else:
-            return -1
+        for node in self.genome.output_nodes:
+            if node.value > highest_value:
+                highest_value = node.value
+                output = node.id
+    
         return output
     
-    def calculate_connection(self, connection: 'nodes.ConnectionGene'):
+
+    def calculate_weighted_input(self, connection: 'nodes.ConnectionGene') -> float:
         """
-        Calculates the new value of the out_node in the connection
-        """
+        Calculate the weighted input value from the in_node of the connection.
         
-        connection.out_node.value += connection.in_node.value * connection.weight
-        return self.activation_function(connection.out_node.value)
-    
-    def update_out_node(self, connection: 'nodes.ConnectionGene'):
+        Returns:
+            float: The weighted input value for the out_node.
         """
-        Updates the out_node value in the connection
+        return connection.in_node.value * connection.weight
+
+
+    def update_out_node_value(self, connection: 'nodes.ConnectionGene') -> None:
         """
-        connection.out_node.value += self.calculate_connection(connection)
+        Update the out_node's value in the connection by adding the weighted input
+        and applying the activation function.
+        
+        Args:
+            connection (nodes.ConnectionGene): The connection gene containing in_node, out_node, and weight.
+        """
+        weighted_input = self.calculate_weighted_input(connection)
+        connection.out_node.value += weighted_input
+        connection.out_node.value = self.activation_function(connection.out_node.value)
+        print(connection.out_node.value)
+
 
         
     def activation_function(self, value: float) -> float:
