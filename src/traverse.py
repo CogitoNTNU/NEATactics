@@ -13,7 +13,7 @@ class Traverse:
         all its incoming connections traversed before it.
         """
         order_of_traversal = self.kahns_algorithm()
-        print(order_of_traversal)
+        # print(order_of_traversal)
         if not order_of_traversal:
             return None
         for node in order_of_traversal:
@@ -95,7 +95,6 @@ class Traverse:
         weighted_input = self.calculate_weighted_input(connection)
         connection.out_node.value += weighted_input
         connection.out_node.value = self.activation_function(connection.out_node.value)
-        print(connection.out_node.value)
 
 
         

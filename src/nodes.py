@@ -43,6 +43,8 @@ class Genome:
         node1.add_node_connection(new_node.id)
         new_node.add_node_connection(node1.id)
         new_node.add_node_connection(node2.id)
+        new_node.add_connection_connection(connection2)
+        node1.add_connection_connection(connection1)
     
 
     def add_connection_mutation(self, node1: 'Node', node2: 'Node', global_innovation_number: int):
@@ -67,7 +69,7 @@ class Genome:
             self.add_connection(connection)
             node2.add_node_connection(node1.id)
             node1.add_node_connection(node2.id)
-            node1.add_connection(connection)
+            node1.add_connection_connection(connection)
             return True
         else:
             return False
@@ -126,7 +128,7 @@ class Node:
     def add_node_connection(self, node:'Node'):
         self.connected_nodes.append(node)
 
-    def add_connection(self, connection: 'ConnectionGene'):
+    def add_connection_connection(self, connection: 'ConnectionGene'):
         self.connections_to_output.append(connection)
 
     def __repr__(self):
