@@ -5,6 +5,7 @@ import numpy as np
 import time
 from typing import Tuple
 from src.utils.utils import save_state_as_png
+import pickle
 
 def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment. Returns the environment."
@@ -53,6 +54,8 @@ def get_state_from_environment(env: MarioJoypadSpace):
         
         print(sr.state)
 
+        with open(f"state_frame_{i}.pkl", "wb") as f:
+            pickle.dump(sr.state, f)
         
         if sr.info["life"] == 2:
             print(f"Lost a life at frame {i}.")
@@ -76,10 +79,15 @@ if __name__ == '__main__':
     env, state = init()
     test_gym_environment(env)
 
+    # env, state = init()
+    # sr = simulate_one_frame(env)
+    
     env, state = init()
     sr = simulate_one_frame(env)
     # print(sr.reward)
     # print(sr.info)
+    get_state_from_environment(env)
+
 
 """
 Notes:

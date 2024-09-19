@@ -3,6 +3,12 @@ from src.genetics.node import Node
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.genome import Genome
 import random
+import numpy as np
+import pickle
+
+def get_state(file_path: str) -> np.ndarray:
+    with open(file_path, "rb") as f:
+        return pickle.load(f)
 
 def generate_nodes():
     list_of_nodes = []
@@ -52,6 +58,9 @@ def test_visualize_genome():
         genome.add_node(i)
     for i in list_of_connections:
         genome.add_connection(i)
+    
+
+    
     visualize_genome(genome)
 
 
