@@ -9,7 +9,7 @@ GRAPH_XMAX = 17
 GRAPH_YMIN = -20
 GRAPH_YMAX = 3
 
-def create_custom_layout(G, layers):
+def get_position_dict(layers):
     """
     Creates a custom layout for the graph G, ensuring nodes are separated by layers.
     
@@ -68,7 +68,7 @@ def visualize_genome(genome: Genome):
             layers[1].append(node.id)
         else:
             layers[2].append(node.id)
-    pos = create_custom_layout(G, layers)
+    pos = get_position_dict(layers)
     nx.draw(G, pos, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
     
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
