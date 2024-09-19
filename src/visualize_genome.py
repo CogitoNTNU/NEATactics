@@ -13,7 +13,6 @@ def create_custom_layout(G, layers):
     pos = {}
     layer_gap = 5  # Horizontal gap between layers
     node_gap = 2   # Vertical gap between nodes in the same layer
-    input_layer_nodes_per_row = 20  # Define input layer as a 20x10 grid
     
     # Total number of layers
     total_layers = len(layers)
@@ -47,13 +46,18 @@ def create_custom_layout(G, layers):
 def visualize_genome(genome: Genome):
     G = nx.DiGraph()
     for node in genome.nodes:
-        G.add_node(node.id, layer_number = node.layer_number)
+        if node.type == 'Input':
+            G.add_node(node.id, layer_number = 0)
+        elif node.type == 'Hidden':
+            G.add_node(node.id, layer_number = 1)
+        elif node.type == 'Output':
+            G.add_node(node.id, layer_number = 2)
     for connection in genome.connections:
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
     colors_node = []
     for node in genome.nodes:
-        if node.type == 'input':
+        if node.type == 'Input':
             if node.value < 0.25:
                 colors_node.append('b')
             elif node.value < 0.5:
@@ -67,9 +71,14 @@ def visualize_genome(genome: Genome):
     
 
 
-    layers = [[] for _ in range(max([node.layer_number for node in genome.nodes]) + 1)]
+    layers = [[] for _ in range(3)]
     for node in genome.nodes:
-        layers[node.layer_number].append(node.id)
+        if node.type == 'Input':
+            layers[0].append(node.id)
+        elif node.type == 'Hidden':
+            layers[1].append(node.id)
+        else:
+            layers[2].append(node.id)
     pos = create_custom_layout(G, layers)
     nx.draw(G, pos, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
     plt.show()

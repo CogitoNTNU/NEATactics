@@ -7,10 +7,13 @@ def test_visualize_genome():
     list_of_connections = []
     for i in range(200):
         color = random.random()
-        list_of_nodes.append(Node(i, "input", 0, color))
+        list_of_nodes.append(Node(i, "Input", color))
     for i in range(200, 205):
         color = random.random()
-        list_of_nodes.append(Node(i, "output", 1, color))
+        list_of_nodes.append(Node(i, "Hidden", color))
+    for i in range(200, 205):
+        color = random.random()
+        list_of_nodes.append(Node(i, "Output", color))
     for i in range(200):
         for j in range(200, 205):
             list_of_connections.append(ConnectionGene(list_of_nodes[i], list_of_nodes[j], 1, True, 1))
