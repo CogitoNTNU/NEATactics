@@ -51,9 +51,8 @@ def visualize_genome(genome: Genome):
     for connection in genome.connections:
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
-    colors_node = []
-    for node in genome.nodes:
-        colors_node.append(get_color(node.type, node.value))
+
+    colors_node = [get_color(node.type, node.value) for node in genome.nodes]
     
 
 
