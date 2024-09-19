@@ -16,20 +16,24 @@ genome.add_node(Node(9, 'output'))
 genome.add_node(Node(10, 'output'))
 
 
-rand1 = random.randint(0, 9)
-rand2 = random.randint(0, 9)
 
-global_inovation_number = 0
-for i in range(7):
-    while not genome.add_connection_mutation(node1=genome.nodes[rand1], node2=genome.nodes[rand2], global_innovation_number=global_inovation_number):
-        rand1 = random.randint(0, 9)
-        rand2 = random.randint(0, 9)
-    rand3 = random.randint(0, len(genome.connections)-1)
-    genome.add_node_mutation(genome.connections[rand3], len(genome.nodes)+1, global_inovation_number)
+def test():
+    rand1 = random.randint(0, 9)
+    rand2 = random.randint(0, 9)
+    global_inovation_number = 0
+    for i in range(15):
+        while not genome.add_connection_mutation(node1=genome.nodes[rand1], node2=genome.nodes[rand2], global_innovation_number=global_inovation_number):
+            rand1 = random.randint(0, 9)
+            rand2 = random.randint(0, 9)
+        rand3 = random.randint(0, len(genome.connections)-1)
+        genome.add_node_mutation(genome.connections[rand3], len(genome.nodes)+1, global_inovation_number)
 
-
+test()
 forward = Traverse(genome)
-print(forward.traverse())
+something = forward.traverse()
+while something != None:
+    test()
+    something = forward.traverse()
 
 for output in genome.output_nodes:
     print(output, output.value)

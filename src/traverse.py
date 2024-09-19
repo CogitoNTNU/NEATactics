@@ -1,4 +1,5 @@
 import nodes
+from typing import List
 
 class Traverse:
     def __init__(self, genome: 'nodes.Genome') -> None:
@@ -23,7 +24,7 @@ class Traverse:
         action = self.output()
         return action
     
-    def kahns_algorithm(self) -> list[nodes.Node]:
+    def kahns_algorithm(self) -> List[nodes.Node]:
         """
         Kahns algorithm for topological sorting of the genome
 
