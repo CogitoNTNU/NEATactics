@@ -101,6 +101,7 @@ class Node:
     A node in a neural network.
     Has a unique id and a type.
     """
+
     def __init__(self, id: int, type: str, value: float = 0.0):
         self.id = id
         self.type = type
