@@ -13,13 +13,14 @@ class Traverse:
         all its incoming connections traversed before it.
         """
         order_of_traversal = self.kahns_algorithm()
+        print(order_of_traversal)
         if not order_of_traversal:
             return None
         for node in order_of_traversal:
-            for connection in node.connections:
+            for connection in node.connections_to_output:
                 if connection.is_enabled:
-                    self.update_out_node(connection)
-        action = self.output(True)
+                    self.update_out_node_value(connection)
+        action = self.output()
         return action
     
     def kahns_algorithm(self) -> list[nodes.Node]:
@@ -59,19 +60,17 @@ class Traverse:
         
         
     
-    def output(self, done: bool) -> int:
+    def output(self) -> int:
         """
         Returns the output-node with the highest value after the traversal is done
         """
         output = -1
         highest_value = 0
-        if done:
-            for node in self.genome.output_nodes:
-                if node.value > highest_value:
-                    highest_value = node.value
-                    output = node.id
-        else:
-            return -1
+        for node in self.genome.output_nodes:
+            if node.value > highest_value:
+                highest_value = node.value
+                output = node.id
+    
         return output
     
 
@@ -96,6 +95,7 @@ class Traverse:
         weighted_input = self.calculate_weighted_input(connection)
         connection.out_node.value += weighted_input
         connection.out_node.value = self.activation_function(connection.out_node.value)
+        print(connection.out_node.value)
 
 
         

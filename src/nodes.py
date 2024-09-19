@@ -111,10 +111,13 @@ class Node:
         
         """
         Type is one of the following:
-        - Input
-        - Hidden
-        - Output 
+        - input
+        - hidden
+        - output 
         """
+    def set_value(self, value: float):
+        if type == "input":
+            self.value = value
 
     def update_value(self, value: float):
         self.value += value
