@@ -102,12 +102,12 @@ class Node:
     Has a unique id and a type.
     """
 
-    def __init__(self, id: int, type: str):
+    def __init__(self, id: int, type: str, value: float = 0.0):
         self.id = id
         self.type = type
         self.connected_nodes = [] #hmm
         self.connection_genes = []
-        self.value = 0.0
+        self.value = value
         
         """
         Type is one of the following:
@@ -115,7 +115,10 @@ class Node:
         - Hidden
         - Output 
         """
-        
+
+    def update_value(self, value: float):
+        self.value = value
+
     def add_node_connection(self, node:'Node'):
         self.connected_nodes.append(node)
 
