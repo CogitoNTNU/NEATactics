@@ -57,18 +57,7 @@ def visualize_genome(genome: Genome):
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
     colors_node = []
     for node in genome.nodes:
-        if node.type == 'Input':
-            if node.value < 0.25:
-                colors_node.append('b')
-            elif node.value < 0.5:
-                colors_node.append('g')
-            elif node.value < 0.75:
-                colors_node.append('y')
-            else:
-                colors_node.append('r')
-        else:
-            colors_node.append('g')
-    
+        colors_node.append(get_color(node.type, node.value))
 
 
     layers = [[] for _ in range(3)]
@@ -82,3 +71,22 @@ def visualize_genome(genome: Genome):
     pos = create_custom_layout(G, layers)
     nx.draw(G, pos, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
     plt.show()
+
+
+def get_color(type: str, value: float) -> str:
+    """
+    Takes a value which is assumed to be in range [0, 1],
+    and returns a simple string like 'r' which representsn the color.
+    """
+    if type == 'input':
+        if value < 0.25:
+            return 'b'
+        elif value < 0.5:
+            return 'g'
+        elif value < 0.75:
+            return 'y'
+        else:
+            return 'r'
+
+    else:
+        return 'g'
