@@ -83,7 +83,6 @@ class Node:
         self.id = id
         self.type = type
         self.connected_nodes = []
-        self.layer_number = layer_number
         self.value = value
         """
         Type is one of the following:

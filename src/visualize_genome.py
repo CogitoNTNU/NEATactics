@@ -24,8 +24,8 @@ def create_custom_layout(G, layers):
             x_pos = 0  # Input layer starts at the far left
             # Organize the first layer into a 20x10 grid, starting from top-left (0,0)
             for i, node in enumerate(layer):
-                row = i % 10  # There are 10 rows, so row is determined by i % 10
-                col = i // 10  # Columns are determined by i // 10
+                row = i // 10  # There are 10 rows, so row is determined by i % 10
+                col = i % 10  # Columns are determined by i // 10
                 pos[node] = (x_pos + col * 0.5, -row * node_gap)  # Adjust x (columns) and y (rows)
         elif layer_idx == total_layers - 1:  # Output layer case
             x_pos = total_layers * layer_gap  # Place output nodes at the farthest right
