@@ -67,6 +67,7 @@ class Genome:
             self.add_connection(connection)
             node2.add_node_connection(node1.id)
             node1.add_node_connection(node2.id)
+            node1.add_connection(connection)
             return True
         else:
             return False
@@ -105,7 +106,7 @@ class Node:
         self.id = id
         self.type = type
         self.connected_nodes = [] #hmm
-        self.connection_genes = []
+        self.connections_to_output = []
         self.value = value
         
         """
@@ -120,6 +121,9 @@ class Node:
 
     def add_node_connection(self, node:'Node'):
         self.connected_nodes.append(node)
+
+    def add_connection(self, connection: 'ConnectionGene'):
+        self.connections_to_output.append(connection)
 
     def __repr__(self):
         return f"Node(id={self.id}, type={self.type})"

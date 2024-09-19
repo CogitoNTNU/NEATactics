@@ -44,7 +44,7 @@ class Traverse:
             current_node = queue.pop(0)
             order_of_traversal.append(current_node)
 
-            for connection in current_node.connections:
+            for connection in current_node.connections_to_output:
                 if connection.is_enabled:
                     in_degree[connection.out_node.id] -= 1
                     if in_degree[connection.out_node.id] == 0:
@@ -74,18 +74,29 @@ class Traverse:
             return -1
         return output
     
-    def calculate_connection(self, connection: 'nodes.ConnectionGene'):
+
+    def calculate_weighted_input(self, connection: 'nodes.ConnectionGene') -> float:
         """
-        Calculates the new value of the out_node in the connection
+        Calculate the weighted input value from the in_node of the connection.
+        
+        Returns:
+            float: The weighted input value for the out_node.
         """
         return connection.in_node.value * connection.weight
-    
-    def update_out_node(self, connection: 'nodes.ConnectionGene'):
+
+
+    def update_out_node_value(self, connection: 'nodes.ConnectionGene') -> None:
         """
-        Updates the out_node value in the connection
+        Update the out_node's value in the connection by adding the weighted input
+        and applying the activation function.
+        
+        Args:
+            connection (nodes.ConnectionGene): The connection gene containing in_node, out_node, and weight.
         """
-        connection.out_node.value += self.calculate_connection(connection)
+        weighted_input = self.calculate_weighted_input(connection)
+        connection.out_node.value += weighted_input
         connection.out_node.value = self.activation_function(connection.out_node.value)
+
 
         
     def activation_function(self, value: float) -> float:
