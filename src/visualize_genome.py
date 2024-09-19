@@ -1,6 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from src.nodes import Genome
+import random
 
 def create_custom_layout(G, layers):
     """
@@ -34,9 +35,9 @@ def create_custom_layout(G, layers):
                 pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically
         else:
             # Hidden layers are placed regularly between the input and output layers
-            x_pos = layer_idx * layer_gap  # Horizontal position for hidden layers
             y_start = -(len(layer) - 1) * node_gap / 2  # Center the layer vertically
             for i, node in enumerate(layer):
+                x_pos = round(random.uniform(10.5, 14.5), 2)
                 pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically
     
     return pos
