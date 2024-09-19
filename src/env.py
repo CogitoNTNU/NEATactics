@@ -10,7 +10,7 @@ from utils import save_state_as_png
 def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment. Returns the environment."
 
-    ENV_NAME = "SuperMarioBros-v2"
+    ENV_NAME = "SuperMarioBros-v3"
     env = gym_super_mario_bros.make(ENV_NAME)
     env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
     env.metadata['render_modes'] = "human"
@@ -28,13 +28,15 @@ def test_gym_environment(env: MarioJoypadSpace):
         sr = env.step(action) # State, Reward, Done, Info
         save_state_as_png(i + 1, sr.state) 
         time.sleep(0.02)
-        print(sr.state.shape)
+        print(sr.state)
         if sr.info["life"] == 2:
             print(f"Lost a life at frame {i}.")
         if sr.info["life"] == 0:
             print(f"Zero lives at fram: {i}.")
+            
         if sr.done:
             print(f"Game over at frame {i}.")
+            
             break
             _ = env.reset() # Discard the new initial state if done.
 
@@ -94,3 +96,4 @@ x_pos: int
 y_pos: int
 }
 """
+
