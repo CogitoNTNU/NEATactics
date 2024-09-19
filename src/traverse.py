@@ -43,7 +43,7 @@ class Traverse:
         while queue:
             current_node = queue.pop(0)
             order_of_traversal.append(current_node)
-            
+
             for connection in current_node.connections:
                 if connection.is_enabled:
                     in_degree[connection.out_node.id] -= 1
@@ -79,8 +79,8 @@ class Traverse:
         Calculates the new value of the out_node in the connection
         """
         
-        out_value = connection.in_node.value * connection.weight
-        return self.activation_function(out_value)
+        connection.out_node.value += connection.in_node.value * connection.weight
+        return self.activation_function(connection.out_node.value)
     
     def update_out_node(self, connection: 'nodes.ConnectionGene'):
         """
