@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 from src.nodes import Genome
 import random
 
+# Adjust the size of the visualization whiteboard for the NN:
+GRAPH_XMIN = -1.5
+GRAPH_XMAX = 17
+GRAPH_YMIN = -20
+GRAPH_YMAX = 3
+
 def create_custom_layout(G, layers):
     """
     Creates a custom layout for the graph G, ensuring nodes are separated by layers.
@@ -25,8 +31,8 @@ def create_custom_layout(G, layers):
             x_pos = 0  # Input layer starts at the far left
             # Organize the first layer into a 20x10 grid, starting from top-left (0,0)
             for i, node in enumerate(layer):
-                row = i // 20  # There are 10 rows, so row is determined by i % 10
-                col = i % 20  # Columns are determined by i // 10
+                row = i // 20  # There are 10 rows, so row is determined by i // 20
+                col = i % 20  # Columns are determined by i % 20
                 pos[node] = (x_pos + col * 0.5, -row * node_gap)  # Adjust x (columns) and y (rows)
         elif layer_idx == total_layers - 1:  # Output layer case
             x_pos = total_layers * layer_gap   # Place output nodes at the farthest right
@@ -53,8 +59,6 @@ def visualize_genome(genome: Genome):
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
 
     colors_node = [get_color(node.type, node.value) for node in genome.nodes]
-    
-
 
     layers = [[] for _ in range(3)]
     for node in genome.nodes:
@@ -66,6 +70,9 @@ def visualize_genome(genome: Genome):
             layers[2].append(node.id)
     pos = create_custom_layout(G, layers)
     nx.draw(G, pos, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
+    
+    plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
+    plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
     plt.show()
 
 def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
