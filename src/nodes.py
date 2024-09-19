@@ -116,7 +116,7 @@ class Node:
         """
 
     def update_value(self, value: float):
-        self.value = value
+        self.value += value
 
     def add_node_connection(self, node:'Node'):
         self.connected_nodes.append(node)

@@ -78,15 +78,14 @@ class Traverse:
         """
         Calculates the new value of the out_node in the connection
         """
-        
-        connection.out_node.value += connection.in_node.value * connection.weight
-        return self.activation_function(connection.out_node.value)
+        return connection.in_node.value * connection.weight
     
     def update_out_node(self, connection: 'nodes.ConnectionGene'):
         """
         Updates the out_node value in the connection
         """
         connection.out_node.value += self.calculate_connection(connection)
+        connection.out_node.value = self.activation_function(connection.out_node.value)
 
         
     def activation_function(self, value: float) -> float:
