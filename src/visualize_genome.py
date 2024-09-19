@@ -45,13 +45,8 @@ def create_custom_layout(G, layers):
 
 def visualize_genome(genome: Genome):
     G = nx.DiGraph()
-    for node in genome.nodes:
-        if node.type == 'Input':
-            G.add_node(node.id, layer_number = 0)
-        elif node.type == 'Hidden':
-            G.add_node(node.id, layer_number = 1)
-        elif node.type == 'Output':
-            G.add_node(node.id, layer_number = 2)
+    add_nodes_to_graph(G, genome) 
+
     for connection in genome.connections:
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
@@ -72,6 +67,17 @@ def visualize_genome(genome: Genome):
     nx.draw(G, pos, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
     plt.show()
 
+def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
+    """
+    Takes a graph and genome as input, and adds all of the nodes connected to that genome to the graph. 
+    """
+    for node in genome.nodes:
+        if node.type == 'Input':
+            graph.add_node(node.id, layer_number = 0)
+        elif node.type == 'Hidden':
+            graph.add_node(node.id, layer_number = 1)
+        elif node.type == 'Output':
+            graph.add_node(node.id, layer_number = 2)
 
 def get_color(type: str, value: float) -> str:
     """
