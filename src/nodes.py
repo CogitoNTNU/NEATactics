@@ -1,7 +1,6 @@
 import random  
 # TODO: Rudimentary NN structure which can interact with the environment.
 
-global_innovation_number = 0
 
 class Genome:
     """
@@ -27,10 +26,10 @@ class Genome:
         #self.connections.remove(connection)
         connection.is_enabled = False
     
-    def add_node_mutation(self, connection:'ConnectionGene', node_id: int):#, global_innovation_number: int):
+    def add_node_mutation(self, connection:'ConnectionGene', node_id: int, global_innovation_number: int):
         node1 = connection.in_node
         node2 = connection.out_node
-        new_node = self.Node(node_id)
+        new_node = Node(node_id, 'hidden')
         self.add_node(new_node)
         
         connection1 = ConnectionGene(node1, new_node, 1, True, global_innovation_number)
@@ -46,7 +45,7 @@ class Genome:
         new_node.add_node_connection(node2.id)
     
 
-    def add_connection_mutation(self, node1: 'Node', node2: 'Node'):
+    def add_connection_mutation(self, node1: 'Node', node2: 'Node', global_innovation_number: int):
         """
         Attempts to create a new connection between two nodes (node1 and node2).
         
@@ -62,7 +61,7 @@ class Genome:
         - bool: True if the connection was successfully added, False otherwise.
         """
         weight = self.get_weight()
-        if self.is_valid_connection(self, node1, node2):
+        if self.is_valid_connection(node1, node2):
             connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
             global_innovation_number += 1
             self.add_connection(connection)
@@ -72,7 +71,7 @@ class Genome:
         else:
             return False
     
-    def get_weight():
+    def get_weight(self):
         return 2*random.random() - 1  #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
 
     def weight_mutation(self, connection: 'ConnectionGene'):
@@ -95,7 +94,7 @@ class Genome:
 
     def __repr__(self):
         return (f"Genome(id={self.id}, nodes={[node.id for node in self.nodes]}, "
-                f"connections={[connection.innovation_number for connection in self.connections]})")
+                f"connections={[connection.is_enabled for connection in self.connections]})")
 
 class Node:
     """
@@ -106,6 +105,7 @@ class Node:
         self.id = id
         self.type = type
         self.connected_nodes = [] #hmm
+        self.connection_genes = []
         self.value = 0.0
         
         """
@@ -116,7 +116,7 @@ class Node:
         """
         
     def add_node_connection(self, node:'Node'):
-        self.connected_nodes.append(node.id)
+        self.connected_nodes.append(node)
 
     def __repr__(self):
         return f"Node(id={self.id}, type={self.type})"

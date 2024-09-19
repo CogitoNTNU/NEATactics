@@ -5,7 +5,7 @@ class Traverse:
         self.genome = genome
     
     
-    def traverse(self, genome: 'nodes.Genome') -> None:
+    def traverse(self) -> None:
         """
         Traverse through the genome and returns an action
         Using Kahns alorithm to traverse through the genome 
@@ -43,6 +43,7 @@ class Traverse:
         while queue:
             current_node = queue.pop(0)
             order_of_traversal.append(current_node)
+            
             for connection in current_node.connections:
                 if connection.is_enabled:
                     in_degree[connection.out_node.id] -= 1
