@@ -24,11 +24,11 @@ def create_custom_layout(G, layers):
             x_pos = 0  # Input layer starts at the far left
             # Organize the first layer into a 20x10 grid, starting from top-left (0,0)
             for i, node in enumerate(layer):
-                row = i // 10  # There are 10 rows, so row is determined by i % 10
-                col = i % 10  # Columns are determined by i // 10
+                row = i // 20  # There are 10 rows, so row is determined by i % 10
+                col = i % 20  # Columns are determined by i // 10
                 pos[node] = (x_pos + col * 0.5, -row * node_gap)  # Adjust x (columns) and y (rows)
         elif layer_idx == total_layers - 1:  # Output layer case
-            x_pos = total_layers * layer_gap  # Place output nodes at the farthest right
+            x_pos = total_layers * layer_gap +   # Place output nodes at the farthest right
             y_start = -(len(layer) - 1) * node_gap * 2   # Center the output nodes vertically
             for i, node in enumerate(layer):
                 pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically
@@ -57,7 +57,18 @@ def visualize_genome(genome: Genome):
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
     colors_node = []
     for node in genome.nodes:
-        colors_node.append(get_color(node.type, node.value))
+        if node.type == 'Input':
+            if node.value < 0.25:
+                colors_node.append('b')
+            elif node.value < 0.5:
+                colors_node.append('g')
+            elif node.value < 0.75:
+                colors_node.append('y')
+            else:
+                colors_node.append('r')
+        else:
+            colors_node.append('g')
+    
 
 
     layers = [[] for _ in range(3)]
@@ -71,22 +82,3 @@ def visualize_genome(genome: Genome):
     pos = create_custom_layout(G, layers)
     nx.draw(G, pos, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
     plt.show()
-
-
-def get_color(type: str, value: float) -> str:
-    """
-    Takes a value which is assumed to be in range [0, 1],
-    and returns a simple string like 'r' which representsn the color.
-    """
-    if type == 'input':
-        if value < 0.25:
-            return 'b'
-        elif value < 0.5:
-            return 'g'
-        elif value < 0.75:
-            return 'y'
-        else:
-            return 'r'
-
-    else:
-        return 'g'
