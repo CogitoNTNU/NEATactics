@@ -47,30 +47,23 @@ def test_gym_environment(env: MarioJoypadSpace):
 def get_state_from_environment(env: MarioJoypadSpace):
     """Simulates 100 frames where your only action is to move right."""
 
-    for i in range(1): # Simulate 200 frames.
+    for i in range(200):
         
         action = RIGHT_ONLY.index(["right"]) # Choose to go right
         sr = env.step(action) # State, Reward, Done, Info
         
-        print(sr.state)
-
-        with open(f"state_frame_{i}.pkl", "wb") as f:
-            pickle.dump(sr.state, f)
+        if i == 150:
+            with open(f"state_frame_{i}.pkl", "wb") as f:
+                pickle.dump(sr.state, f)
         
-        if sr.info["life"] == 2:
-            print(f"Lost a life at frame {i}.")
-        if sr.info["life"] == 0:
-            print(f"Zero lives at fram: {i}.")
-            
         if sr.done:
             print(f"Game over at frame {i}.")
-            
             break
-            _ = env.reset() # Discard the new initial state if done.
 
         env.render()
 
     env.close()
+
 def simulate_one_frame(env: MarioJoypadSpace) -> StepResult:
     return env.step(RIGHT_ONLY.index(["right"]))
 
