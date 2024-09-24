@@ -1,9 +1,7 @@
 import random
 from src.genetics.connection_gene import ConnectionGene
-from typing import TYPE_CHECKING
+from src.genetics.node import Node
 
-if TYPE_CHECKING:
-    from src.genetics.node import Node
 
 class Genome:
     """

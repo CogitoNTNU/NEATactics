@@ -1,7 +1,7 @@
 from src.genetics.node import Node
 from src.genetics.genome import Genome
-from genetics.species import *
-from genetics.traverse import Traverse
+from src.genetics.species import *
+from src.genetics.traverse import Traverse
 import random
 
 genome = Genome(1)
