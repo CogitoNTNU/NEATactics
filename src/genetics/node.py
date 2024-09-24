@@ -5,24 +5,22 @@ if TYPE_CHECKING:
     from src.genetics.genome import Genome
 
 class Node:
-    """
-    A node in a neural network.
-    Has a unique id and a type.
-    """
+    """A node in a neural network. Has a unique id and a type."""
+    VALID_TYPES = {"input", "hidden", "output"}
 
     def __init__(self, id: int, type: str, value: float = 0.0):
         self.id = id
-        self.type = type
+        self.type = self._validate_type(type)
+        """Type is one of the following: {input, hidden, output}"""
         self.connected_nodes = [] #hmm
         self.connections_to_output = []
         self.value = value
-        
-        """
-        Type is one of the following:
-        - input
-        - hidden
-        - output 
-        """
+
+    def _validate_type(self, type: str) -> str:
+        if type not in self.VALID_TYPES:
+            raise ValueError(f"Invalid type: '{type}'. Must be one of the following: {self.VALID_TYPES}")
+        return type
+
     def set_value(self, value: float):
         if type == "input":
             self.value = value
