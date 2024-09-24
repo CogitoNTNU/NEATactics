@@ -1,6 +1,9 @@
 import random
 from src.genetics.connection_gene import ConnectionGene
-from src.genetics.node import Node
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.genetics.node import Node
 
 class Genome:
     """
@@ -9,7 +12,7 @@ class Genome:
     """
     def __init__(self, id: int):
         self.id = id
-        self.nodes: list[Node] = []
+        self.nodes: list['Node'] = []
         self.connections: list[ConnectionGene] = []
         self.output_nodes = []
 

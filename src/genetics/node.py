@@ -1,5 +1,8 @@
-from src.genetics.genome import Genome
 from src.genetics.connection_gene import ConnectionGene
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.genetics.genome import Genome
 
 class Node:
     """
