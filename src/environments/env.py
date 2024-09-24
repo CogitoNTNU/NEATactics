@@ -52,8 +52,6 @@ def get_state_from_environment(env: MarioJoypadSpace):
         
         print(sr.state)
 
-        with open(f"state_frame_{i}.pkl", "wb") as f:
-            pickle.dump(sr.state, f)
         
         if sr.info["life"] == 2:
             print(f"Lost a life at frame {i}.")
