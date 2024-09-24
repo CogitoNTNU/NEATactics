@@ -24,13 +24,13 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     return env, state
 
 def insert_input(genome:Genome, state: list) -> None:
-    start_idx_input_node = 5
+    start_idx_input_node = 7
     num_input_nodes = 200
     for node in genome.nodes:
         node.value = 0
     
     for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
-        node.value = state[i//20][i % 10] # (Not sure if this is correct)
+        node.value = state[i//20][i % 20] # (Not sure if this is correct)
             
 
 def run_game(env: MarioJoypadSpace, genome: Genome):

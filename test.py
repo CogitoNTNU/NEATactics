@@ -3,24 +3,16 @@ from src.genetics.genome import Genome
 from src.genetics.species import *
 from src.genetics.traverse import Traverse
 from src.environments.run_env import env_init, run_game
-
 import random
 
 genome = Genome(1)
-for i in range(5):
+# Create output nodes
+for i in range(7):
     genome.add_node(Node(i, 'output'))
 
-genome.add_node(Node(5, 'input', 1))
-genome.add_node(Node(6, 'input', 0.5))
-genome.add_node(Node(7, 'input', 0))
-genome.add_node(Node(8, 'input', -0.5))
-genome.add_node(Node(9, 'input', 0.9))
-genome.add_node(Node(10, 'input', -0.3))
-genome.add_node(Node(11, 'input', 0.2))
-
-
-
-
+# Create input nodes
+for i in range(7, 207):
+    genome.add_node(Node(i, 'input'))
 
 def test():
     rand1 = random.randint(0, len(genome.nodes)-1)
