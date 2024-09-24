@@ -1,5 +1,6 @@
 import random
 from src.genetics.connection_gene import ConnectionGene
+from src.genetics.node import Node
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -16,6 +17,7 @@ class Genome:
         self.connections: list[ConnectionGene] = []
         self.output_nodes = []
 
+    
 
     def add_node(self, node: 'Node'):
         self.nodes.append(node)
@@ -97,7 +99,8 @@ class Genome:
             return False
         else:
             return True
-
+    def get_nodes(self):
+        return self.nodes
     def __repr__(self):
         return (f"Genome(id={self.id}, nodes={[node.id for node in self.nodes]}, "
                 f"connections={[connection.is_enabled for connection in self.connections]})")

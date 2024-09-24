@@ -30,7 +30,7 @@ def create_connections(list_of_nodes):
 def test_visualize_genome():
     state = get_state("./test/state_frame_0.pkl")
     state = state / 255
-    print(state)
+    # print(state)
 
     list_of_nodes = []
     i = 0

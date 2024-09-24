@@ -23,11 +23,12 @@ def test_gym_environment(env: MarioJoypadSpace):
 
     for i in range(200): # Simulate 200 frames.
         
+        
         action = SIMPLE_MOVEMENT.index(["right"]) # Choose to go right
         sr = env.step(action) # State, Reward, Done, Info
         save_state_as_png(i + 1, sr.state) 
         time.sleep(0.02)
-        print(sr.state)
+        # print(sr.state)
         if sr.info["life"] == 2:
             print(f"Lost a life at frame {i}.")
         if sr.info["life"] == 0:
@@ -53,8 +54,8 @@ if __name__ == '__main__':
 
     env, state = init()
     sr = simulate_one_frame(env)
-    print(sr.reward)
-    print(sr.info)
+    # print(sr.reward)
+    # print(sr.info)
 
 """
 Notes:

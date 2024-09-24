@@ -14,8 +14,8 @@ class MarioJoypadSpace(JoypadSpace):
 
     def reset(self) -> np.ndarray:
         """Reset the environment, and return the initial state."""
-        return np.array(super().reset())
-        ## return self.interpret_state(np.array(super().reset()))
+        # return np.array(super().reset())
+        return self.interpret_state(np.array(super().reset()))
     
     def step(self, action: int) -> StepResult:
         """Perform an action, and get the next frame."""
@@ -36,5 +36,8 @@ class MarioJoypadSpace(JoypadSpace):
         # Reduce pixel count
         state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8)
         
+        # Normalize greyscal to [0, 1]
+        state = np.array(state)
+        state = state / 255
         
         return np.array(state)
