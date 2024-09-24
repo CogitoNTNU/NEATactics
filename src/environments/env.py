@@ -1,6 +1,6 @@
 from src.environments.mario_env import MarioJoypadSpace, StepResult
 import gym_super_mario_bros
-from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
+from gym_super_mario_bros.actions import RIGHT_ONLY
 import numpy as np
 import time
 from typing import Tuple
@@ -11,7 +11,7 @@ def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
 
     ENV_NAME = "SuperMarioBros-v3"
     env = gym_super_mario_bros.make(ENV_NAME)
-    env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
+    env = MarioJoypadSpace(env, RIGHT_ONLY) # Select available actions for AI
     env.metadata['render_modes'] = "human"
     env.metadata['render_fps'] = 144
  
@@ -24,7 +24,7 @@ def test_gym_environment(env: MarioJoypadSpace):
     for i in range(200): # Simulate 200 frames.
         
         
-        action = SIMPLE_MOVEMENT.index(["right"]) # Choose to go right
+        action = RIGHT_ONLY.index(["right"]) # Choose to go right
         sr = env.step(action) # State, Reward, Done, Info
         save_state_as_png(i + 1, sr.state) 
         time.sleep(0.02)
@@ -43,9 +43,33 @@ def test_gym_environment(env: MarioJoypadSpace):
         env.render()
 
     env.close()
+def get_state_from_environment(env: MarioJoypadSpace):
+    """Simulates 100 frames where your only action is to move right."""
 
+    for i in range(1): # Simulate 200 frames.
+        
+        action = RIGHT_ONLY.index(["right"]) # Choose to go right
+        sr = env.step(action) # State, Reward, Done, Info
+        
+        print(sr.state)
+
+        
+        if sr.info["life"] == 2:
+            print(f"Lost a life at frame {i}.")
+        if sr.info["life"] == 0:
+            print(f"Zero lives at fram: {i}.")
+            
+        if sr.done:
+            print(f"Game over at frame {i}.")
+            
+            break
+            _ = env.reset() # Discard the new initial state if done.
+
+        env.render()
+
+    env.close()
 def simulate_one_frame(env: MarioJoypadSpace) -> StepResult:
-    return env.step(SIMPLE_MOVEMENT.index(["right"]))
+    return env.step(RIGHT_ONLY.index(["right"]))
 
 if __name__ == '__main__':
 

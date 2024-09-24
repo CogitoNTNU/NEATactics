@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.genetics.node import Node
 
+
 class Genome:
     """
     Represents some neural network.
