@@ -1,6 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from src.nodes import Genome
+from src.genetics.genome import Genome
 import random
 
 # Adjust the size of the visualization whiteboard for the NN:

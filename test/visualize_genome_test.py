@@ -1,5 +1,7 @@
-from src.visualize_genome import visualize_genome
-from src.nodes import Genome, Node, ConnectionGene
+from src.visualization.visualize_genome import visualize_genome
+from src.genetics.node import Node
+from src.genetics.connection_gene import ConnectionGene
+from src.genetics.genome import Genome
 import random
 
 def generate_nodes():

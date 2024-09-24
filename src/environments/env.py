@@ -1,11 +1,10 @@
-from marioJoypadSpace import MarioJoypadSpace
-from marioJoypadSpace import StepResult
+from src.environments.mario_env import MarioJoypadSpace, StepResult
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 import numpy as np
 import time
 from typing import Tuple
-from utils import save_state_as_png
+from src.utils.utils import save_state_as_png
 
 def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment. Returns the environment."

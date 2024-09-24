@@ -1,4 +1,4 @@
-from src.marioJoypadSpace import MarioJoypadSpace
+from src.environments.mario_env import MarioJoypadSpace
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 

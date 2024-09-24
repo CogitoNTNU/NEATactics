@@ -1,8 +1,10 @@
-import nodes
+from src.genetics.genome import Genome
+from src.genetics.node import Node
+from src.genetics.connection_gene import ConnectionGene
 from typing import List
 
 class Traverse:
-    def __init__(self, genome: 'nodes.Genome') -> None:
+    def __init__(self, genome: Genome) -> None:
         self.genome = genome
     
     
@@ -24,7 +26,7 @@ class Traverse:
         action = self.output()
         return action
     
-    def kahns_algorithm(self) -> List[nodes.Node]:
+    def kahns_algorithm(self) -> List[Node]:
         """
         Kahns algorithm for topological sorting of the genome
 
@@ -75,7 +77,7 @@ class Traverse:
         return output
     
 
-    def calculate_weighted_input(self, connection: 'nodes.ConnectionGene') -> float:
+    def calculate_weighted_input(self, connection: ConnectionGene) -> float:
         """
         Calculate the weighted input value from the in_node of the connection.
         
@@ -85,7 +87,7 @@ class Traverse:
         return connection.in_node.value * connection.weight
 
 
-    def update_out_node_value(self, connection: 'nodes.ConnectionGene') -> None:
+    def update_out_node_value(self, connection: ConnectionGene) -> None:
         """
         Update the out_node's value in the connection by adding the weighted input
         and applying the activation function.
