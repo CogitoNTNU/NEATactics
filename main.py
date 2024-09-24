@@ -1,4 +1,5 @@
 import argparse
+from src.environments.env import init, test_gym_environment
 
 def main():
 
@@ -14,6 +15,8 @@ def main():
         print("Run this script with --hello for a special surprise!")
 
 if __name__ == "__main__":
-    main()
+    # main()
+    env, state = init()
+    test_gym_environment(env)
 
 
