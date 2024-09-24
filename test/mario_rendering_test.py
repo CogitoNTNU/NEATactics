@@ -19,5 +19,3 @@ def test_gym_environment():
             _ = env.reset() # Discarding the new state
         env.render()
     env.close()
-
-test_gym_environment()
