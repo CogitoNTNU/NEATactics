@@ -14,7 +14,6 @@ class MarioJoypadSpace(JoypadSpace):
 
     def reset(self) -> np.ndarray:
         """Reset the environment, and return the initial state."""
-        # return np.array(super().reset())
         return self.interpret_state(np.array(super().reset()))
     
     def step(self, action: int) -> StepResult:
