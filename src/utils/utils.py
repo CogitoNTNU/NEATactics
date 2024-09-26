@@ -9,4 +9,4 @@ def save_state_as_png(i, state: np.ndarray) -> None:
     directory = "./mario_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.imsave(f"./mario_frames/frame{i}.png", state*255, cmap='gray')
+    plt.imsave(f"./mario_frames/frame{i}.png", state, cmap='gray', vmin=0, vmax=1)
