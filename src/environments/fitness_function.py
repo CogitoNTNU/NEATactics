@@ -35,6 +35,17 @@ y_pos: int
 }
 """
 
+"""
+TODO: Another good way is to implent the fitness function from https://medium.com/@savas/craig-using-neural-networks-to-learn-mario-a76036b639ad 
+def fitness(xpos, time):
+    if xpos > 350:
+        return xpos + 0.1* (400-time)
+    else:
+        return xpos
+"""
+
+
+
 class Fitness:
     def __init__(self, rewards) -> None:
         self.fitness = 0
@@ -60,6 +71,7 @@ class Fitness:
         The fitness function that descies how good the genome is. 
         This only works for SIMPLE_MOVEMENT movement scheme.
         """
+
 
         # Win #################
         if info["flag_get"]:
