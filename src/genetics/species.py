@@ -8,8 +8,30 @@ class Species:  # Made by Copilot
         self.members = []
         self.config = config
 
-    def add_member(self, member):
-        self.members.append(member)
+class Species: # Made by Copilot
+    def __init__(self):
+        self.genomes = self.initialize_genomes()
+        
+    def initialize_genomes(self, number_of_genomes=10):
+        genomes = []
+        for i in range(number_of_genomes):
+            genomes.append(Genome(i))
+        
+        for i in range(number_of_genomes):
+            genome = genomes[i]
+            
+            # Create output nodes
+            for i in range(7):
+                genome.add_node(Node(i, 'output'))
+            
+            # Create input nodes
+            for i in range(7, 207):
+                genome.add_node(Node(i, 'input'))
+        
+        return genomes
+
+    def add_genome(self, member):
+        self.genomes.append(member)
 
     def genomic_distance(self, genome1: Genome, genome2: Genome):
         connections1 = [c.innovation_number for c in genome1.connections if c.is_enabled]
