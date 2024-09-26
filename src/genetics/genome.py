@@ -45,10 +45,10 @@ class Genome:
         self.disable_connection(connection)
         self.add_connection(connection1)    
         self.add_connection(connection2)
-        node2.add_node_connection(new_node.id)
-        node1.add_node_connection(new_node.id)
-        new_node.add_node_connection(node1.id)
-        new_node.add_node_connection(node2.id)
+        node2.add_node_connection(new_node)
+        node1.add_node_connection(new_node)
+        new_node.add_node_connection(node1)
+        new_node.add_node_connection(node2)
         new_node.add_connection_connection(connection2)
         node1.add_connection_connection(connection1)
     
@@ -73,8 +73,8 @@ class Genome:
             connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
             global_innovation_number += 1
             self.add_connection(connection)
-            node2.add_node_connection(node1.id)
-            node1.add_node_connection(node2.id)
+            node2.add_node_connection(node1)
+            node1.add_node_connection(node2)
             node1.add_connection_connection(connection)
             return True
         else:

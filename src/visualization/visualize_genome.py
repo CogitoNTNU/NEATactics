@@ -1,13 +1,40 @@
+import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 from src.genetics.genome import Genome
+from src.genetics.node import Node
 import random
+from typing import List
+from src.utils.utils import get_color
 
 # Adjust the size of the visualization whiteboard for the NN:
 GRAPH_XMIN = -1.5
 GRAPH_XMAX = 17
 GRAPH_YMIN = -20
 GRAPH_YMAX = 3
+
+def get_node_in_layers(genome: Genome) -> List[List[Node]]:
+    """
+    Input:
+    - genome
+
+    Output:
+    - A list with shape (1, 3)\n
+
+    The first list represents the nodes in the input layer.\n
+    Seconds list: hidden layer.\n
+    Third list: output layer.\n 
+    """
+    layers = [[] for _ in range(3)]
+    for node in genome.nodes:
+        if node.type == 'input':
+            layers[0].append(node.id)
+        elif node.type == 'hidden':
+            layers[1].append(node.id)
+        else:
+            layers[2].append(node.id)
+    return layers
 
 def get_position_dict(layers):
     """
@@ -48,9 +75,20 @@ def get_position_dict(layers):
     
     return pos
 
-
+def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
+    """Takes a graph and genome as input, and adds all of the nodes connected to that genome to the graph."""
+    for node in genome.nodes:
+        if node.type == 'input':
+            graph.add_node(node.id, layer_number = 0)
+        elif node.type == 'hidden':
+            graph.add_node(node.id, layer_number = 1)
+        elif node.type == 'output':
+            graph.add_node(node.id, layer_number = 2)
 
 def visualize_genome(genome: Genome):
+    fig = plt.figure(figsize=(15, 10))
+    ax = fig.add_subplot(111)
+
     G = nx.DiGraph()
     add_nodes_to_graph(G, genome) 
 
@@ -58,49 +96,17 @@ def visualize_genome(genome: Genome):
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
 
-    colors_node = [get_color(node.type, node.value) for node in genome.nodes]
+    colz = [get_color(node.type, node.value) for node in genome.nodes]
 
-    layers = [[] for _ in range(3)]
-    for node in genome.nodes:
-        if node.type == 'Input':
-            layers[0].append(node.id)
-        elif node.type == 'Hidden':
-            layers[1].append(node.id)
-        else:
-            layers[2].append(node.id)
-    pos = get_position_dict(layers)
-    nx.draw(G, pos, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
+    layers = get_node_in_layers(genome)
+    pos_dict = get_position_dict(layers)
+    nx.draw(G, pos_dict, with_labels=True, edge_color='b', node_size=500,
+            font_size=8, font_color='y', font_weight='bold',
+            node_color=colz, cmap='gray', vmin=0, vmax=1, ax=ax)
+
+    fig.set_facecolor('#d4e6f1') # Background color of network popup.
     
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
     plt.show()
-
-def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
-    """
-    Takes a graph and genome as input, and adds all of the nodes connected to that genome to the graph. 
-    """
-    for node in genome.nodes:
-        if node.type == 'Input':
-            graph.add_node(node.id, layer_number = 0)
-        elif node.type == 'Hidden':
-            graph.add_node(node.id, layer_number = 1)
-        elif node.type == 'Output':
-            graph.add_node(node.id, layer_number = 2)
-
-def get_color(type: str, value: float) -> str:
-    """
-    Takes a value which is assumed to be in range [0, 1],
-    and returns a simple string like 'r' which representsn the color.
-    """
-    if type == 'Input':
-        if value < 0.25:
-            return 'b'
-        elif value < 0.5:
-            return 'g'
-        elif value < 0.75:
-            return 'y'
-        else:
-            return 'r'
-
-    else:
-        return 'g'
+   

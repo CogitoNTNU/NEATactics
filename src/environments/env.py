@@ -1,11 +1,12 @@
 from src.environments.mario_env import MarioJoypadSpace, StepResult
 import gym_super_mario_bros
-from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
+from gym_super_mario_bros.actions import SIMPLE_MOVEMENT, RIGHT_ONLY
 import numpy as np
 import time
 from typing import Tuple
 from src.utils.utils import save_state_as_png
 from src.environments.fitness_function import Fitness
+import pickle
 
 def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment. Returns the environment."
@@ -46,6 +47,26 @@ def test_gym_environment(env: MarioJoypadSpace):
 
     env.close()
 
+def get_state_from_environment(env: MarioJoypadSpace):
+    """Simulates 100 frames where your only action is to move right."""
+    for i in range(200):
+        
+        action = RIGHT_ONLY.index(["right"]) # Choose to go right
+        sr = env.step(action) # State, Reward, Done, Info
+        
+        if i == 150:
+            with open(f"state_frame_{i}.pkl", "wb") as f:
+                pickle.dump(sr.state, f)
+            save_state_as_png(f"pickled{i}", sr.state)
+        
+        if sr.done:
+            print(f"Game over at frame {i}.")
+            break
+
+        env.render()
+
+    env.close()
+
 def simulate_one_frame(env: MarioJoypadSpace) -> StepResult:
     return env.step(SIMPLE_MOVEMENT.index(["right"]))
 
@@ -54,10 +75,15 @@ if __name__ == '__main__':
     env, state = init()
     test_gym_environment(env)
 
+    # env, state = init()
+    # sr = simulate_one_frame(env)
+    
     env, state = init()
     sr = simulate_one_frame(env)
     # print(sr.reward)
     # print(sr.info)
+    get_state_from_environment(env)
+
 
 """
 Notes:
