@@ -1,3 +1,4 @@
+import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -76,6 +77,12 @@ def get_position_dict(layers):
 
 
 def visualize_genome(genome: Genome):
+    # fig = plt.figure(facecolor='brown', figsize=(15, 10)) #### CURSED!
+    fig = plt.figure(facecolor='brown')
+    ax = fig.add_subplot(111, facecolor='brown')
+    ax.set_facecolor('brown')
+    # ax.set_axis_off()
+
     G = nx.DiGraph()
     add_nodes_to_graph(G, genome) 
 
@@ -83,11 +90,16 @@ def visualize_genome(genome: Genome):
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
 
-    colors_node = [get_color(node.type, node.value) for node in genome.nodes]
+    node_vals = np.array([node.value for node in genome.nodes])
+
+    normie_vals = (node_vals - node_vals.min()) / (node_vals.max() - node_vals.min())
+
+    colors_node = [get_color(node.type, normie_vals[i]) for i, node in enumerate([node for node in genome.nodes if node.type == 'input'])]
+    colors_node.extend([get_color(node.type, node.value) for node in genome.nodes if node.type != 'input'])
 
     layers = get_node_in_layers(genome)
     pos_dict = get_position_dict(layers)
-    nx.draw(G, pos_dict, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node)
+    nx.draw(G, pos_dict, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node, cmap='gray', vmin=0, vmax=1, ax=ax)
     
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
@@ -111,8 +123,9 @@ def get_color(type: str, value: float) -> str:
     and returns a simple string like 'r' which representsn the color.
     """
     if type == 'input':
-        cmap = cm.viridis # type: ignore
-        return cmap(value)
+        return cm.gray(value)
+        # grayscale_value = round(value*255)
+        # return f'#{grayscale_value:02x}{grayscale_value:02x}{grayscale_value:02x}' # Something goes wrong here!
 
     if type == 'hidden':
         return 'k'
