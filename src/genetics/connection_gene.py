@@ -27,6 +27,8 @@ class ConnectionGene:
         self.is_enabled = is_enabled
         self.innovation_number = global_innovation_number
 
+    def get_connection_weight(self):
+        return self.weight
     def __repr__(self):
         return (
             f"ConnectionGene(in_node={self.in_node.id}, out_node={self.out_node.id}, "

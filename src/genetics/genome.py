@@ -17,8 +17,7 @@ class Genome:
         self.nodes: list['Node'] = []
         self.connections: list[ConnectionGene] = []
         self.output_nodes = []
-
-    
+        fitness_value = 0.0
 
     def add_node(self, node: 'Node'):
         self.nodes.append(node)
@@ -32,16 +31,19 @@ class Genome:
         #self.connections.remove(connection)
         connection.is_enabled = False
     
-    def add_node_mutation(self, connection:'ConnectionGene', node_id: int):
+    def add_node_mutation(self, connection:'ConnectionGene', node_id: int, innovation_number: int) -> int:
+        """
+        Returns the updated innovation number.
+        """
         node1 = connection.in_node
         node2 = connection.out_node
         new_node = Node(node_id, 'hidden')
         self.add_node(new_node)
         
-        connection1 = ConnectionGene(node1, new_node, 1, True, self.innovation_number)
-        self.innovation_number += 1 #Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
-        connection2 = ConnectionGene(new_node, node2, connection.weight, True, self.innovation_number)
-        self.innovation_number += 1
+        connection1 = ConnectionGene(node1, new_node, 1, True, innovation_number)
+        innovation_number += 1 #Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
+        connection2 = ConnectionGene(new_node, node2, connection.weight, True, innovation_number)
+        innovation_number += 1
         self.disable_connection(connection)
         self.add_connection(connection1)    
         self.add_connection(connection2)
@@ -51,6 +53,7 @@ class Genome:
         new_node.add_node_connection(node2.id)
         new_node.add_connection_connection(connection2)
         node1.add_connection_connection(connection1)
+        return innovation_number
     
 
     def add_connection_mutation(self, node1: 'Node', node2: 'Node', global_innovation_number: int):
@@ -68,7 +71,7 @@ class Genome:
         Returns:
         - bool: True if the connection was successfully added, False otherwise.
         """
-        weight = self.get_weight()
+        weight = self.create_weight()
         if self.is_valid_connection(node1, node2):
             connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
             global_innovation_number += 1
@@ -80,11 +83,25 @@ class Genome:
         else:
             return False
     
-    def get_weight(self):
-        return 2*random.random() - 1  #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
+    def create_weight(self):
+        return 2*random.random()-1  #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
+    
+    def get_random_node(self):
+        return self.nodes[random.randint(0, len(self.nodes)-1)]
+
+    def add_fitnessvalue(self, fitness: float):
+        self.fitness_value = fitness
+
+    def get_total_weight(self):
+        total_weight = 0
+        count = 0
+        for connection in self.connections:
+            count += 1
+            total_weight += connection.get_connection_weight()
+        return total_weight, count
 
     def weight_mutation(self, connection: 'ConnectionGene'):
-        connection.weight = self.get_weight() #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
+        connection.weight = self.create_weight() #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
 
     def is_valid_connection(self, node1: 'Node', node2: 'Node') -> bool:
         # check if it is valid to add a connection between two nodes
