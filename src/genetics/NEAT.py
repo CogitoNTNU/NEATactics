@@ -9,9 +9,11 @@ class NEAT:
         
     def start(self): 
         # Everyone starts in the same species
-        self.species += Species(self.config)
+        initial_species = Species(self.config)
         # Initialize random population
-
         for _ in range(self.config.population_size):
+            member = ...
+            initial_species.add_member(member)
             pass
             
+        self.species += initial_species

@@ -2,7 +2,8 @@ from src.genetics.node import Node
 from src.genetics.genome import Genome
 from src.utils.config import Config
 
-class Species: # Made by Copilot
+
+class Species:  # Made by Copilot
     def __init__(self, config: Config):
         self.members = []
         self.config = config
@@ -26,11 +27,15 @@ class Species: # Made by Copilot
             n = connections2_max
             excess = len([x for x in connections2 if x > connections1_max])
         disjoint = set(connections1) ^ set(connections2) - excess
-        
-        return self.config.c1*disjoint/n + self.config.c2*excess/n + self.config.c3*avg_weight
-        
-            
-    
+
+        avg_weight = genome1.get_weight()
+
+        return (
+            self.config.c1 * disjoint / n
+            + self.config.c2 * excess / n
+            + self.config.c3 * avg_weight
+        )
+
     def calculate_fitness(self):
         # Calculate the fitness of each member in the species
         pass
