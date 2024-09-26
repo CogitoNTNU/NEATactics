@@ -1,5 +1,5 @@
 import argparse
-from src.environments.env import init, test_gym_environment
+from src.environments.env import init, test_gym_environment, get_state_from_environment
 
 def main():
 
@@ -18,5 +18,9 @@ if __name__ == "__main__":
     # main()
     env, state = init()
     test_gym_environment(env)
+
+    # env, state = init()
+    # get_state_from_environment(env) # Will save state 150 in the root folder as pkl, will also save corresponding png in mario_frames.
+
 
 
