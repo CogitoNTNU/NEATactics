@@ -8,7 +8,7 @@ class Traverse:
         self.genome = genome
     
     
-    def traverse(self) -> None:
+    def traverse(self) -> int:
         """
         Traverse through the genome and returns an action
         Using Kahns alorithm to traverse through the genome 
@@ -18,11 +18,12 @@ class Traverse:
         order_of_traversal = self.kahns_algorithm()
         # print(order_of_traversal)
         if not order_of_traversal:
-            return None
+            return -1
         for node in order_of_traversal:
             for connection in node.connections_to_output:
                 if connection.is_enabled:
                     self.update_out_node_value(connection)
+            node.value = self.activation_function(node.value)
         action = self.output()
         return action
     
@@ -59,6 +60,7 @@ class Traverse:
             return order_of_traversal
         else:
             # If not all nodes are processed, there's a cycle
+            print("loop")
             return []
         
         
@@ -67,13 +69,12 @@ class Traverse:
         """
         Returns the output-node with the highest value after the traversal is done
         """
-        output = -1
-        highest_value = 0
+        output = 0
+        highest_value = -1000
         for node in self.genome.output_nodes:
             if node.value > highest_value:
                 highest_value = node.value
                 output = node.id
-    
         return output
     
 
@@ -97,7 +98,6 @@ class Traverse:
         """
         weighted_input = self.calculate_weighted_input(connection)
         connection.out_node.value += weighted_input
-        connection.out_node.value = self.activation_function(connection.out_node.value)
 
 
         
@@ -106,5 +106,5 @@ class Traverse:
         Applies the ReLU activation function to the value
         """
         if value < 0:
-            return 0
+            return 0.0
         return value 
