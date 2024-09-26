@@ -1,10 +1,14 @@
-from src.genetics.genome import Genome
 from src.genetics.node import Node
+from src.genetics.genome import Genome
+
+class Species: # Made by Copilot
+    def __init__(self, config):
+        self.members = []
+        self.config = config
 
 class Species: # Made by Copilot
     def __init__(self):
         self.genomes = self.initialize_genomes()
-
         
     def initialize_genomes(self, number_of_genomes=10):
         genomes = []
@@ -27,6 +31,27 @@ class Species: # Made by Copilot
     def add_genome(self, member):
         self.genomes.append(member)
 
+    def genomic_distance(self, genome1: Genome, genome2: Genome):
+        connections1 = [c.innovation_number for c in genome1.connections if c.is_enabled]
+        connections2 = [c.innovation_number for c in genome2.connections if c.is_enabled]
+
+        excess = None
+        # Last element in the list should always be the largest
+        connections1_max = connections1[-1]
+        connections2_max = connections2[-1]
+        n = 0
+        if connections1_max > connections2_max:
+            excess = len([x for x in connections1 if x > connections2_max])
+            n = connections1_max
+        else:
+            n = connections2_max
+            excess = len([x for x in connections2 if x > connections1_max])
+        disjoint = set(connections1) ^ set(connections2) - excess
+        
+        return self.c1*disjoint/n + self.c2*excess/n + self.c3*avg_weight
+        
+            
+    
     def calculate_fitness(self):
         # Calculate the fitness of each member in the species
         pass
