@@ -5,6 +5,7 @@ import numpy as np
 import time
 from typing import Tuple
 from src.utils.utils import save_state_as_png
+from src.environments.fitness_function import Fitness
 
 def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment. Returns the environment."
@@ -17,6 +18,7 @@ def init() -> Tuple[MarioJoypadSpace, np.ndarray]:
  
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
+
 
 def test_gym_environment(env: MarioJoypadSpace):
     """Simulates 100 frames where your only action is to move right."""

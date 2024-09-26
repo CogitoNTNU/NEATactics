@@ -8,6 +8,7 @@ from src.utils.utils import save_state_as_png
 from src.genetics.genome import Genome
 from src.genetics.traverse import Traverse
 import numpy as np
+from src.environments.fitness_function import Fitness
 
 
 def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
@@ -36,7 +37,11 @@ def insert_input(genome:Genome, state: list) -> None:
 def run_game(env: MarioJoypadSpace, genome: Genome):
     forward = Traverse(genome)
     life2 = 0
-    for i in range(1000): # Simulate 200 frames.
+    fitness = Fitness("Hallo")
+    sr = env.step(0)
+    i = 0
+    timeout = 500
+    while not sr.done: # Simulate 200 frames.
         
         action = forward.traverse() 
         if action == -1:
@@ -55,15 +60,18 @@ def run_game(env: MarioJoypadSpace, genome: Genome):
         
         # if sr.info["life"] == 0:
         #     print(f"Zero lives at fram: {i}.")
-            
-        if sr.done:
+
+        fitness.calculate_fitness(sr.info, action)
+
+        if sr.done or i > timeout:
             print(f"Game over at frame {i}.")
-            reward = sr.reward
+            reward = fitness.get_fitness()
             env.reset() # Discard the new initial state if done.
             print(reward)
             return reward
             
         env.render()
-    print(sr.reward)
+        i += 1
+   
     env.close()
     
