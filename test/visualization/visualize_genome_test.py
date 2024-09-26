@@ -6,6 +6,7 @@ import random
 import numpy as np
 import pickle
 from typing import List
+import os
 
 def get_state(file_path: str) -> np.ndarray:
     """Get a (10, 20) ndarray representing the mario state from a stored .pkl file."""
@@ -58,8 +59,7 @@ def create_genome(id: int, list_of_nodes: List[Node], list_of_connections: List[
     return genome
     
 def test_visualize_genome():
-    state = get_state("./test/state_frame_0.pkl")
-    state = state / 255 # Remove this line when new state functionality is implemented.
+    state = get_state(os.path.join(os.path.dirname(__file__), "state_frame_151.pkl"))
 
     list_of_nodes = create_nodes(state)
     list_of_connections = create_connections(list_of_nodes)
