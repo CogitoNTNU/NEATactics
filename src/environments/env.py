@@ -55,6 +55,7 @@ def get_state_from_environment(env: MarioJoypadSpace):
         if i == 150:
             with open(f"state_frame_{i}.pkl", "wb") as f:
                 pickle.dump(sr.state, f)
+            save_state_as_png(f"pickled{i}", sr.state)
         
         if sr.done:
             print(f"Game over at frame {i}.")
