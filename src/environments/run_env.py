@@ -19,7 +19,7 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
     env.metadata['render_modes'] = "human"
     env.metadata['render_fps'] = 144
-    env.unwrapped._lives = 1
+    # env.unwrapped._lives = 1 # Have mario have one life
  
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
@@ -46,7 +46,7 @@ def run_game(env: MarioJoypadSpace, genome: Genome):
         action = forward.traverse() 
         if action == -1:
             quit()
-        print([node.value for node in genome.output_nodes])
+        # print([node.value for node in genome.output_nodes])
         # print(f"Chosen action: {action}. This is {SIMPLE_MOVEMENT[action]} in SIMPLE_MOVEMENT")
         # move = SIMPLE_MOVEMENT[simple_movement_dict[action]] # Choose to go in the direction NN chooses. BE CAREFUL WITH THE ID OF OUTPUT NODES
         sr = env.step(action) # State, Reward, Done, Info
