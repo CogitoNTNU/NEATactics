@@ -6,6 +6,7 @@ from src.genetics.genome import Genome
 from src.genetics.node import Node
 import random
 from typing import List
+from src.utils.utils import get_color
 
 # Adjust the size of the visualization whiteboard for the NN:
 GRAPH_XMIN = -1.5
@@ -74,44 +75,8 @@ def get_position_dict(layers):
     
     return pos
 
-
-
-def visualize_genome(genome: Genome):
-    # fig = plt.figure(facecolor='brown', figsize=(15, 10)) #### CURSED!
-    fig = plt.figure()
-    fig.patch.set_facecolor('brown')
-    ax = fig.add_subplot(111)
-    ax.set_facecolor('brown')
-    # ax.set_axis_off()
-
-    G = nx.DiGraph()
-    add_nodes_to_graph(G, genome) 
-
-    for connection in genome.connections:
-        if connection.is_enabled:
-            G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
-
-    node_vals = np.array([node.value for node in genome.nodes])
-
-    normie_vals = (node_vals - node_vals.min()) / (node_vals.max() - node_vals.min())
-
-    colors_node = [get_color(node.type, normie_vals[i]) for i, node in enumerate([node for node in genome.nodes if node.type == 'input'])]
-    colors_node.extend([get_color(node.type, node.value) for node in genome.nodes if node.type != 'input'])
-
-    layers = get_node_in_layers(genome)
-    pos_dict = get_position_dict(layers)
-    nx.draw(G, pos_dict, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node, cmap='gray', vmin=0, vmax=1, ax=ax)
-    ax.set_facecolor('brown')
-    fig.patch.set_facecolor('brown')
-    
-    plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
-    plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
-    plt.show()
-
 def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
-    """
-    Takes a graph and genome as input, and adds all of the nodes connected to that genome to the graph. 
-    """
+    """Takes a graph and genome as input, and adds all of the nodes connected to that genome to the graph."""
     for node in genome.nodes:
         if node.type == 'input':
             graph.add_node(node.id, layer_number = 0)
@@ -120,21 +85,28 @@ def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
         elif node.type == 'output':
             graph.add_node(node.id, layer_number = 2)
 
-def get_color(type: str, value: float) -> str:
-    """
-    Takes a value which is assumed to be in range [0, 1],
-    and returns a simple string like 'r' which representsn the color.
-    """
-    if type == 'input':
-        return cm.gray(value)
-        # grayscale_value = round(value*255)
-        # return f'#{grayscale_value:02x}{grayscale_value:02x}{grayscale_value:02x}' # Something goes wrong here!
+def visualize_genome(genome: Genome):
+    fig = plt.figure(figsize=(15, 10))
+    ax = fig.add_subplot(111)
 
-    if type == 'hidden':
-        return 'k'
+    G = nx.DiGraph()
+    add_nodes_to_graph(G, genome) 
 
-    if type == 'output':
-        return 'm'
+    for connection in genome.connections:
+        if connection.is_enabled:
+            G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
 
-    raise ValueError(f"Encountered invalid type: {type}")
+    colz = [get_color(node.type, node.value) for node in genome.nodes]
+
+    layers = get_node_in_layers(genome)
+    pos_dict = get_position_dict(layers)
+    nx.draw(G, pos_dict, with_labels=True, edge_color='b', node_size=500,
+            font_size=8, font_color='y', font_weight='bold',
+            node_color=colz, cmap='gray', vmin=0, vmax=1, ax=ax)
+
+    fig.set_facecolor('#d4e6f1') # Background color of network popup.
     
+    plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
+    plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
+    plt.show()
+   
