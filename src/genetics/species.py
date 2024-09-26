@@ -1,8 +1,9 @@
 from src.genetics.node import Node
 from src.genetics.genome import Genome
+from src.utils.config import Config
 
 class Species: # Made by Copilot
-    def __init__(self, config):
+    def __init__(self, config: Config):
         self.members = []
         self.config = config
 
@@ -26,7 +27,7 @@ class Species: # Made by Copilot
             excess = len([x for x in connections2 if x > connections1_max])
         disjoint = set(connections1) ^ set(connections2) - excess
         
-        return self.c1*disjoint/n + self.c2*excess/n + self.c3*avg_weight
+        return self.config.c1*disjoint/n + self.config.c2*excess/n + self.config.c3*avg_weight
         
             
     

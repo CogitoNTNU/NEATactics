@@ -15,7 +15,7 @@ class Genome:
         self.nodes: list['Node'] = []
         self.connections: list[ConnectionGene] = []
         self.output_nodes = []
-
+        self.innovation_number = 0
 
     def add_node(self, node: 'Node'):
         self.nodes.append(node)
@@ -29,16 +29,16 @@ class Genome:
         #self.connections.remove(connection)
         connection.is_enabled = False
     
-    def add_node_mutation(self, connection:'ConnectionGene', node_id: int, global_innovation_number: int):
+    def add_node_mutation(self, connection:'ConnectionGene', node_id: int):
         node1 = connection.in_node
         node2 = connection.out_node
         new_node = Node(node_id, 'hidden')
         self.add_node(new_node)
         
-        connection1 = ConnectionGene(node1, new_node, 1, True, global_innovation_number)
-        global_innovation_number += 1 #Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
-        connection2 = ConnectionGene(new_node, node2, connection.weight, True, global_innovation_number)
-        global_innovation_number += 1
+        connection1 = ConnectionGene(node1, new_node, 1, True, self.innovation_number)
+        self.innovation_number += 1 #Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
+        connection2 = ConnectionGene(new_node, node2, connection.weight, True, self.innovation_number)
+        self.innovation_number += 1
         self.disable_connection(connection)
         self.add_connection(connection1)    
         self.add_connection(connection2)
