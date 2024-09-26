@@ -78,8 +78,9 @@ def get_position_dict(layers):
 
 def visualize_genome(genome: Genome):
     # fig = plt.figure(facecolor='brown', figsize=(15, 10)) #### CURSED!
-    fig = plt.figure(facecolor='brown')
-    ax = fig.add_subplot(111, facecolor='brown')
+    fig = plt.figure()
+    fig.patch.set_facecolor('brown')
+    ax = fig.add_subplot(111)
     ax.set_facecolor('brown')
     # ax.set_axis_off()
 
@@ -100,6 +101,8 @@ def visualize_genome(genome: Genome):
     layers = get_node_in_layers(genome)
     pos_dict = get_position_dict(layers)
     nx.draw(G, pos_dict, with_labels=True, edge_color='b', node_size=500, font_size=8, font_color='w', font_weight='bold', node_color=colors_node, cmap='gray', vmin=0, vmax=1, ax=ax)
+    ax.set_facecolor('brown')
+    fig.patch.set_facecolor('brown')
     
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
