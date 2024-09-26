@@ -1,5 +1,6 @@
 from src.genetics.connection_gene import ConnectionGene
 from typing import TYPE_CHECKING
+from typing import List
 
 if TYPE_CHECKING:
     from src.genetics.genome import Genome
@@ -13,7 +14,7 @@ class Node:
     def __init__(self, id: int, type: str, value: float = 0.0):
         self.id = id
         self.type = type
-        self.connected_nodes = [] #hmm
+        self.connected_nodes: List[int] = [] #hmm
         self.connections_to_output = []
         self.value = value
         
@@ -30,8 +31,8 @@ class Node:
     def update_value(self, value: float):
         self.value += value
 
-    def add_node_connection(self, node:'Node'):
-        self.connected_nodes.append(node)
+    def add_node_connection(self, nodeId: int):
+        self.connected_nodes.append(nodeId)
 
     def add_connection_connection(self, connection: 'ConnectionGene'):
         self.connections_to_output.append(connection)

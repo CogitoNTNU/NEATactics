@@ -13,4 +13,5 @@ class NEAT:
         # Initialize random population
 
         for _ in range(self.config.population_size):
+            pass
             

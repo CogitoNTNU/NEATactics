@@ -28,9 +28,25 @@ def create_connections(list_of_nodes):
     return list_of_connections
 
 def test_visualize_genome():
-    list_of_nodes = generate_nodes()
+    state = get_state("./test/state_frame_0.pkl")
+    state = state / 255
+    # print(state)
+
+    list_of_nodes = []
+    i = 0
+    for row in state:
+        for value in row:
+            list_of_nodes.append(Node(i, "Input", value))
+            i += 1
+
+    for i in range(200, 202):
+        color = random.random()
+        list_of_nodes.append(Node(i, "Hidden", color))
+    for i in range(202, 207):
+        color = random.random()
+        list_of_nodes.append(Node(i, "Output", color))
+
     list_of_connections = create_connections(list_of_nodes)
-    
     genome = Genome(1)
     for i in list_of_nodes:
         genome.add_node(i)
