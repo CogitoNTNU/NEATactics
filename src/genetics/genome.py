@@ -17,7 +17,7 @@ class Genome:
         self.nodes: list['Node'] = []
         self.connections: list[ConnectionGene] = []
         self.output_nodes = []
-        fitness_value = 0.0
+        self.fitness_value: float = 0.0
 
     def add_node(self, node: 'Node'):
         self.nodes.append(node)
@@ -47,10 +47,10 @@ class Genome:
         self.disable_connection(connection)
         self.add_connection(connection1)    
         self.add_connection(connection2)
-        node2.add_node_connection(new_node)
-        node1.add_node_connection(new_node)
-        new_node.add_node_connection(node1)
-        new_node.add_node_connection(node2)
+        node2.add_node_connection(new_node.id)
+        node1.add_node_connection(new_node.id)
+        new_node.add_node_connection(node1.id)
+        new_node.add_node_connection(node2.id)
         new_node.add_connection_connection(connection2)
         node1.add_connection_connection(connection1)
         return innovation_number
@@ -76,8 +76,8 @@ class Genome:
             connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
             global_innovation_number += 1
             self.add_connection(connection)
-            node2.add_node_connection(node1)
-            node1.add_node_connection(node2)
+            node2.add_node_connection(node1.id)
+            node1.add_node_connection(node2.id)
             node1.add_connection_connection(connection)
             return True
         else:
@@ -121,5 +121,5 @@ class Genome:
         return self.nodes
     def __repr__(self):
         return (f"Genome(id={self.id}, nodes={[node.id for node in self.nodes]}, "
-                f"connections={[connection.is_enabled for connection in self.connections]})")
+                f"connections={[connection for connection in self.connections]})")
 

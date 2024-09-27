@@ -4,11 +4,14 @@ from src.genetics.species import *
 from src.genetics.traverse import Traverse
 from src.environments.run_env import env_init, run_game
 from src.genetics.species import Species
+from src.utils.config import Config
+from src.genetics.NEAT import NEAT
 import random
 
 
-def test_generate_genome():
-    for i in range(300):
+def test_generate_genome(neat: NEAT):
+    inn_number = 0
+    for i in range(0, 40): # how many genomes you want to create
         genome = Genome(i)
         
         # Create output nodes
@@ -18,43 +21,37 @@ def test_generate_genome():
         # Create input nodes
         for i in range(7, 207):
             genome.add_node(Node(i, 'input'))
+        
+        inn_number = test(genome, inn_number)
+        neat.add_genome(genome)
 
 
-def test(genome: Genome):
+def test(genome: Genome, inn_number):
     rand1 = random.randint(0, len(genome.nodes)-1)
     rand2 = random.randint(0, len(genome.nodes)-1)
-    global_inovation_number = 0
-    for i in range(10):
-        while not genome.add_connection_mutation(node1=genome.nodes[rand1], node2=genome.nodes[rand2], global_innovation_number=global_inovation_number):
+    for i in range(15): # how many connections and node mutations
+        while not genome.add_connection_mutation(node1=genome.nodes[rand1], node2=genome.nodes[rand2], global_innovation_number=inn_number):
             rand1 = random.randint(0, len(genome.nodes)-1)
             rand2 = random.randint(0, len(genome.nodes)-1)
         rand3 = random.randint(0, len(genome.connections)-1)
-        genome.add_node_mutation(genome.connections[rand3], len(genome.nodes)+1, global_inovation_number)
-
-
-species = Species()
-genomes = species.initialize_genomes()
-
-
-for genome in genomes:
-    test(genome)
-    env, _ = env_init()
-    run_game(env=env, genome=genome)
-    # test(genome)
-
+        inn_number += 1
+        genome.add_node_mutation(genome.connections[rand3], len(genome.nodes)+1, inn_number)
+        inn_number += 1
+    return inn_number
     
-forward = Traverse(genome)
-something = forward.traverse()
 
-
-# while something != None:
-#     test()
-# print(something)
-
-# for output in genome.output_nodes:
-#     print(output, output.value)
+# need if __name__ == "__main__": when running test_genomes.
+if __name__ == "__main__":
+    config_instance = Config()
+    neat = NEAT(config_instance)
     
-# for connection in genome.connections:
-#     print(connection)
-# print(genome)
+    neat.initiate_genomes()
+    # test_generate_genome(neat) # creates randomly more "complex" genomes
+    
+    neat.test_genomes()
+    for genome in neat.genomes:
+        print(genome.fitness_value)
 
+    neat.sort_species(neat.genomes)
+    for specie in neat.species:
+        print(specie)

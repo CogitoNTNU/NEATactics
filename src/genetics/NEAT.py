@@ -1,58 +1,45 @@
-from species import Species
+from src.genetics.species import Species
 from src.genetics.genome import Genome
 from src.utils.config import Config
 from src.environments.run_env import env_init, run_game
+from src.genetics.genomic_distance import *
+from src.genetics.create_basic_genomes import create_basic_genomes
 from typing import List
+import multiprocessing
 
 class NEAT:
     def __init__(self, config: Config):
         self.config = config
         self.global_innovation_number = 0
         self.species_number = 0
+        self.genomes: list[Genome] = []
         self.species: list[Species] = []
 
     def add_species(self, species: Species):
         self.species.append(species)
 
-    def test_genome(genome: Genome):
+    def test_genome(self, genome: Genome):
         env, _ = env_init()
         fitness = run_game(env=env, genome=genome)
-        genome.add_fitnessvalue(fitness)
-
-    def genomic_distance(self, genome1: Genome, genome2: Genome):
-        innovation_numbers1 = [c.innovation_number for c in genome1.connections if c.is_enabled]
-        innovation_numbers2 = [c.innovation_number for c in genome2.connections if c.is_enabled]
-
-        excess = None
-        # Last element in the list should always be the largest
-        connections1_max = innovation_numbers1[-1]
-        connections2_max = innovation_numbers2[-1]
-        n = 0
-        if connections1_max > connections2_max:
-            excess = len([x for x in innovation_numbers1 if x > connections2_max])
-            n = connections1_max
-        else:
-            n = connections2_max
-            excess = len([x for x in innovation_numbers2 if x > connections1_max])
-
-        disjoint_set = set(innovation_numbers1) ^ set(innovation_numbers2) # XOR to find disjoint
-        disjoint = len(disjoint_set) - excess
-
-        weight_1, amount_1 = genome1.get_total_weight()
-        weight_2, amount_2 = genome2.get_total_weight()
-        avg_weight = (weight_1+weight_2)/(amount_1+amount_2)
-
-        return (
-            self.config.c1 * disjoint / n
-            + self.config.c2 * excess / n
-            + self.config.c3 * avg_weight
-        )
+        return genome.id, fitness  # Return the genome's ID and its fitness
         
-    def initiate_genomes(self): 
+    def test_genomes(self):
+        # Create a multiprocessing pool
+        with multiprocessing.Pool() as pool:
+            # Run `test_genome` in parallel for each genome
+            results = pool.map(self.test_genome, self.genomes)
+        
+        # Update genomes with the returned fitness values
+        for genome_id, fitness in results:
+            for genome in self.genomes:
+                if genome.id == genome_id:  # Match the genome by its ID
+                    genome.fitness_value = fitness  # Assign the fitness value
+                    break  # Move to the next result once a match is found
+        
+    def initiate_genomes(self, number_of_genomes: int = 20): 
         # Everyone starts in the same species
         # Initialize random population
-        specie = Species(self.config, 0)
-        genomes = specie.genomes
+        genomes = create_basic_genomes(number_of_genomes)
         for genome in genomes:
             node1 = genome.get_random_node()
             node2 = genome.get_random_node()
@@ -60,36 +47,46 @@ class NEAT:
             while not genome.add_connection_mutation(node1, node2, self.global_innovation_number):
                 node1 = genome.get_random_node()
                 node2 = genome.get_random_node()
-
-        self.species.append(specie)
-        
+            self.genomes.append(genome)
+    
+    def create_species(self):
+        """Create a new species with a unique species number."""
+        self.species_number += 1  # Increment the global species counter
+        new_species = Species(self.config, self.species_number)
+        return new_species
+    
     def sort_species(self, genomes: List[Genome]):
-        # put each genome in its own species
-        test_species_genomes = [] # List with each species from the last generation with one random genome from the last generation
-        for specie in self.species:
-            if not specie.genomes:
-                test_species_genomes.append([specie.genomes[0]])
-            
-        self.species = []
-        genomic_distance_treshold = 1
+         # Create a list to hold representative genomes from each species
+        test_species_genomes = [(specie, specie.genomes[0]) for specie in self.species if specie.genomes]  # List of tuples (species, representative)
 
-        for genome1 in genomes:
-            counter = 0
-            for genome2 in test_species_genomes:
-                if self.genomic_distance(genome1, genome2) < genomic_distance_treshold:
-                    specie.add_genome(genome1) 
-                    break
-                    # When we add a new species we need the later genomes to check if 
-                    # they fit in the newly added species before we make a new species
-  
-                else:
-                    counter += 1
-                if(counter>=len(test_species_genomes)):
-                    self.add_species(Species())
-                    pass #create new species
-            
+        self.species = []  # Reset the species list for the new generation
+        
+        for specie, _ in test_species_genomes:
+            specie.genomes = []
 
-                
+        for genome in genomes:
+            found_species = False  # To track if the genome is assigned to a species
+
+            # Compare genome to each species' representative genome
+            for specie, representative in test_species_genomes:
+                print(genomic_distance(genome, representative, self.config))
+                if genomic_distance(genome, representative, self.config) < self.config.genomic_distance_threshold:
+                    # If the genome fits, add it to the correct species
+                    specie.add_genome(genome)
+                    print(f"once, {specie}")
+                    found_species = True
+                    break  # Stop searching once the genome is added to a species
+
+            # If the genome does not fit into any species, create a new species
+            if not found_species:
+                new_species = self.create_species()
+                new_species.add_genome(genome)
+                self.species.append(new_species)  # Add the new species to the species list
+                test_species_genomes.append((new_species, genome))  # Use this genome as the representative for the new species
+    
+    def add_genome(self, genome: Genome):
+        self.genomes.append(genome)
+        
                 
             
     

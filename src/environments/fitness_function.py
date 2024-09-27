@@ -48,7 +48,7 @@ def fitness(xpos, time):
 
 class Fitness:
     def __init__(self, rewards) -> None:
-        self.fitness = 0
+        self.fitness = 0.0
         
         self.prev_lives = 2
         self.prev_pos = 0

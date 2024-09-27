@@ -36,7 +36,6 @@ def insert_input(genome:Genome, state: list) -> None:
 
 def run_game(env: MarioJoypadSpace, genome: Genome):
     forward = Traverse(genome)
-    life2 = 0
     fitness = Fitness("Hallo")
     sr = env.step(0)
     i = 0
@@ -68,10 +67,11 @@ def run_game(env: MarioJoypadSpace, genome: Genome):
             reward = fitness.get_fitness()
             env.reset() # Discard the new initial state if done.
             print(reward)
+            env.close()
             return reward
             
         env.render()
         i += 1
-   
     env.close()
+    return -1000
     

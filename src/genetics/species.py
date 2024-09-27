@@ -1,35 +1,23 @@
-from src.genetics.node import Node
-from src.genetics.genome import Genome
 from src.utils.config import Config
+from src.genetics.create_basic_genomes import create_basic_genomes
+from src.genetics.genome import Genome
 
 
 class Species: 
     def __init__(self, config: Config, species_number: int):
-        self.members = []
         self.species_number = species_number
         self.config = config
-        self.genomes = self.initialize_genomes(config.population_size)
-        
-    def initialize_genomes(self, number_of_genomes: int):
-        genomes: list[Genome] = []
-        for i in range(number_of_genomes):
-            genomes.append(Genome(i))
-        
-        for i in range(number_of_genomes):
-            genome = genomes[i]
-            
-            # Create output nodes
-            for i in range(7):
-                genome.add_node(Node(i, 'output'))
-            
-            # Create input nodes
-            for i in range(7, 207):
-                genome.add_node(Node(i, 'input'))
-        
-        return genomes
+        self.genomes = []
 
-    def add_genome(self, member):
-        self.genomes.append(member)
+    def add_genome(self, genome: Genome):
+        """Add a genome to the species."""
+        self.genomes.append(genome)
+        
+    def get_representative(self):
+        """Return a representative genome for the species (can choose the first one)."""
+        if self.genomes:
+            return self.genomes[0]
+        return None
 
     def calculate_fitness(self):
         # Calculate the fitness of each member in the species
@@ -50,3 +38,7 @@ class Species:
     def update_representative(self):
         # Update the representative member of the species
         pass
+
+    def __repr__(self):
+        return (f"Specie number: {self.species_number}, "
+                f"Number of genomes: {len(self.genomes)}")
