@@ -35,7 +35,8 @@ class NEAT:
             n = connections2_max
             excess = len([x for x in innovation_numbers2 if x > connections1_max])
 
-        disjoint = set(innovation_numbers1) ^ set(innovation_numbers2) - excess # XOR to find disjoint
+        disjoint_set = set(innovation_numbers1) ^ set(innovation_numbers2) # XOR to find disjoint
+        disjoint = len(disjoint_set) - excess
 
         weight_1, amount_1 = genome1.get_total_weight()
         weight_2, amount_2 = genome2.get_total_weight()
