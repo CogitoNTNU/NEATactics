@@ -14,7 +14,6 @@ class MarioJoypadSpace(JoypadSpace):
 
     def reset(self) -> np.ndarray:
         """Reset the environment, and return the initial state."""
-        # return np.array(super().reset())
         return self.interpret_state(np.array(super().reset()))
     
     def step(self, action: int) -> StepResult:
@@ -25,19 +24,16 @@ class MarioJoypadSpace(JoypadSpace):
         return StepResult(state, reward, done, info)
     
     def interpret_state(self, state: np.ndarray) -> np.ndarray:
-        # We get a np.ndarray with shape (240, 256, 3)
-
-        # Cut the picture
-        state = state[80:216]
-        
-        # Convert to grayscale
-        state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140])  # Grayscale conversion
-        state = state.astype(np.uint8)
-        # Reduce pixel count
-        state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8)
-        
-        # Normalize greyscal to [0, 1]
+        """
+        Preprocessing of state:\n
+        Input:
+        - ndarray with shape (240, 256, 3)\n
+        Output:
+        - ndarray with shape (10, 20)        
+        """
+        state = state[80:216] # Cut the picture
+        state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140]) # Convert to grayscale
+        state = state.astype(np.uint8) # Ensure valid grayscale value (can't be float)
+        state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8) # Reduce pixel count.
         state = np.array(state)
-        state = state / 255
-        
-        return np.array(state)
+        return state / 255
