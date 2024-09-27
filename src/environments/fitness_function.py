@@ -68,7 +68,7 @@ class Fitness:
 
     def calculate_fitness(self, info, action):
         """
-        The fitness function that descies how good the genome is. 
+        The fitness function that descides how good the genome is. 
         This only works for SIMPLE_MOVEMENT movement scheme.
         """
 
