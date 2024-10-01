@@ -9,7 +9,7 @@ from src.genetics.genome import Genome
 from src.genetics.traverse import Traverse
 import numpy as np
 from src.environments.fitness_function import Fitness
-from utils.config import Config
+from src.utils.config import Config
 
 
 def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
