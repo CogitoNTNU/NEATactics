@@ -65,7 +65,7 @@ def get_position_dict(layers):
             x_pos = total_layers * layer_gap   # Place output nodes at the farthest right
             y_start = -(len(layer) - 1) * node_gap * 2   # Center the output nodes vertically
             for i, node in enumerate(layer):
-                pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically
+                pos[node] = (x_pos, y_start + 8 + i * node_gap)  # Place nodes vertically
         else:
             # Hidden layers are placed regularly between the input and output layers
             y_start = -(len(layer) - 1) * node_gap / 2  # Center the layer vertically
