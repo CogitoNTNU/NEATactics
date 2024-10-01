@@ -6,6 +6,7 @@ import pickle
 import os
 from typing import List
 from src.genetics.node import Node
+from src.genetics.traverse import Traverse
 
 XLEN = 20
 YLEN = 10
@@ -33,6 +34,9 @@ def test_visualize_genome():
 
     genome = get_genome_from_NEAT()
     set_input_node_values(state, genome.nodes)
+    traverse = Traverse(genome)
+    traverse.traverse()
+    visualize_genome(genome)
 
 if __name__ == "__main__":
     get_genome_from_NEAT()
