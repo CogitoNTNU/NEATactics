@@ -9,6 +9,7 @@ from src.genetics.genome import Genome
 from src.genetics.traverse import Traverse
 import numpy as np
 from src.environments.fitness_function import Fitness
+from utils.config import Config
 
 
 def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
@@ -25,8 +26,9 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     return env, state
 
 def insert_input(genome:Genome, state: list) -> None:
-    start_idx_input_node = 7
-    num_input_nodes = 200
+    config = Config()
+    start_idx_input_node = config.num_output_nodes
+    num_input_nodes = config.num_input_nodes
     for node in genome.nodes:
         node.value = 0
     
