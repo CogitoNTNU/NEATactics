@@ -68,13 +68,19 @@ def get_genome_from_NEAT():
     return neat.genomes[0]
     
 def test_visualize_genome():
-    #state = get_state(os.path.join(os.path.dirname(__file__), "state_frame_151.pkl"))
+    state = get_state(os.path.join(os.path.dirname(__file__), "state_frame_151.pkl"))
 
     #list_of_nodes = create_nodes(state)
     #list_of_connections = create_connections(list_of_nodes)
     #genome = create_genome(0, list_of_nodes, list_of_connections)
     genome = get_genome_from_NEAT()
-    
+    i = 0
+    for node in genome.nodes:
+        if node.type == 'input':
+            print(i)
+            node.set_value(state[i//XLEN][i%XLEN])
+            i += 1
+        
     visualize_genome(genome)
 
 if __name__ == "__main__":
