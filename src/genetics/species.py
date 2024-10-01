@@ -1,13 +1,14 @@
 from src.utils.config import Config
 from src.genetics.create_basic_genomes import create_basic_genomes
 from src.genetics.genome import Genome
+from typing import List
 
 
 class Species: 
     def __init__(self, config: Config, species_number: int):
         self.species_number = species_number
         self.config = config
-        self.genomes = []
+        self.genomes: List[Genome] = []
 
     def add_genome(self, genome: Genome):
         """Add a genome to the species."""

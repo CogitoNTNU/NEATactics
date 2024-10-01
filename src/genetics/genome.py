@@ -56,7 +56,7 @@ class Genome:
         return innovation_number
     
 
-    def add_connection_mutation(self, node1: 'Node', node2: 'Node', global_innovation_number: int):
+    def add_connection_mutation(self, node1: 'Node', node2: 'Node', global_innovation_number: int): 
         """
         Attempts to create a new connection between two nodes (node1 and node2).
         
@@ -72,16 +72,13 @@ class Genome:
         - bool: True if the connection was successfully added, False otherwise.
         """
         weight = self.create_weight()
-        if self.is_valid_connection(node1, node2):
-            connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
-            global_innovation_number += 1
-            self.add_connection(connection)
-            node2.add_node_connection(node1.id)
-            node1.add_node_connection(node2.id)
-            node1.add_connection_connection(connection)
-            return True
-        else:
-            return False
+        connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
+        global_innovation_number += 1
+        self.add_connection(connection)
+        node2.add_node_connection(node1.id)
+        node1.add_node_connection(node2.id)
+        node1.add_connection_connection(connection)
+        return connection
     
     def create_weight(self):
         return 2*random.random()-1  #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
