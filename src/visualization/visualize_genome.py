@@ -6,7 +6,7 @@ from src.genetics.genome import Genome
 from src.genetics.node import Node
 import random
 from typing import List
-from src.utils.utils import get_color
+from src.utils.utils import get_node_color, get_weight_color
 
 # Adjust the size of the visualization whiteboard for the NN:
 GRAPH_XMIN = -1.5
@@ -92,17 +92,20 @@ def visualize_genome(genome: Genome):
     G = nx.DiGraph()
     add_nodes_to_graph(G, genome) 
 
+    edge_weights = []
     for connection in genome.connections:
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
+            edge_weights.append(connection.weight)
 
-    colz = [get_color(node.type, node.value) for node in genome.nodes]
-
+    node_colz = [get_node_color(node.type, node.value) for node in genome.nodes]
+    edge_colz = get_weight_color(edge_weights)
+    
     layers = get_node_in_layers(genome)
     pos_dict = get_position_dict(layers)
-    nx.draw(G, pos_dict, with_labels=True, edge_color='b', node_size=500,
+    nx.draw(G, pos_dict, with_labels=True, edge_color=edge_colz, node_size=500,
             font_size=8, font_color='y', font_weight='bold',
-            node_color=colz, cmap='gray', vmin=0, vmax=1, ax=ax)
+            node_color=node_colz, cmap='gray', vmin=0, vmax=1, ax=ax)
 
     fig.set_facecolor('#d4e6f1') # Background color of network popup.
     
