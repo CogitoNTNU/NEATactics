@@ -111,7 +111,7 @@ class Genome:
             return False
         elif node1.type == "output":
             return False
-        elif node2.type == "input":
+        elif node2.type == "input" or node2.type == "bias":
             return False
         elif node1.id in node2.connected_nodes: # TODO Hva skjer hvis connectionen er disabled? svar: enable og oppdater vekten 
             return False
