@@ -41,7 +41,7 @@ class Genome:
         self.add_node(new_node)
         
         connection1 = ConnectionGene(node1, new_node, 1, True, innovation_number)
-        innovation_number += 1 #Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
+        innovation_number += 1 
         connection2 = ConnectionGene(new_node, node2, connection.weight, True, innovation_number)
         innovation_number += 1
         self.disable_connection(connection)

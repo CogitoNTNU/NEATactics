@@ -6,6 +6,7 @@ from src.genetics.genomic_distance import *
 from src.genetics.create_basic_genomes import create_basic_genomes
 from typing import List
 import multiprocessing
+import random
 
 class NEAT:
     def __init__(self, config: Config):
@@ -15,6 +16,31 @@ class NEAT:
         self.genomes: list[Genome] = []
         self.species: list[Species] = []
 
+    def save_genomes(self):
+        raise NotImplementedError()
+    
+    def load_genomes(self):
+        raise NotImplementedError()
+        
+    def start_training(self):
+        self.initiate_genomes()
+
+        for i in range(self.config.n_generations):
+            print(f"Generation {i} starts gaming!")
+            self.test_genomes()
+            # TODO: Breed and destroy old generation
+            for genome in self.genomes:
+                rand_num = random.uniform(0, 1)
+                if rand_num < self.config.probability_node_mut:
+                    genome.add_node_mutation()
+                if rand_num < self.config.probability_weight_mut:
+                    genome.weight_mutation()
+                if rand_num < self.config.probability_connection_mut:
+                    genome.add_connection_mutation()
+                
+                    
+
+            
     def add_species(self, species: Species):
         self.species.append(species)
 
@@ -86,8 +112,6 @@ class NEAT:
     
     def add_genome(self, genome: Genome):
         self.genomes.append(genome)
-
-
         
                 
             
