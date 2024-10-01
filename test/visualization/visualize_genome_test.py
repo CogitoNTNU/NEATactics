@@ -4,6 +4,8 @@ from src.genetics.NEAT import NEAT
 import numpy as np
 import pickle
 import os
+from typing import List
+from src.genetics.node import Node
 
 XLEN = 20
 YLEN = 10
@@ -12,6 +14,13 @@ def get_state(file_path: str) -> np.ndarray:
     """Get a (10, 20) ndarray representing the mario state from a stored .pkl file."""
     with open(file_path, "rb") as f:
         return pickle.load(f)
+
+def set_input_node_values(state: np.ndarray, node_list: List[Node]):
+    i = 0
+    for node in node_list:
+        if node.type == 'input':
+            node.set_value(state[i//XLEN][i%XLEN])
+            i += 1
 
 def get_genome_from_NEAT():
     conf = Config(population_size=4)
@@ -22,18 +31,8 @@ def get_genome_from_NEAT():
 def test_visualize_genome():
     state = get_state(os.path.join(os.path.dirname(__file__), "state_frame_151.pkl"))
 
-    #list_of_nodes = create_nodes(state)
-    #list_of_connections = create_connections(list_of_nodes)
-    #genome = create_genome(0, list_of_nodes, list_of_connections)
     genome = get_genome_from_NEAT()
-    i = 0
-    for node in genome.nodes:
-        if node.type == 'input':
-            print(i)
-            node.set_value(state[i//XLEN][i%XLEN])
-            i += 1
-        
-    visualize_genome(genome)
+    set_input_node_values(state, genome.nodes)
 
 if __name__ == "__main__":
     get_genome_from_NEAT()
