@@ -38,7 +38,7 @@ class Node:
         self.connections_to_output.append(connection)
 
     def __repr__(self):
-        return f"Node(id={self.id}, type={self.type})"
+        return f"Node(id={self.id}, type={self.type}, value={self.value})"
 
 
 if __name__ == '__main__':
