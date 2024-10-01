@@ -1,10 +1,13 @@
 from src.visualization.visualize_genome import visualize_genome
+from src.utils.config import Config
 from src.genetics.node import Node
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.genome import Genome
+from src.genetics.NEAT import NEAT
 import random
 import numpy as np
 import pickle
+from icecream import ic
 from typing import List
 import os
 
@@ -57,15 +60,22 @@ def create_genome(id: int, list_of_nodes: List[Node], list_of_connections: List[
     for i in list_of_connections:
         genome.add_connection(i)
     return genome
+
+def get_genome_from_NEAT():
+    conf = Config(population_size=4)
+    neat = NEAT(conf)
+    neat.initiate_genomes()
+    return neat.genomes[0]
     
 def test_visualize_genome():
-    state = get_state(os.path.join(os.path.dirname(__file__), "state_frame_151.pkl"))
+    #state = get_state(os.path.join(os.path.dirname(__file__), "state_frame_151.pkl"))
 
-    list_of_nodes = create_nodes(state)
-    list_of_connections = create_connections(list_of_nodes)
-    genome = create_genome(0, list_of_nodes, list_of_connections)
+    #list_of_nodes = create_nodes(state)
+    #list_of_connections = create_connections(list_of_nodes)
+    #genome = create_genome(0, list_of_nodes, list_of_connections)
+    genome = get_genome_from_NEAT()
     
     visualize_genome(genome)
 
-
-    
+if __name__ == "__main__":
+    get_genome_from_NEAT()

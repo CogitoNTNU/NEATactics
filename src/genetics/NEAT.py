@@ -86,6 +86,8 @@ class NEAT:
     
     def add_genome(self, genome: Genome):
         self.genomes.append(genome)
+
+
         
                 
             

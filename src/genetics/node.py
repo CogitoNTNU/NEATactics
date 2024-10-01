@@ -23,8 +23,10 @@ class Node:
         return type
 
     def set_value(self, value: float):
-        if type == "input":
+        if self.type == "input":
             self.value = value
+        else:
+            raise Exception("Only the input nodes should get different values!")
 
     def update_value(self, value: float):
         self.value += value
