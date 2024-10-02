@@ -7,6 +7,8 @@ from src.genetics.create_basic_genomes import create_basic_genomes
 from src.genetics.connection_gene import ConnectionGene
 from typing import List
 import multiprocessing
+import math
+import random
 
 class NEAT:
     def __init__(self, config: Config):
@@ -25,6 +27,48 @@ class NEAT:
             
     def add_species(self, species: Species):
         self.species.append(species)
+
+    def breeder(self, species: Species):
+        temp_genomes = []
+        ordered_list = sorted(species.genomes, key=lambda x: x.fitness_value, reverse=True)[:int(math.floor((len(species.genomes))/2))]
+        if(len(ordered_list)%2==1):
+            ordered_list.pop()
+        while len(ordered_list) != 0:
+            random_next = random.randint(1, len(ordered_list)-1)
+            new_genome = self.breed_two_genomes(ordered_list[random_next], ordered_list[0])
+            temp_genomes.append(new_genome)
+            ordered_list.pop(0)
+            ordered_list.pop(random_next)
+        # orderd_list[0] har den mest fit genomen i specien 
+        self.genomes = temp_genomes
+
+    def breed_two_genomes(self, genome1: Genome, genome2: Genome):
+        """
+        Returns a new genome that is breeded by the input genomes
+        """
+        # Chooses which genome that has priority, should maybe do something different if the firness is the same
+        if genome1.fitness_value >= genome2.fitness_value:
+            alfa_genome = genome1
+            beta_genome = genome2
+        else:
+            alfa_genome = genome2
+            beta_genome = genome1
+        
+        new_genome = Genome(id=len(self.genomes))
+        for i_number in range(self.global_innovation_number): #the innovation numbers are in order and such we only need one loop
+            alfa_connected = False
+            for connection in alfa_genome.connections:
+                if connection.innovation_number == i_number:
+                    new_genome.add_connection(alfa_genome.connections[i_number])
+                    new_genome.add_node(alfa_genome.connections[i_number].in_node)
+                    alfa_connected = True
+                    break
+            if not alfa_connected:
+                for connection in beta_genome.connections:
+                    if connection.innovation_number == i_number:
+                        new_genome.add_connection(alfa_genome.connections[i_number])
+                        break
+        return new_genome
 
     def test_genome(self, genome: Genome):
         env, _ = env_init()
@@ -117,7 +161,7 @@ class NEAT:
             self.global_innovation_number += 1
             self.connections.append(connection)
     
-    def kill_bad_genomes_in_each_species(self):
+    def cull_species(self):
         pass
     
     def add_genome(self, genome: Genome): # only for test.py
