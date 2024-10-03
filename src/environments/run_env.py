@@ -39,7 +39,7 @@ def insert_input(genome:Genome, state: list) -> None:
 def run_game(env: MarioJoypadSpace, genome: Genome):
     
     forward = Traverse(genome)
-    fitness = Fitness("Hallo")
+    fitness = Fitness("Hallo") # TODO this probably needs to get fixed
     sr = env.step(0)
     i = 0
     timeout = 500
