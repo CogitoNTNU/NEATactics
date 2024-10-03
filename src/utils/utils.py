@@ -20,14 +20,16 @@ def normalize_positive_values(positive_vals: np.ndarray) -> None:
     if len(positive_vals) > 0:
         wmin, wmax = 0, positive_vals.max()
         if wmax == 0:
-            positive_vals = np.zeros(len(positive_vals))
+            positive_vals.fill(0)
             return
-        positive_vals = (positive_vals - wmin) / (wmax - wmin)  # Normalize positives to [0, 1]
+        positive_vals -= wmin # Normalize positives to [0, 1]
+        positive_vals /= (wmax-wmin)  
 
 def normalize_negative_values(negative_vals: np.ndarray) -> None:
     """Takes an ndarray with negative floats as inputs,
     and modifies the array such that all values end up in the range [0, 1],
     where the most negative input gets the value 1."""
-    normalize_positive_values(negative_vals.__neg__())
+    negative_vals *= -1
+    normalize_positive_values(negative_vals)
 
 
