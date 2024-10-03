@@ -7,8 +7,8 @@ def genomic_distance(genome1: Genome, genome2: Genome, config: Config):
 
         excess = None
         # Last element in the list should always be the largest
-        connections1_max = innovation_numbers1[-1]
-        connections2_max = innovation_numbers2[-1]
+        connections1_max = max(innovation_numbers1)
+        connections2_max = max(innovation_numbers2)
         n = 0
         if connections1_max > connections2_max:
             excess = len([x for x in innovation_numbers1 if x > connections2_max])

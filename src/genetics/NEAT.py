@@ -5,10 +5,12 @@ from src.environments.run_env import env_init, run_game
 from src.genetics.genomic_distance import *
 from src.genetics.create_basic_genomes import create_basic_genomes
 from src.genetics.connection_gene import ConnectionGene
+from src.genetics.node import Node
 from typing import List
 import multiprocessing
 import math
 import random
+import copy
 
 class NEAT:
     def __init__(self, config: Config):
@@ -30,6 +32,7 @@ class NEAT:
 
     def breeder(self, species: Species):
         temp_genomes = []
+        # Removes the worst half of the genomes in each species
         ordered_list = sorted(species.genomes, key=lambda x: x.fitness_value, reverse=True)[:int(math.floor((len(species.genomes))/2))]
         if(len(ordered_list)%2==1):
             ordered_list.pop()
@@ -37,38 +40,73 @@ class NEAT:
             random_next = random.randint(1, len(ordered_list)-1)
             new_genome = self.breed_two_genomes(ordered_list[random_next], ordered_list[0])
             temp_genomes.append(new_genome)
-            ordered_list.pop(0)
             ordered_list.pop(random_next)
+            ordered_list.pop(0)
         # orderd_list[0] har den mest fit genomen i specien 
         self.genomes = temp_genomes
 
     def breed_two_genomes(self, genome1: Genome, genome2: Genome):
         """
-        Returns a new genome that is breeded by the input genomes
+        Returns a new genome that is breed by the input genomes
+        
+        The connections that line up (same inn number) are inherited at random.
+        Disjoint and excess are inherited from the more fit parent.
         """
         # Chooses which genome that has priority, should maybe do something different if the firness is the same
+        alpha_genome = None
+        beta_genome = None
         if genome1.fitness_value >= genome2.fitness_value:
-            alfa_genome = genome1
+            alpha_genome = genome1
             beta_genome = genome2
         else:
-            alfa_genome = genome2
+            alpha_genome = genome2
             beta_genome = genome1
         
-        new_genome = Genome(id=len(self.genomes))
-        for i_number in range(self.global_innovation_number): #the innovation numbers are in order and such we only need one loop
-            alfa_connected = False
-            for connection in alfa_genome.connections:
-                if connection.innovation_number == i_number:
-                    new_genome.add_connection(alfa_genome.connections[i_number])
-                    new_genome.add_node(alfa_genome.connections[i_number].in_node)
-                    alfa_connected = True
-                    break
-            if not alfa_connected:
-                for connection in beta_genome.connections:
-                    if connection.innovation_number == i_number:
-                        new_genome.add_connection(alfa_genome.connections[i_number])
+        new_genome: Genome = create_basic_genomes(1)[0] # create a new genome with the correct input, output and bias nodes
+        
+        innovation_nums_alpha = [c.innovation_number for c in alpha_genome.connections]
+        innovation_nums_beta = [c.innovation_number for c in beta_genome.connections]
+        alpha_num_set = set(innovation_nums_alpha)
+        beta_num_set = set(innovation_nums_beta)
+
+        max_num_alpha = max(innovation_nums_alpha)
+        max_num_beta = max(innovation_nums_beta)
+        
+        if max_num_alpha > max_num_beta:
+            excess = [x for x in innovation_nums_alpha if x > max_num_beta]
+        else:
+            excess = [x for x in innovation_nums_beta if x > max_num_alpha]
+
+        disjoint_nums = alpha_num_set ^ beta_num_set
+        equal_nums = alpha_num_set & beta_num_set
+        
+        
+        
+        if alpha_genome.fitness_value == beta_genome.fitness_value:
+            pass
+        else:
+            
+            # Get connections from the most fit parent
+            disjoint_nums = disjoint_nums & alpha_num_set
+            
+            # first add all hidden nodes of the alpha genome
+            for hidden_node in alpha_genome.hidden_nodes:
+                new_node = Node(hidden_node.id, "hidden")
+                new_genome.add_node(new_node)
+            
+            # create a new connection with the same in node, out node and weight as the alpha_nums connection with the correct inn number
+            for num in disjoint_nums:
+                # 50/50 if it chooses alpha_genome or beta genome
+                
+                new_connection = None
+                for connection in alpha_genome.connections:
+                    if num == connection.innovation_number:
+                        new_connection = connection
                         break
-        return new_genome
+                # new_connection.in_node
+                
+                # new_genome.add_connection(ConnectionGene(in_node, out_node, weight, is_enabled, innovation_num))
+        
 
     def test_genome(self, genome: Genome):
         env, _ = env_init()
@@ -151,7 +189,9 @@ class NEAT:
         node2 = genome.get_random_node()
         innovation_number = self.check_existing_connections(node1.id, node2.id)
         if (innovation_number !=-1):
+            
             genome.add_connection_mutation(node1, node2, innovation_number)
+            
         else:
             while not genome.is_valid_connection(node1, node2):
                 node1 = genome.get_random_node()

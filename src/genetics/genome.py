@@ -1,4 +1,5 @@
 import random
+import bisect
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
 from typing import TYPE_CHECKING
@@ -14,24 +15,29 @@ class Genome:
     """
     def __init__(self, id: int):
         self.id = id
-        self.nodes: list['Node'] = []
+        self.nodes = []
         self.connections: list[ConnectionGene] = []
-        self.output_nodes = []
+        self.input_nodes: list[Node] = []
+        self.output_nodes: list[Node] = []
+        self.hidden_nodes: list[Node] = []
         self.fitness_value: float = 0.0
 
-    def add_node(self, node: 'Node'):
-        self.nodes.append(node)
-        if node.type == 'output':
+    def add_node(self, node: Node):
+        if node.type == 'input':
+            self.input_nodes.append(node)
+        elif node.type == 'output':
             self.output_nodes.append(node)
+        elif node.type == 'hidden':
+            self.hidden_nodes.append(node)
 
-    def add_connection(self, connection: 'ConnectionGene'):
+    def add_connection(self, connection: ConnectionGene):
         self.connections.append(connection)
         
-    def disable_connection(self, connection:'ConnectionGene'):
+    def disable_connection(self, connection: ConnectionGene):
         #self.connections.remove(connection)
         connection.is_enabled = False
     
-    def add_node_mutation(self, connection:'ConnectionGene', node_id: int, innovation_number: int) -> int:
+    def add_node_mutation(self, connection: ConnectionGene, node_id: int, innovation_number: int) -> int:
         """
         Returns the updated innovation number.
         """
@@ -56,7 +62,7 @@ class Genome:
         return innovation_number
     
 
-    def add_connection_mutation(self, node1: 'Node', node2: 'Node', global_innovation_number: int): 
+    def add_connection_mutation(self, node1: Node, node2: Node, global_innovation_number: int): 
         """
         Attempts to create a new connection between two nodes (node1 and node2).
         
@@ -100,7 +106,7 @@ class Genome:
     def weight_mutation(self, connection: 'ConnectionGene'):
         connection.weight = self.create_weight() #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
 
-    def is_valid_connection(self, node1: 'Node', node2: 'Node') -> bool:
+    def is_valid_connection(self, node1: Node, node2: Node) -> bool:
         # check if it is valid to add a connection between two nodes
         # not valid if node1 is output, node2 is input or if they are the same node.
         # (Maybe other restrictions) 
