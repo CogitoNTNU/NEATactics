@@ -36,8 +36,10 @@ class NEAT:
                 rand_num = random.uniform(0, 1)
                 if rand_num < self.config.probability_node_mut:
                     genome.add_node_mutation()
+                rand_num = random.uniform(0, 1)
                 if rand_num < self.config.probability_weight_mut:
                     genome.weight_mutation()
+                rand_num = random.uniform(0, 1)
                 if rand_num < self.config.probability_connection_mut:
                     genome.add_connection_mutation()
         
