@@ -145,7 +145,38 @@ class NEAT:
             if specie_size > 0:
                 for genome in specie.genomes:
                     genome.fitness_value = genome.fitness_value / specie_size
+                    specie.adjust_total_fitness(genome.fitness_value)  # Adjusts the total fitness of the specie
     
+    def calculate_number_of_children_of_species(self):
+        """Takes in all species and sets the number of children it should have"""
+        config = Config()
+        mean_total_adjusted_fitness = sum([specie.fitness_value for specie in self.species])/config.population_size
+        for specie in self.species:
+            num_new_population = round((specie.fitness_value)/(mean_total_adjusted_fitness))
+            specie.set_new_population_size(num_new_population)
+            print(specie.fitness_value)
+        
+        # Ensures that the total sum of new genomes is the total population_size
+        num_new_for_each_specie = []
+        for specie in self.species:
+            num_new_for_each_specie.append(specie.new_population_size)
+
+        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
+        difference_between_desired_and_real = config.population_size - sum(num_new_for_each_specie)
+        idx_of_species_w_most_genomes = num_new_for_each_specie.index((max(num_new_for_each_specie)))
+
+        self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
+
+        # TODO Delete this, only for debug
+        num_new_for_each_specie = []
+        for specie in self.species:
+            num_new_for_each_specie.append(specie.new_population_size)    
+        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
+
+        
+
+
+
     def add_mutation_connection(self, genome: Genome):
         node1 = genome.get_random_node()
         node2 = genome.get_random_node()

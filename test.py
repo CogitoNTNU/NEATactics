@@ -11,7 +11,7 @@ import random
 
 def test_generate_genome(neat: NEAT):
     inn_number = 0
-    for i in range(0, 40): # how many genomes you want to create
+    for i in range(0, 40): # how many genomes you want to create. TODO use hyperparameter
         genome = Genome(i)
         
         # Create output nodes
@@ -58,6 +58,9 @@ if __name__ == "__main__":
     
     
     neat.adjust_fitness()
-    
     for specie in neat.species:
-        neat.breeder(specie)
+        print(f"total fitness of specie {specie.species_number}: {specie.fitness_value}")
+    
+    neat.calculate_number_of_children_of_species()
+    #for specie in neat.species:
+    #    neat.breeder(specie)
