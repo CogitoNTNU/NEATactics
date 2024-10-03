@@ -37,8 +37,8 @@ class NEAT:
             random_next = random.randint(1, len(ordered_list)-1)
             new_genome = self.breed_two_genomes(ordered_list[random_next], ordered_list[0])
             temp_genomes.append(new_genome)
-            ordered_list.pop(0)
             ordered_list.pop(random_next)
+            ordered_list.pop(0)
         # orderd_list[0] har den mest fit genomen i specien 
         self.genomes = temp_genomes
 
@@ -47,6 +47,7 @@ class NEAT:
         Returns a new genome that is breeded by the input genomes
         """
         # Chooses which genome that has priority, should maybe do something different if the firness is the same
+        """
         if genome1.fitness_value >= genome2.fitness_value:
             alfa_genome = genome1
             beta_genome = genome2
@@ -68,7 +69,8 @@ class NEAT:
                     if connection.innovation_number == i_number:
                         new_genome.add_connection(alfa_genome.connections[i_number])
                         break
-        return new_genome
+        """
+        return genome1
 
     def test_genome(self, genome: Genome):
         env, _ = env_init()

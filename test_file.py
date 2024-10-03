@@ -38,10 +38,8 @@ def test(genome: Genome, inn_number):
         genome.add_node_mutation(genome.connections[rand3], len(genome.nodes)+1, inn_number)
         inn_number += 1
     return inn_number
-    
 
-# need if __name__ == "__main__": when running test_genomes.
-if __name__ == "__main__":
+def main():
     config_instance = Config()
     neat = NEAT(config_instance)
     
@@ -61,3 +59,9 @@ if __name__ == "__main__":
     
     for specie in neat.species:
         neat.breeder(specie)
+    
+    return neat.genomes
+
+# need if __name__ == "__main__": when running test_genomes.
+if __name__ == "__main__":
+    main()
