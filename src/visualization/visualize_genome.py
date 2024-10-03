@@ -52,6 +52,7 @@ def get_position_dict(layers):
     
     # Total number of layers
     total_layers = len(layers)
+    random.seed(10)
     
     # Loop through layers and assign positions
     for layer_idx, layer in enumerate(layers):
@@ -75,7 +76,8 @@ def get_position_dict(layers):
             y_start = -(len(layer) - 1) * node_gap / 2  # Center the layer vertically
             for i, node in enumerate(layer):
                 x_pos = round(random.uniform(10.5, 14.5), 2)
-                pos[node] = (x_pos, y_start + i * node_gap)  # Place nodes vertically
+                y_pos = round(random.uniform(0, 18), 2)
+                pos[node] = (x_pos, -y_pos)  # Place nodes vertically
     
     return pos
 
@@ -115,11 +117,10 @@ def visualize_genome(genome: Genome, frame_number: int):
     
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
-    directory = "./genome_farmes"
+    directory = "./genome_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
     plt.savefig(f'./genome_frames/genome_{frame_number}.png')
-    plt.show()
     plt.close()
 
    
