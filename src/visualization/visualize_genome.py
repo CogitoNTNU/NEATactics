@@ -118,7 +118,7 @@ def visualize_genome(genome: Genome, frame_number: int):
     directory = "./genome_farmes"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.savefig(f'./genome_farmes/genome_{frame_number}.png')
+    plt.savefig(f'./genome_frames/genome_{frame_number}.png')
     plt.show()
     plt.close()
 
