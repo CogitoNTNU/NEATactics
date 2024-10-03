@@ -3,7 +3,7 @@ from src.genetics.genome import Genome
 from src.utils.config import Config
 from src.environments.run_env import env_init, run_game
 from src.genetics.genomic_distance import *
-from src.genetics.create_basic_genomes import create_basic_genomes
+from src.genetics.create_basic_genomes import create_emty_genomes
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
 from typing import List
@@ -62,7 +62,7 @@ class NEAT:
             alpha_genome = genome2
             beta_genome = genome1
         
-        new_genome: Genome = create_basic_genomes(1)[0] # create a new genome with the correct input, output and bias nodes
+        new_genome: Genome = create_emty_genomes(1)[0] # create a new genome with the correct input, output and bias nodes
         
         innovation_nums_alpha = [c.innovation_number for c in alpha_genome.connections]
         innovation_nums_beta = [c.innovation_number for c in beta_genome.connections]
@@ -103,10 +103,7 @@ class NEAT:
                     if num == connection.innovation_number:
                         new_connection = connection
                         break
-                # new_connection.in_node
-                
-                # new_genome.add_connection(ConnectionGene(in_node, out_node, weight, is_enabled, innovation_num))
-        
+        return genome1
 
     def test_genome(self, genome: Genome):
         env, _ = env_init()
@@ -183,7 +180,38 @@ class NEAT:
             if specie_size > 0:
                 for genome in specie.genomes:
                     genome.fitness_value = genome.fitness_value / specie_size
+                    specie.adjust_total_fitness(genome.fitness_value)  # Adjusts the total fitness of the specie
     
+    def calculate_number_of_children_of_species(self):
+        """Takes in all species and sets the number of children it should have"""
+        config = Config()
+        mean_total_adjusted_fitness = sum([specie.fitness_value for specie in self.species])/config.population_size
+        for specie in self.species:
+            num_new_population = round((specie.fitness_value)/(mean_total_adjusted_fitness))
+            specie.set_new_population_size(num_new_population)
+            print(specie.fitness_value)
+        
+        # Ensures that the total sum of new genomes is the total population_size
+        num_new_for_each_specie = []
+        for specie in self.species:
+            num_new_for_each_specie.append(specie.new_population_size)
+
+        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
+        difference_between_desired_and_real = config.population_size - sum(num_new_for_each_specie)
+        idx_of_species_w_most_genomes = num_new_for_each_specie.index((max(num_new_for_each_specie)))
+
+        self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
+
+        # TODO Delete this, only for debug
+        num_new_for_each_specie = []
+        for specie in self.species:
+            num_new_for_each_specie.append(specie.new_population_size)    
+        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
+
+        
+
+
+
     def add_mutation_connection(self, genome: Genome):
         node1 = genome.get_random_node()
         node2 = genome.get_random_node()
