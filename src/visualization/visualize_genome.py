@@ -14,6 +14,7 @@ GRAPH_XMIN = -1.5
 GRAPH_XMAX = 17
 GRAPH_YMIN = -20
 GRAPH_YMAX = 3
+BOX_HEIGHT = 18
 
 def get_node_in_layers(genome: Genome) -> List[List[Node]]:
     """
@@ -64,9 +65,11 @@ def get_position_dict(layers):
                 pos[node] = (x_pos + col * 0.5, -row * node_gap)  # Adjust x (columns) and y (rows)
         elif layer_idx == total_layers - 1:  # Output layer case
             x_pos = total_layers * layer_gap   # Place output nodes at the farthest right
-            y_start = -(len(layer) - 1) * node_gap * 2   # Center the output nodes vertically
+            y_gap = (BOX_HEIGHT) / (len(layer))  # Center the output layer vertically
+            
             for i, node in enumerate(layer):
-                pos[node] = (x_pos, y_start + 8 + i * node_gap)  # Place nodes vertically
+                y_pos = - y_gap * i - y_gap/2
+                pos[node] = (x_pos, y_pos)  # Place nodes vertically
         else:
             # Hidden layers are placed regularly between the input and output layers
             y_start = -(len(layer) - 1) * node_gap / 2  # Center the layer vertically
@@ -116,6 +119,7 @@ def visualize_genome(genome: Genome, frame_number: int):
     if not os.path.exists(directory):
         os.makedirs(directory)
     plt.savefig(f'./genome_farmes/genome_{frame_number}.png')
+    plt.show()
     plt.close()
 
    
