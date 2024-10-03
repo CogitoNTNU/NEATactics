@@ -29,13 +29,13 @@ def test_generate_genome(neat: NEAT):
 def test(genome: Genome, inn_number):
     rand1 = random.randint(0, len(genome.nodes)-1)
     rand2 = random.randint(0, len(genome.nodes)-1)
-    for i in range(15): # how many connections and node mutations
+    for i in range(30): # how many connections and node mutations
         while not genome.add_connection_mutation(node1=genome.nodes[rand1], node2=genome.nodes[rand2], global_innovation_number=inn_number):
             rand1 = random.randint(0, len(genome.nodes)-1)
             rand2 = random.randint(0, len(genome.nodes)-1)
         rand3 = random.randint(0, len(genome.connections)-1)
         inn_number += 1
-        genome.add_node_mutation(genome.connections[rand3], len(genome.nodes)+1, inn_number)
+        # genome.add_node_mutation(genome.connections[rand3], len(genome.nodes)+1, inn_number)
         inn_number += 1
     return inn_number
     
