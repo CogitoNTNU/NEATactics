@@ -37,6 +37,7 @@ def insert_input(genome:Genome, state: list) -> None:
             
 
 def run_game(env: MarioJoypadSpace, genome: Genome):
+    
     forward = Traverse(genome)
     fitness = Fitness("Hallo")
     sr = env.step(0)

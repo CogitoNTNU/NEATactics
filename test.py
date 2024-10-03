@@ -10,24 +10,17 @@ import random
 
 
 def test_generate_genome(neat: NEAT):
-    config = Config()
-    num_input_nodes = config.num_input_nodes
-    num_output_nodes = config.num_output_nodes
     inn_number = 0
     for i in range(0, 40): # how many genomes you want to create
         genome = Genome(i)
         
         # Create output nodes
-        for i in range(num_output_nodes):
+        for i in range(7):
             genome.add_node(Node(i, 'output'))
 
         # Create input nodes
-        for i in range(num_output_nodes, num_output_nodes + num_input_nodes):
+        for i in range(7, 207):
             genome.add_node(Node(i, 'input'))
-        
-        genome.add_node(Node(num_input_nodes + num_output_nodes, "bias", 1.0))
-        for output_node in range(num_output_nodes):
-            genome.add_connection_mutation(genome.nodes[num_output_nodes + num_input_nodes], genome[output_node])
         
         inn_number = test(genome, inn_number)
         neat.add_genome(genome)
@@ -56,9 +49,15 @@ if __name__ == "__main__":
     # test_generate_genome(neat) # creates randomly more "complex" genomes
     
     neat.test_genomes()
-    for genome in neat.genomes:
-        print(genome.fitness_value)
+    # for genome in neat.genomes:
+        # print(genome.fitness_value)
 
     neat.sort_species(neat.genomes)
+    # for specie in neat.species:
+    #     print(specie)
+    
+    
+    neat.adjust_fitness()
+    
     for specie in neat.species:
-        print(specie)
+        neat.breeder(specie)
