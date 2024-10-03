@@ -1,28 +1,45 @@
 from src.utils.utils import normalize_negative_values, normalize_positive_values
 import numpy as np
-from typing import Union, List
+from typing import List
 import matplotlib.cm as cm
+from src.genetics.node import Node
 
 GREEN = cm.Greens # type: ignore
 GRAY = cm.gray # type: ignore
 RED = cm.Reds # type: ignore
 
-def get_node_color(type: str, value: float) -> Union[str, float]:
-    """
-    Takes a value which is assumed to be in range [0, 1],
-    and returns a simple string like 'r' which representsn the color.
-    """
-    if type == 'input':
-        return GRAY(value)
+def get_node_colz(nodez: List[Node]) -> List[float]:
 
-    if type == 'hidden':
-        return RED(value)
+    input_vals, hidden_vals, output_vals = [], [], []
+    for node in nodez:
+        if node.type == 'input':
+            input_vals.append(node.value)
+        if node.type == 'hidden':
+            hidden_vals.append(node.value)
+        if node.type == 'output':
+            output_vals.append(node.value)
+    
+    npout = np.array(output_vals)
+    normalize_positive_values(npout)
+    hidden_colz = get_weight_color(hidden_vals)
 
-    if type == 'output':
-        print(value)
-        return GREEN(value) # TODO: Try to see if passing 'r' is stable.
+    hidden_idx, output_idx = 0, 0
+    colors = []
 
-    raise ValueError(f"Encountered invalid type: {type}")
+
+    for node in nodez:
+        if node.type == 'input':
+            color = GRAY(node.value) # For input nodes, use their value directly
+        elif node.type == 'hidden':
+            color = hidden_colz[hidden_idx]
+            hidden_idx += 1
+        elif node.type == 'output':
+            color = GREEN(npout[output_idx])
+            output_idx += 1
+        colors.append(color)
+
+    return colors
+ 
 
 def get_weight_color(edge_weights: List[float]) -> List[float]:
     """Input: A list of weights for the genome, in sorted order.\n
