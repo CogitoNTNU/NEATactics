@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from src.genetics.genome import Genome
 from src.genetics.node import Node
+import os
 import random
 from typing import List
 from src.utils.utils import get_node_color, get_weight_color
@@ -85,7 +86,7 @@ def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
         elif node.type == 'output':
             graph.add_node(node.id, layer_number = 2)
 
-def visualize_genome(genome: Genome):
+def visualize_genome(genome: Genome, frame_number: int):
     fig = plt.figure(figsize=(15, 10))
     ax = fig.add_subplot(111)
 
@@ -111,5 +112,10 @@ def visualize_genome(genome: Genome):
     
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
-    plt.show()
+    directory = "./genome_farmes"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    plt.savefig(f'./genome_farmes/genome_{frame_number}.png')
+    plt.close()
+
    

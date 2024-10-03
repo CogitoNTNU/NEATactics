@@ -1,6 +1,7 @@
 import argparse
 from src.environments.env import init, test_gym_environment, get_state_from_environment
-
+from src.environments.run_env import run_game
+from test.visualization.visualize_genome_test import get_genome_from_NEAT
 def main():
 
     parser = argparse.ArgumentParser(description="A fun Python script with a secret feature!")
@@ -17,7 +18,8 @@ def main():
 if __name__ == "__main__":
     # main()
     env, state = init()
-    test_gym_environment(env)
+    genome = get_genome_from_NEAT()
+    run_game(env, genome)
 
     # env, state = init()
     # get_state_from_environment(env) # Will save state 150 in the root folder as pkl, will also save corresponding png in mario_frames.
