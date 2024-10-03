@@ -7,7 +7,7 @@ from src.genetics.node import Node
 import os
 import random
 from typing import List
-from src.utils.colors_visualization import get_node_color, get_weight_color
+from src.utils.colors_visualization import get_weight_color, get_node_colz
 
 # Adjust the size of the visualization whiteboard for the NN:
 GRAPH_XMIN = -1.5
@@ -103,8 +103,8 @@ def visualize_genome(genome: Genome, frame_number: int):
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
             edge_weights.append(connection.weight)
-    
-    node_colz = [get_node_color(node.type, node.value) for node in genome.nodes]
+
+    node_colz = get_node_colz(list(genome.nodes)) # Make a copy of the genome.nodes list
     edge_colz = get_weight_color(edge_weights)
     
     layers = get_node_in_layers(genome)
