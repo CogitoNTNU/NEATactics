@@ -4,6 +4,7 @@ from src.utils.config import Config
 from src.environments.run_env import env_init, run_game
 from src.genetics.genomic_distance import *
 from src.genetics.create_basic_genomes import create_basic_genomes
+from src.genetics.connection_gene import ConnectionGene
 from typing import List
 import multiprocessing
 import random
@@ -11,10 +12,11 @@ import random
 class NEAT:
     def __init__(self, config: Config):
         self.config = config
-        self.global_innovation_number = 0
+        self.global_innovation_number = 0 # When 
         self.species_number = 0
         self.genomes: list[Genome] = []
         self.species: list[Species] = []
+        self.connections: list[ConnectionGene] = []
 
     def save_genomes(self):
         raise NotImplementedError()
@@ -37,9 +39,12 @@ class NEAT:
                     genome.weight_mutation()
                 if rand_num < self.config.probability_connection_mut:
                     genome.add_connection_mutation()
-                
-                    
-
+        
+    def check_existing_connections(self, node1: int, node2: int):
+        for connection in self.connections:
+            if connection.in_node.id == node1 and connection.out_node.id == node2:
+                return connection.innovation_number
+        return -1
             
     def add_species(self, species: Species):
         self.species.append(species)
@@ -61,18 +66,13 @@ class NEAT:
                 if genome.id == genome_id:  # Match the genome by its ID
                     genome.fitness_value = fitness  # Assign the fitness value
                     break  # Move to the next result once a match is found
-        
+    
     def initiate_genomes(self, number_of_genomes: int = 20): 
         # Everyone starts in the same species
         # Initialize random population
         genomes = create_basic_genomes(number_of_genomes)
         for genome in genomes:
-            node1 = genome.get_random_node()
-            node2 = genome.get_random_node()
-            self.global_innovation_number += 1
-            while not genome.add_connection_mutation(node1, node2, self.global_innovation_number):
-                node1 = genome.get_random_node()
-                node2 = genome.get_random_node()
+            self.add_mutation_connection(genome)
             self.genomes.append(genome)
     
     def create_species(self):
@@ -110,13 +110,38 @@ class NEAT:
                 self.species.append(new_species)  # Add the new species to the species list
                 test_species_genomes.append((new_species, genome))  # Use this genome as the representative for the new species
     
-    def add_genome(self, genome: Genome):
-        self.genomes.append(genome)
         
-                
+    def adjust_fitness(self):
+        """
+        Encourage diversity by adjusting the fitness values of genomes.
+        Larger species get penalized slightly by dividing the fitness of 
+        each genome by the species size, giving smaller species a chance 
+        to survive and evolve.
+        """
+        for specie in self.species:
+            specie_size = len(specie.genomes)
             
+            if specie_size > 0:
+                for genome in specie.genomes:
+                    genome.fitness_value = genome.fitness_value / specie_size
     
-
-
-
-        
+    def add_mutation_connection(self, genome: Genome):
+        node1 = genome.get_random_node()
+        node2 = genome.get_random_node()
+        innovation_number = self.check_existing_connections(node1.id, node2.id)
+        if (innovation_number !=-1):
+            genome.add_connection_mutation(node1, node2, innovation_number)
+        else:
+            while not genome.is_valid_connection(node1, node2):
+                node1 = genome.get_random_node()
+                node2 = genome.get_random_node()
+    
+            connection = genome.add_connection_mutation(node1, node2, self.global_innovation_number)
+            self.global_innovation_number += 1
+            self.connections.append(connection)
+    
+    def kill_bad_genomes_in_each_species(self):
+        pass
+    
+    def add_genome(self, genome: Genome): # only for test.py
+        self.genomes.append(genome)
