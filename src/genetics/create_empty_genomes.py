@@ -1,9 +1,9 @@
 from src.genetics.genome import Genome
 from src.genetics.node import Node
 from src.utils.config import Config
-from src.genetics.NEAT import NEAT
+from typing import List
 
-def create_emty_genomes(number_of_genomes=20) -> list:
+def create_empty_genomes(number_of_genomes=20) -> List[Genome]:
         """
         Empty genomes are created with no hidden layer adn only input and output nodes.
         """
@@ -23,7 +23,7 @@ def create_emty_genomes(number_of_genomes=20) -> list:
                 genome.add_node(Node(i, 'output'))
             
             # Create input nodes
-            for i in range(num_input_nodes, num_output_nodes + num_input_nodes):
+            for i in range(num_output_nodes, num_output_nodes + num_input_nodes):
                 genome.add_node(Node(i, 'input'))
         
         return genomes

@@ -15,7 +15,7 @@ class Genome:
     """
     def __init__(self, id: int):
         self.id = id
-        self.nodes = []
+        self.nodes: list[Node] = []
         self.connections: list[ConnectionGene] = []
         self.input_nodes: list[Node] = []
         self.output_nodes: list[Node] = []
@@ -23,6 +23,7 @@ class Genome:
         self.fitness_value: float = 0.0
 
     def add_node(self, node: Node):
+        self.nodes.append(node)
         if node.type == 'input':
             self.input_nodes.append(node)
         elif node.type == 'output':
@@ -90,7 +91,7 @@ class Genome:
         return 2*random.random()-1  #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
     
     def get_random_node(self):
-        return self.nodes[random.randint(0, len(self.nodes)-1)]
+        return self.nodes[random.randint(0, len(self.nodes) - 1)]
 
     def add_fitnessvalue(self, fitness: float):
         self.fitness_value = fitness
@@ -123,6 +124,6 @@ class Genome:
     def get_nodes(self):
         return self.nodes
     def __repr__(self):
-        return (f"Genome(id={self.id}, nodes={[node.id for node in self.nodes]}, "
+        return (f"Genome(id={self.id}, hidden nodes={[node.id for node in self.hidden_nodes]}, "
                 f"connections={[connection for connection in self.connections]})")
 

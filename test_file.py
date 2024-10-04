@@ -1,9 +1,6 @@
 from src.genetics.node import Node
 from src.genetics.genome import Genome
-from src.genetics.species import *
-from src.genetics.traverse import Traverse
 from src.environments.run_env import env_init, run_game
-from src.genetics.species import Species
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
 import random
@@ -42,26 +39,38 @@ def test(genome: Genome, inn_number):
 def main():
     config_instance = Config()
     neat = NEAT(config_instance)
-    
     neat.initiate_genomes()
-    # test_generate_genome(neat) # creates randomly more "complex" genomes
     
-    neat.test_genomes()
-    # for genome in neat.genomes:
-        # print(genome.fitness_value)
+    for i in range(3):
+        # test_generate_genome(neat) # creates randomly more "complex" genomes
 
-    neat.sort_species(neat.genomes)
-    # for specie in neat.species:
-    #     print(specie)
-    
-    
-    neat.adjust_fitness()
-    for specie in neat.species:
-        print(f"total fitness of specie {specie.species_number}: {specie.fitness_value}")
-    
-    neat.calculate_number_of_children_of_species()
-    #for specie in neat.species:
-    #    neat.breeder(specie)
+        neat.test_genomes()
+        for genome in neat.genomes:
+            print(f"Genome {genome.id}, old fitness: {genome.fitness_value}")
+        
+        neat.sort_species(neat.genomes)
+        neat.adjust_fitness()
+        
+        for genome in neat.genomes:
+            print(f"Genome {genome.id}, new fitness: {genome.fitness_value}")
+        
+        for specie in neat.species:
+            print(f"total fitness of specie {specie.species_number}: {specie.fitness_value}")
+        
+        
+        
+        neat.calculate_number_of_children_of_species()
+        new_genomes_list = []
+        for specie in neat.species:
+            new_genomes_list.append(neat.breeder(specie))
+        #    print("hi")
+        #    print(new_genomes_list)
+        # Assuming new_genomes_list is a list of lists of genomes
+        flattened_genomes = [genome for sublist in new_genomes_list for genome in sublist]
+        neat.genomes = flattened_genomes
+            
+        for genome in neat.genomes:
+            neat.add_mutation_connection(genome)
     
     return neat.genomes
 

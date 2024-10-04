@@ -1,5 +1,4 @@
 from src.utils.config import Config
-from src.genetics.create_basic_genomes import create_basic_genomes
 from src.genetics.genome import Genome
 from typing import List
 

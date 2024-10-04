@@ -3,7 +3,7 @@ from src.genetics.genome import Genome
 from src.utils.config import Config
 from src.environments.run_env import env_init, run_game
 from src.genetics.genomic_distance import *
-from src.genetics.create_basic_genomes import create_emty_genomes
+from src.genetics.create_empty_genomes import create_empty_genomes
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
 from typing import List
@@ -17,6 +17,7 @@ class NEAT:
         self.config = config
         self.global_innovation_number = 0 # When 
         self.species_number = 0
+        self.genome_id = 0
         self.genomes: list[Genome] = []
         self.species: list[Species] = []
         self.connections: list[ConnectionGene] = []
@@ -30,80 +31,154 @@ class NEAT:
     def add_species(self, species: Species):
         self.species.append(species)
 
-    def breeder(self, species: Species):
+    def breeder(self, specie: Species):
+        """
+        Breeds the genomes in a species to create a new generation of genomes.
+        
+        Uses the top half of the genomes in the species to create offspring, and 
+        randomly chooses two parents from the top half to create a new genome.
+        
+        If the number of genomes to reproduce is higher than twice the number of 
+        genomes in the species, some elite genomes will be added to the new generation.
+        """
         temp_genomes = []
-        # Removes the worst half of the genomes in each species
-        ordered_list = sorted(species.genomes, key=lambda x: x.fitness_value, reverse=True)[:int(math.floor((len(species.genomes))/2))]
-        if(len(ordered_list)%2==1):
+        
+        # Sort genomes by fitness (descending order)
+        ordered_list = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
+        
+        # Select a percentage of the top genomes as elites (at least one elite survives)
+        num_elites = min(max(1, int(self.config.elitism_rate * len(ordered_list))), specie.new_population_size)
+        elites = ordered_list[:num_elites]  # Get the top elites
+        
+        # create new genomes from elites
+        for elite in elites:
+            cloned_elite = copy.deepcopy(elite)  # Create an exact copy of the elite genome
+            cloned_elite.id = self.genome_id 
+            self.genome_id += 1
+            temp_genomes.append(cloned_elite)  # Add the cloned genome to the new generation
+        
+        # Remaining genomes to breed
+        top_half = ordered_list[:len(ordered_list) // 2]
+        for genome in top_half:
+            if genome.fitness_value == 0:
+                top_half.remove(genome)
+        
+        if(len(top_half)%2==1):
             ordered_list.pop()
-        while len(ordered_list) != 0:
-            random_next = random.randint(1, len(ordered_list)-1)
-            new_genome = self.breed_two_genomes(ordered_list[random_next], ordered_list[0])
-            temp_genomes.append(new_genome)
-            ordered_list.pop(random_next)
-            ordered_list.pop(0)
-        # orderd_list[0] har den mest fit genomen i specien 
-        self.genomes = temp_genomes
+            
+        while len(temp_genomes) < specie.new_population_size:
+            parent1 = random.choice(top_half)
+            parent2 = random.choice(top_half)
+            
+            # Generate two offspring from each pair to maintain population size
+            new_genome1 = self.breed_two_genomes(parent1, parent2)
+            temp_genomes.append(new_genome1)
+            
+            # Randomly add one of the best genomes
+            
+        return temp_genomes
+
+
+    def add_connection_to_new_genome(self, new_genome, new_nodes_dict, connection):
+        """
+        Helper function to add a connection to the new genome.
+        This will handle creating missing nodes if they don't exist.
+        """
+        in_node_id = connection.in_node.id
+        out_node_id = connection.out_node.id
+
+        # Get corresponding nodes from new genome or create if not present
+        new_in_node = new_nodes_dict.get(in_node_id)
+        if new_in_node is None:
+            # Create the missing input node
+            new_in_node = Node(connection.in_node.id, connection.in_node.type)
+            new_genome.add_node(new_in_node)
+            new_nodes_dict[in_node_id] = new_in_node  # Update the dictionary to reflect the new node
+
+        new_out_node = new_nodes_dict.get(out_node_id)
+        if new_out_node is None:
+            # Create the missing output node
+            new_out_node = Node(connection.out_node.id, connection.out_node.type)
+            new_genome.add_node(new_out_node)
+            new_nodes_dict[out_node_id] = new_out_node  # Update the dictionary to reflect the new node
+
+        # Only create a new connection if both nodes are found/created
+        new_connection = ConnectionGene(
+            new_in_node, 
+            new_out_node, 
+            connection.weight, 
+            connection.is_enabled, 
+            connection.innovation_number
+        )
+        new_genome.add_connection(new_connection)
 
     def breed_two_genomes(self, genome1: Genome, genome2: Genome):
         """
-        Returns a new genome that is breed by the input genomes
-        
-        The connections that line up (same inn number) are inherited at random.
-        Disjoint and excess are inherited from the more fit parent.
+        Returns a new genome that is bred from the input genomes.
+
+        The connections that line up (same innovation number) are inherited at random.
+        Disjoint and excess connections are inherited from the more fit parent.
         """
-        # Chooses which genome that has priority, should maybe do something different if the firness is the same
-        alpha_genome = None
-        beta_genome = None
+        # print(f"Breeding genome: {genome1}")
+        # print(f"with genome2: {genome2}")
+        
+        # Determine which genome is alpha (more fit) and beta (less fit)
         if genome1.fitness_value >= genome2.fitness_value:
             alpha_genome = genome1
             beta_genome = genome2
         else:
             alpha_genome = genome2
             beta_genome = genome1
-        
-        new_genome: Genome = create_emty_genomes(1)[0] # create a new genome with the correct input, output and bias nodes
-        
-        innovation_nums_alpha = [c.innovation_number for c in alpha_genome.connections]
-        innovation_nums_beta = [c.innovation_number for c in beta_genome.connections]
-        alpha_num_set = set(innovation_nums_alpha)
-        beta_num_set = set(innovation_nums_beta)
 
-        max_num_alpha = max(innovation_nums_alpha)
-        max_num_beta = max(innovation_nums_beta)
-        
-        if max_num_alpha > max_num_beta:
-            excess = [x for x in innovation_nums_alpha if x > max_num_beta]
-        else:
-            excess = [x for x in innovation_nums_beta if x > max_num_alpha]
+        # Create a new genome with the correct input, output, and bias nodes
+        new_genome: Genome = create_empty_genomes(1)[0]  # Assuming a function to create an empty genome
+        new_genome.id = self.genome_id
+        self.genome_id += 1
+        new_nodes_dict = {node.id: node for node in new_genome.nodes}  # Fast lookup for nodes in the new genome
 
-        disjoint_nums = alpha_num_set ^ beta_num_set
+        # Step 1: Build dictionaries for fast connection lookups
+        alpha_connections_dict = {c.innovation_number: c for c in alpha_genome.connections}
+        beta_connections_dict = {c.innovation_number: c for c in beta_genome.connections}
+
+        # Get the innovation numbers of the connections from both genomes
+        alpha_num_set = set(alpha_connections_dict.keys())
+        beta_num_set = set(beta_connections_dict.keys())
+
+        # Matching innovation numbers (inherit at random)
         equal_nums = alpha_num_set & beta_num_set
-        
-        
-        
+
+        # Step 2: Inherit matching connections at random
+        for innovation_number in equal_nums:
+            if random.random() < 0.5:
+                connection = alpha_connections_dict[innovation_number]
+            else:
+                connection = beta_connections_dict[innovation_number]
+
+            # Add the selected connection to the new genome
+            self.add_connection_to_new_genome(new_genome, new_nodes_dict, connection)
+
+        # Step 3: Handle disjoint and excess connections
         if alpha_genome.fitness_value == beta_genome.fitness_value:
-            pass
+            # Randomly inherit disjoint and excess genes from either genome
+            all_disjoint_and_excess_nums = alpha_num_set ^ beta_num_set
+            for num in all_disjoint_and_excess_nums:
+                if random.random() < 0.5:
+                    if num in alpha_connections_dict:
+                        connection = alpha_connections_dict[num]
+                    else:
+                        connection = beta_connections_dict[num]
+
+                    # Add the chosen connection to the new genome
+                    self.add_connection_to_new_genome(new_genome, new_nodes_dict, connection)
         else:
-            
-            # Get connections from the most fit parent
-            disjoint_nums = disjoint_nums & alpha_num_set
-            
-            # first add all hidden nodes of the alpha genome
-            for hidden_node in alpha_genome.hidden_nodes:
-                new_node = Node(hidden_node.id, "hidden")
-                new_genome.add_node(new_node)
-            
-            # create a new connection with the same in node, out node and weight as the alpha_nums connection with the correct inn number
-            for num in disjoint_nums:
-                # 50/50 if it chooses alpha_genome or beta genome
-                
-                new_connection = None
-                for connection in alpha_genome.connections:
-                    if num == connection.innovation_number:
-                        new_connection = connection
-                        break
-        return genome1
+            # Inherit disjoint and excess genes from the more fit parent (alpha_genome)
+            disjoint_and_excess_nums = alpha_num_set - beta_num_set
+            for num in disjoint_and_excess_nums:
+                connection = alpha_connections_dict[num]
+                # Add the connection to the new genome
+                self.add_connection_to_new_genome(new_genome, new_nodes_dict, connection)
+        print(f"new genome: {new_genome}")
+        return new_genome
 
     def test_genome(self, genome: Genome):
         env, _ = env_init()
@@ -126,46 +201,56 @@ class NEAT:
     def initiate_genomes(self, number_of_genomes: int = 20): 
         # Everyone starts in the same species
         # Initialize random population
-        genomes = create_basic_genomes(number_of_genomes)
+        genomes = create_empty_genomes(number_of_genomes)
         for genome in genomes:
             self.add_mutation_connection(genome)
             self.genomes.append(genome)
     
     def create_species(self):
         """Create a new species with a unique species number."""
-        self.species_number += 1  # Increment the global species counter
         new_species = Species(self.config, self.species_number)
+        self.species_number += 1  # Increment the global species counter
         return new_species
     
     def sort_species(self, genomes: List[Genome]):
-         # Create a list to hold representative genomes from each species
-        test_species_genomes = [(specie, specie.genomes[0]) for specie in self.species if specie.genomes]  # List of tuples (species, representative)
+        # Create a list to hold representative genomes from each species
+        if not self.species:
+            new_species = self.create_species()
+            new_species.add_genome(genomes[0])
+            self.species.append(new_species)
+            test_species_genomes = [(new_species, genomes[0])]
+        else:
+            # Create a list to hold representative genomes from each species if species exist
+            test_species_genomes = [(specie, specie.genomes[0]) for specie in self.species if specie.genomes]
 
-        self.species = []  # Reset the species list for the new generation
-        
+        new_species_list = []  # Temporary list to hold the new species structure
+
+        # Reset the genomes in each species (prepare for the new generation)
         for specie, _ in test_species_genomes:
-            specie.genomes = []
+            specie.genomes = []  # Clear genomes from previous generation
 
         for genome in genomes:
-            found_species = False  # To track if the genome is assigned to a species
+            found_species = False  # Track if the genome is assigned to a species
 
             # Compare genome to each species' representative genome
             for specie, representative in test_species_genomes:
-                print(genomic_distance(genome, representative, self.config))
                 if genomic_distance(genome, representative, self.config) < self.config.genomic_distance_threshold:
                     # If the genome fits, add it to the correct species
                     specie.add_genome(genome)
-                    print(f"once, {specie}")
                     found_species = True
                     break  # Stop searching once the genome is added to a species
 
-            # If the genome does not fit into any species, create a new species
+            # If the genome does not fit into any existing species, create a new one
             if not found_species:
                 new_species = self.create_species()
                 new_species.add_genome(genome)
-                self.species.append(new_species)  # Add the new species to the species list
+                new_species_list.append(new_species)  # Track new species
                 test_species_genomes.append((new_species, genome))  # Use this genome as the representative for the new species
-    
+
+        # After processing all genomes, update self.species
+        self.species = [specie for specie, _ in test_species_genomes if specie.genomes]  # Remove empty species
+        self.species.extend(new_species_list)  # Add newly created species
+
         
     def adjust_fitness(self):
         """
@@ -179,7 +264,7 @@ class NEAT:
             
             if specie_size > 0:
                 for genome in specie.genomes:
-                    genome.fitness_value = genome.fitness_value / specie_size
+                    genome.fitness_value = max(0, genome.fitness_value / specie_size)
                     specie.adjust_total_fitness(genome.fitness_value)  # Adjusts the total fitness of the specie
     
     def calculate_number_of_children_of_species(self):
@@ -208,18 +293,12 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)    
         print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
 
-        
-
-
-
     def add_mutation_connection(self, genome: Genome):
         node1 = genome.get_random_node()
         node2 = genome.get_random_node()
         innovation_number = self.check_existing_connections(node1.id, node2.id)
         if (innovation_number !=-1):
-            
             genome.add_connection_mutation(node1, node2, innovation_number)
-            
         else:
             while not genome.is_valid_connection(node1, node2):
                 node1 = genome.get_random_node()
