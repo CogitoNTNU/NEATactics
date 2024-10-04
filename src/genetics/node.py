@@ -32,7 +32,7 @@ class Node:
     def add_node_connection(self, nodeId: int):
         self.connected_nodes.append(nodeId)
 
-    def add_connection_connection(self, connection: 'ConnectionGene'):
+    def add_outgoing_connection(self, connection: 'ConnectionGene'):
         self.connections_to_output.append(connection)
 
     def __repr__(self):

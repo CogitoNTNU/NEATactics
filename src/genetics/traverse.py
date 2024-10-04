@@ -18,6 +18,7 @@ class Traverse:
         order_of_traversal = self.kahns_algorithm()
         # print(order_of_traversal)
         if not order_of_traversal:
+            print("loop")
             return 6 # if it finds a loop, choose to go left to get minimal fitness value
         for node in order_of_traversal:
             for connection in node.connections_to_output:

@@ -26,7 +26,7 @@ def test_generate_genome(neat: NEAT):
 def test(genome: Genome, inn_number):
     rand1 = random.randint(0, len(genome.nodes)-1)
     rand2 = random.randint(0, len(genome.nodes)-1)
-    for i in range(15): # how many connections and node mutations
+    for i in range(20): # how many connections and node mutations
         while not genome.add_connection_mutation(node1=genome.nodes[rand1], node2=genome.nodes[rand2], global_innovation_number=inn_number):
             rand1 = random.randint(0, len(genome.nodes)-1)
             rand2 = random.randint(0, len(genome.nodes)-1)
@@ -41,7 +41,7 @@ def main():
     neat = NEAT(config_instance)
     neat.initiate_genomes()
     
-    for i in range(3):
+    for i in range(config_instance.generations):
         # test_generate_genome(neat) # creates randomly more "complex" genomes
 
         neat.test_genomes()
@@ -63,15 +63,13 @@ def main():
         new_genomes_list = []
         for specie in neat.species:
             new_genomes_list.append(neat.breeder(specie))
-        #    print("hi")
-        #    print(new_genomes_list)
-        # Assuming new_genomes_list is a list of lists of genomes
+        
         flattened_genomes = [genome for sublist in new_genomes_list for genome in sublist]
         neat.genomes = flattened_genomes
             
         for genome in neat.genomes:
             neat.add_mutation_connection(genome)
-    
+
     return neat.genomes
 
 # need if __name__ == "__main__": when running test_genomes.

@@ -58,8 +58,8 @@ class Genome:
         node1.add_node_connection(new_node.id)
         new_node.add_node_connection(node1.id)
         new_node.add_node_connection(node2.id)
-        new_node.add_connection_connection(connection2)
-        node1.add_connection_connection(connection1)
+        new_node.add_outgoing_connection(connection2)
+        node1.add_outgoing_connection(connection1)
         return innovation_number
     
 
@@ -84,7 +84,7 @@ class Genome:
         self.add_connection(connection)
         node2.add_node_connection(node1.id)
         node1.add_node_connection(node2.id)
-        node1.add_connection_connection(connection)
+        node1.add_outgoing_connection(connection)
         return connection
     
     def create_weight(self):
@@ -125,5 +125,5 @@ class Genome:
         return self.nodes
     def __repr__(self):
         return (f"Genome(id={self.id}, hidden nodes={[node.id for node in self.hidden_nodes]}, "
-                f"connections={[connection for connection in self.connections]})")
+                f"connections={[connection for connection in self.connections]}, fitness_value={self.fitness_value})")
 

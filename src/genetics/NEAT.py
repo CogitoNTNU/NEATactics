@@ -15,7 +15,7 @@ import copy
 class NEAT:
     def __init__(self, config: Config):
         self.config = config
-        self.global_innovation_number = 0 # When 
+        self.global_innovation_number = 7 # When 
         self.species_number = 0
         self.genome_id = 0
         self.genomes: list[Genome] = []
@@ -58,24 +58,21 @@ class NEAT:
             temp_genomes.append(cloned_elite)  # Add the cloned genome to the new generation
         
         # Remaining genomes to breed
-        top_half = ordered_list[:len(ordered_list) // 2]
-        for genome in top_half:
-            if genome.fitness_value == 0:
-                top_half.remove(genome)
+        top_half = [genome for genome in ordered_list[:len(ordered_list) // 2]]
         
         if(len(top_half)%2==1):
             ordered_list.pop()
             
+        for genome in top_half:
+            print(f"top half fitness values: {genome.fitness_value}, genome id: {genome.id}")
+        
         while len(temp_genomes) < specie.new_population_size:
             parent1 = random.choice(top_half)
             parent2 = random.choice(top_half)
             
             # Generate two offspring from each pair to maintain population size
             new_genome1 = self.breed_two_genomes(parent1, parent2)
-            temp_genomes.append(new_genome1)
-            
-            # Randomly add one of the best genomes
-            
+            temp_genomes.append(new_genome1) 
         return temp_genomes
 
 
@@ -111,6 +108,7 @@ class NEAT:
             connection.innovation_number
         )
         new_genome.add_connection(new_connection)
+        new_in_node.add_outgoing_connection(new_connection)
 
     def breed_two_genomes(self, genome1: Genome, genome2: Genome):
         """
@@ -177,7 +175,7 @@ class NEAT:
                 connection = alpha_connections_dict[num]
                 # Add the connection to the new genome
                 self.add_connection_to_new_genome(new_genome, new_nodes_dict, connection)
-        print(f"new genome: {new_genome}")
+        # print(f"new genome: {new_genome}")
         return new_genome
 
     def test_genome(self, genome: Genome):
@@ -198,10 +196,10 @@ class NEAT:
                     genome.fitness_value = fitness  # Assign the fitness value
                     break  # Move to the next result once a match is found
     
-    def initiate_genomes(self, number_of_genomes: int = 20): 
+    def initiate_genomes(self): 
         # Everyone starts in the same species
         # Initialize random population
-        genomes = create_empty_genomes(number_of_genomes)
+        genomes = create_empty_genomes()
         for genome in genomes:
             self.add_mutation_connection(genome)
             self.genomes.append(genome)
@@ -228,6 +226,7 @@ class NEAT:
         # Reset the genomes in each species (prepare for the new generation)
         for specie, _ in test_species_genomes:
             specie.genomes = []  # Clear genomes from previous generation
+            specie.fitness_value = 0  # Reset the fitness value
 
         for genome in genomes:
             found_species = False  # Track if the genome is assigned to a species
@@ -264,19 +263,25 @@ class NEAT:
             
             if specie_size > 0:
                 for genome in specie.genomes:
-                    genome.fitness_value = max(0, genome.fitness_value / specie_size)
+                    genome.fitness_value = genome.fitness_value / specie_size
                     specie.adjust_total_fitness(genome.fitness_value)  # Adjusts the total fitness of the specie
     
     def calculate_number_of_children_of_species(self):
         """Takes in all species and sets the number of children it should have"""
         config = Config()
+        
+        # Check if config.population_size is greater than 0
+        if config.population_size <= 0:
+            raise ValueError("Population size must be greater than zero.")
+        
         mean_total_adjusted_fitness = sum([specie.fitness_value for specie in self.species])/config.population_size
+        
         for specie in self.species:
             num_new_population = round((specie.fitness_value)/(mean_total_adjusted_fitness))
             specie.set_new_population_size(num_new_population)
             print(specie.fitness_value)
         
-        # Ensures that the total sum of new genomes is the total population_size
+         # Ensures that the total sum of new genomes is the total population_size
         num_new_for_each_specie = []
         for specie in self.species:
             num_new_for_each_specie.append(specie.new_population_size)
@@ -292,6 +297,7 @@ class NEAT:
         for specie in self.species:
             num_new_for_each_specie.append(specie.new_population_size)    
         print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
+
 
     def add_mutation_connection(self, genome: Genome):
         node1 = genome.get_random_node()
