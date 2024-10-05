@@ -3,7 +3,7 @@ from src.genetics.genome import Genome
 from src.utils.config import Config
 from src.environments.run_env import env_init, run_game
 from src.genetics.genomic_distance import *
-from src.genetics.create_empty_genomes import create_empty_genomes
+from src.genetics.create_base_genomes  import create_base_genomes 
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
 from src.genetics.breed_two_genomes import breed_two_genomes
@@ -104,20 +104,13 @@ class NEAT:
                     genome.fitness_value = fitness  # Assign the fitness value
                     break  # Move to the next result once a match is found
     
-    def initiate_genomes(self, num_genomes=None): 
-        """ Initialize random population of genomes, with one connection mutation each. """
-        genomes = create_empty_genomes(num_genomes)
-        for genome in genomes:
-            self.add_mutation_connection(genome)
-            self.genomes.append(genome)
-    
-    def create_species(self):
-        """Create a new species with a unique species number."""
-        new_species = Species(self.config, self.species_number)
-        self.species_number += 1  # Increment the global species counter
-        return new_species
-    
     def sort_species(self, genomes: List[Genome]):
+        """
+        Sort genomes into species based on genomic distance.
+        
+        returns:
+        - list[Species]: List of species with genomes assigned to each.
+        """
         # Create a list to hold representative genomes from each species
         if not self.species:
             new_species = self.create_species()
@@ -157,6 +150,11 @@ class NEAT:
         self.species = [specie for specie, _ in test_species_genomes if specie.genomes]  # Remove empty species
         self.species.extend(new_species_list)  # Add newly created species
 
+    def create_species(self):
+        """ Helper function to create a new species."""
+        new_species = Species(self.config, self.species_number)
+        self.species_number += 1  # Increment the global species counter
+        return new_species
         
     def adjust_fitness(self):
         """
@@ -205,7 +203,9 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)    
         print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
 
-    def add_mutation_connection(self, genome: Genome):
+    
+
+    def add_connection_mutation(self, genome: Genome):
         """
         Adds a new connection mutation to the genome.
         """
@@ -245,3 +245,10 @@ class NEAT:
             breeding_pool.pop()
         
         return breeding_pool
+
+    def initiate_genomes(self, num_genomes=None): 
+        """ Initialize random population of genomes, with one connection mutation each. """
+        genomes = create_base_genomes(num_genomes)
+        for genome in genomes:
+            self.add_connection_mutation(genome)
+            self.genomes.append(genome)

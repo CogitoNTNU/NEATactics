@@ -6,7 +6,7 @@ from src.genetics.NEAT import NEAT
 
 def create_a_genome_for_visualization(genome: Genome, mutations, neat: NEAT):
     for i in range(mutations):
-        neat.add_mutation_connection(genome)
+        neat.add_connection_mutation(genome)
     print(genome)
 
 def main():
@@ -41,7 +41,7 @@ def main():
         neat.genomes = flattened_genomes
             
         for genome in neat.genomes:
-            neat.add_mutation_connection(genome)
+            neat.add_connection_mutation(genome)
 
     return neat.genomes
 

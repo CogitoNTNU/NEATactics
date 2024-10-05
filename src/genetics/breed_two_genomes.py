@@ -1,7 +1,7 @@
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
 from src.genetics.genome import Genome
-from src.genetics.create_empty_genomes import create_empty_genomes
+from src.genetics.create_base_genomes import create_base_genomes
 import random
 
 def add_connection_to_new_genome(new_genome, new_nodes_dict, connection):
@@ -60,7 +60,7 @@ def breed_two_genomes(genome1: Genome, genome2: Genome, genome_id: int) -> Genom
         beta_genome = genome1
 
     # Create a new genome with the correct input, output, and bias nodes
-    new_genome: Genome = create_empty_genomes(1)[0]  # Assuming a function to create an empty genome
+    new_genome: Genome = create_base_genomes(1)[0]  # Assuming a function to create an empty genome
     new_genome.id = genome_id
     new_nodes_dict = {node.id: node for node in new_genome.nodes}  # Fast lookup for nodes in the new genome
 

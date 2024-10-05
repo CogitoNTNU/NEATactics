@@ -125,15 +125,6 @@ class Genome:
         """ Returns a random output or hidden node from the genome. """
         combined_nodes = self.output_nodes + self.hidden_nodes
         return random.choice(combined_nodes)
-
-    def get_total_weight(self):
-        """ Calculate the total weight of all connections in the genome. """
-        total_weight = 0
-        count = 0
-        for connection in self.connections:
-            count += 1
-            total_weight += connection.get_connection_weight()
-        return total_weight, count
     
     def check_existing_connection(self, node1: Node, node2: Node):
         """

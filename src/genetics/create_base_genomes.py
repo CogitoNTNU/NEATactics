@@ -3,7 +3,7 @@ from src.genetics.node import Node
 from src.utils.config import Config
 from typing import List
 
-def create_empty_genomes(number_of_genomes=None) -> List[Genome]:
+def create_base_genomes(number_of_genomes=None) -> List[Genome]:
         """
         Empty genomes are created with no hidden layer adn only input and output nodes.
         """

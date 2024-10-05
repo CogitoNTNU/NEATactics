@@ -21,10 +21,7 @@ def genomic_distance(genome1: Genome, genome2: Genome, config: Config):
     # Find the matching genes and calculate the average weight difference
     matching_genes = set(innovation_numbers1.keys()) & set(innovation_numbers2.keys())
     if matching_genes:
-        total_weight_diff = sum(
-            abs(innovation_numbers1[num].weight - innovation_numbers2[num].weight)
-            for num in matching_genes
-        )
+        total_weight_diff = sum(abs(innovation_numbers1[num].weight - innovation_numbers2[num].weight) for num in matching_genes)
         avg_weight_diff = total_weight_diff / len(matching_genes)
     else:
         avg_weight_diff = 0

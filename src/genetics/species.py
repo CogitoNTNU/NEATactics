@@ -1,5 +1,6 @@
 from src.utils.config import Config
 from src.genetics.genome import Genome
+import random
 from typing import List
 
 
@@ -16,9 +17,9 @@ class Species:
         self.genomes.append(genome)
         
     def get_representative(self):
-        """Return a representative genome for the species (can choose the first one)."""
+        """Return a representative genome for the species. """
         if self.genomes:
-            return self.genomes[0]
+            return random.choice(self.genomes)
         return None
     
     def adjust_total_fitness(self, add_fitness):
