@@ -16,7 +16,7 @@ import copy
 class NEAT:
     def __init__(self, config: Config):
         self.config = config
-        self.global_innovation_number = 7 # When 
+        self.global_innovation_number = 7 # Because we innitialize 7 connections from the bias node
         self.species_number = 0
         self.genome_id = 0
         self.genomes: list[Genome] = []
@@ -32,50 +32,58 @@ class NEAT:
     def add_species(self, species: Species):
         self.species.append(species)
 
-    def breeder(self, specie: Species):
+    def generate_offspring(self, specie: Species):
         """
         Breeds the genomes in a species to create a new generation of genomes.
         
-        Uses the top half of the genomes in the species to create offspring, and 
-        randomly chooses two parents from the top half to create a new genome.
+        Removes a certain percentage of the worst performing genomes, and reproduce from the rest.
         
         If the number of genomes to reproduce is higher than twice the number of 
         genomes in the species, some elite genomes will be added to the new generation.
+        
+        returns: 
+        :list[Genome]: List of new genomes for the next generation.
         """
-        temp_genomes = []
+        new_generation_genomes = []
         
         # Sort genomes by fitness (descending order)
-        ordered_list = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
+        breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
+        
+        # If there are less than two genomes in the species, clone the genomes to fill the new generation and return
+        if len(breeding_pool) < 2:
+            for genome in breeding_pool:
+                if len(new_generation_genomes) < specie.new_population_size:
+                    cloned_genome = copy.deepcopy(genome)
+                    cloned_genome.id = self.genome_id
+                    self.genome_id += 1
+                    new_generation_genomes.append(cloned_genome)
+            return new_generation_genomes
         
         # Select a percentage of the top genomes as elites (at least one elite survives)
-        num_elites = min(max(1, int(self.config.elitism_rate * len(ordered_list))), specie.new_population_size)
-        elites = ordered_list[:num_elites]  # Get the top elites
+        num_elites = min(max(1, int(self.config.elitism_rate * len(breeding_pool))), specie.new_population_size)
+        elites = breeding_pool[:num_elites]  # Get the top elites
         
         # create new genomes from elites
         for elite in elites:
             cloned_elite = copy.deepcopy(elite)  # Create an exact copy of the elite genome
             cloned_elite.id = self.genome_id 
             self.genome_id += 1
-            temp_genomes.append(cloned_elite)  # Add the cloned genome to the new generation
+            new_generation_genomes.append(cloned_elite)  # Add the cloned genome to the new generation
         
-        # Remaining genomes to breed
-        top_half = [genome for genome in ordered_list[:len(ordered_list) // 2]]
-        
-        if(len(top_half)%2==1):
-            ordered_list.pop()
+        # Remove a percentage of the worst-performing genomes from the breeding pool
+        breeding_pool = self.select_breeding_pool(breeding_pool)
             
-        for genome in top_half:
-            print(f"top half fitness values: {genome.fitness_value}, genome id: {genome.id}")
-        
-        while len(temp_genomes) < specie.new_population_size:
-            parent1 = random.choice(top_half)
-            parent2 = random.choice(top_half)
+        while len(new_generation_genomes) < specie.new_population_size:
+            if len(breeding_pool) == 0:
+                break
+            parent1 = random.choice(breeding_pool)
+            parent2 = random.choice(breeding_pool)
             
             # Generate two offspring from each pair to maintain population size
-            new_genome1 = breed_two_genomes(parent1, parent2, self.genome_id)
+            new_genome = breed_two_genomes(parent1, parent2, self.genome_id)
             self.genome_id += 1
-            temp_genomes.append(new_genome1) 
-        return temp_genomes
+            new_generation_genomes.append(new_genome)
+        return new_generation_genomes
 
     def test_genome(self, genome: Genome):
         env, _ = env_init()
@@ -83,6 +91,7 @@ class NEAT:
         return genome.id, fitness  # Return the genome's ID and its fitness
         
     def test_genomes(self):
+        """ Test all the genomes in the population in the environment. """
         # Create a multiprocessing pool
         with multiprocessing.Pool() as pool:
             # Run `test_genome` in parallel for each genome
@@ -96,8 +105,7 @@ class NEAT:
                     break  # Move to the next result once a match is found
     
     def initiate_genomes(self, num_genomes=None): 
-        # Everyone starts in the same species
-        # Initialize random population
+        """ Initialize random population of genomes, with one connection mutation each. """
         genomes = create_empty_genomes(num_genomes)
         for genome in genomes:
             self.add_mutation_connection(genome)
@@ -219,6 +227,25 @@ class NEAT:
             connection = genome.add_connection_mutation(node1, node2, self.global_innovation_number)
             self.global_innovation_number += 1
             self.connections.append(connection)
+    
+    def select_breeding_pool(self, breeding_pool: List[Genome]) -> List[Genome]:
+        """
+        Selects genomes for breeding by removing a percentage of the worst-performing genomes.
+        
+        :param breeding_pool: List of genomes sorted by performance (best to worst).
+        
+        :return: List of genomes that will be used for breeding.
+        """
+        # Calculate how many genomes to remove
+        num_to_remove = int(len(breeding_pool) * self.config.remove_worst_percentage)
+            
+        # Remove the worst-performing genomes by slicing the ordered list
+        breeding_pool = breeding_pool[:-num_to_remove] if num_to_remove > 0 else breeding_pool
+        
+        if(len(breeding_pool)%2==1):
+            breeding_pool.pop()
+        
+        return breeding_pool
     
     def cull_species(self):
         pass

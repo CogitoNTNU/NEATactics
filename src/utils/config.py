@@ -34,7 +34,7 @@ class Config:
     # Paper: 1/(1+exp(-0.49*x))
     
     elitism_rate: float = 0.05 # percentage of the best genomes are copied to the next generation
-
+    remove_worst_percentage: float = 0.05 # percentage of the worst genomes are removed from the population when breeding
 
 
     # Paper said that the max differnce in weights was about 3.0

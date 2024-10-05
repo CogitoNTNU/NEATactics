@@ -54,7 +54,7 @@ def main():
         neat.calculate_number_of_children_of_species()
         new_genomes_list = []
         for specie in neat.species:
-            new_genomes_list.append(neat.breeder(specie))
+            new_genomes_list.append(neat.generate_offspring(specie))
         
         flattened_genomes = [genome for sublist in new_genomes_list for genome in sublist]
         neat.genomes = flattened_genomes
