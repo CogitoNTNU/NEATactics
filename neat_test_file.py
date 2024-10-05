@@ -1,29 +1,10 @@
-from src.genetics.node import Node
 from src.genetics.genome import Genome
 from src.environments.run_env import env_init, run_game
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
-import random
 
 
-def test_generate_genome(neat: NEAT):
-    inn_number = 0
-    for i in range(0, 40): # how many genomes you want to create. TODO use hyperparameter
-        genome = Genome(i)
-        
-        # Create output nodes
-        for i in range(7):
-            genome.add_node(Node(i, 'output'))
-
-        # Create input nodes
-        for i in range(7, 207):
-            genome.add_node(Node(i, 'input'))
-        
-        inn_number = test(genome, inn_number, neat)
-        neat.add_genome(genome)
-
-
-def test(genome: Genome, mutations, neat: NEAT):
+def create_a_genome_for_visualization(genome: Genome, mutations, neat: NEAT):
     for i in range(mutations):
         neat.add_mutation_connection(genome)
     print(genome)

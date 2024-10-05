@@ -205,7 +205,6 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)    
         print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
 
-
     def add_mutation_connection(self, genome: Genome):
         """
         Adds a new connection mutation to the genome.
@@ -246,9 +245,3 @@ class NEAT:
             breeding_pool.pop()
         
         return breeding_pool
-    
-    def cull_species(self):
-        pass
-    
-    def add_genome(self, genome: Genome): # only for test.py
-        self.genomes.append(genome)

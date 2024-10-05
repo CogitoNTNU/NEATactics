@@ -36,7 +36,7 @@ class Genome:
         """ Disables a connection. """
         connection.is_enabled = False
     
-    def add_node_mutation(self, connection: ConnectionGene, node_id: int, innovation_number: int) -> int:
+    def add_node_mutation(self, connection: ConnectionGene, node_id: int, innovation_number: int):
         """
         Mutation: add a new node to the network. 
         The new node is placed between the two nodes of the connection.
@@ -44,61 +44,59 @@ class Genome:
         The connection is disabled and two new connections are added, one from the input node to the new node
         and one from the new node to the output node. The new node is added to the network and the innovation
         number is updated.
+        
+        returns:
+        - ConnectionGene: The new connection from the input node to the new node.
+        - ConnectionGene: The new connection from the new node to the output node.
+        - Node: The new node that was added to the network.
         """
-        node1 = connection.in_node
-        node2 = connection.out_node
         new_node = Node(node_id, 'hidden')
         self.add_node(new_node)
         
-        connection1 = ConnectionGene(node1, new_node, 1, True, innovation_number) # First connections weight is set to 1
-        innovation_number += 1 #Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
-        connection2 = ConnectionGene(new_node, node2, connection.weight, True, innovation_number)
-        innovation_number += 1
+        in_node = connection.in_node
+        out_node = connection.out_node
+        
+        # Create two new connections, 
+        connection1 = ConnectionGene(in_node, new_node, 1, True, innovation_number)
+        connection2 = ConnectionGene(new_node, out_node, connection.weight, True, innovation_number + 1)
+
         self.disable_connection(connection)
         self.add_connection(connection1)    
         self.add_connection(connection2)
-        node2.add_node_connection(new_node.id)
-        node1.add_node_connection(new_node.id)
-        new_node.add_node_connection(node1.id)
-        new_node.add_node_connection(node2.id)
-        new_node.add_outgoing_connection(connection2)
-        node1.add_outgoing_connection(connection1)
-        return innovation_number
+        
+        # The genome has to keep track of outgoing connections for each node for Kahns algorithm
+        new_node.add_outgoing_connection(connection2) 
+        in_node.add_outgoing_connection(connection1)
+        
+        return connection1, connection2, new_node
     
 
     def add_connection_mutation(self, node1: Node, node2: Node, global_innovation_number: int): 
         """
-        Attempts to create a new connection between two nodes (node1 and node2).
+        Mutation: add a new connection to the network.
         
-        The method checks if the connection is valid, assigns it a random weight, 
-        and adds it to the network if valid. The connection is marked with a unique 
-        global innovation number and enabled by default.
-
-        Parameters:
-        - node1 (Node): Starting node of the connection. Pick from Genomes nodes list
-        - node2 (Node): Target node of the connection. Pick from Genomes nodes list
-
+        If the connection already exists, it is enabled and assigned a new weight.
+        Otherwise, a new connection is created and added to the genome.
+        
         Returns:
-        - bool: True if the connection was successfully added, False otherwise.
+            ConnectionGene: The new connection that was added to the genome.
         """
-        weight = self.create_weight()
-        excisting_connection = self.check_existing_connection(node1, node2) # check if connection already exists
+        
+        excisting_connection = self.check_existing_connection(node1, node2)
+        
+        # If the connection is already a in the genome, make sure it's enabled and assign it a new weight
         if excisting_connection:
             excisting_connection.is_enabled = True
-            self.weight_mutation(excisting_connection)
+            excisting_connection.weight = self.generate_new_weight()
             return excisting_connection
         
-        connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
+        connection = ConnectionGene(node1, node2, self.generate_new_weight(), True, global_innovation_number)
+        
         self.add_connection(connection)
-        node2.add_node_connection(node1.id)
-        node1.add_node_connection(node2.id)
-        node1.add_outgoing_connection(connection)
+        node1.add_outgoing_connection(connection) # The genome needs a list of outgoing connections for Kahns algorithm
         return connection
     
-    def weight_mutation(self, connection: 'ConnectionGene'):
-        connection.weight = self.create_weight() 
-    
-    def create_weight(self):
+    def generate_new_weight(self):
         """
         A helper function to create a random weight for a connection.
         
@@ -119,12 +117,6 @@ class Genome:
         """ Returns a random output or hidden node from the genome. """
         combined_nodes = self.output_nodes + self.hidden_nodes
         return random.choice(combined_nodes)
-
-    def add_fitnessvalue(self, fitness: float):
-        """
-        
-        """
-        self.fitness_value = fitness
 
     def get_total_weight(self):
         """ Calculate the total weight of all connections in the genome. """
@@ -149,7 +141,7 @@ class Genome:
     
     @property
     def nodes(self) -> List[Node]:
-        # Combine all nodes into one list when accessing .nodes
+        """ Returns all nodes in the genome. """
         return self.output_nodes + self.input_nodes + self.hidden_nodes
     
     def __repr__(self):

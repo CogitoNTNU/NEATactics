@@ -40,10 +40,11 @@ def add_connection_to_new_genome(new_genome, new_nodes_dict, connection):
 
 def breed_two_genomes(genome1: Genome, genome2: Genome, genome_id: int) -> Genome:
     """
-    Returns a new genome that is bred from the input genomes.
+    Returns a new genome that is bred from the parameter genomes.
 
     The connections that line up (same innovation number) are inherited at random.
     Disjoint and excess connections are inherited from the more fit parent.
+    If the parents have the same fitness, disjoint and excess connections are inherited at random.
     
     A node is only created if it is required by an inherited connection.
     """

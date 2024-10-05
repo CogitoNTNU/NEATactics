@@ -2,7 +2,7 @@ import argparse
 from src.environments.env import init, test_gym_environment, get_state_from_environment
 from src.environments.run_env import run_game
 from test.visualization.visualize_genome_test import get_genome_from_NEAT
-from neat_test_file import test
+from neat_test_file import create_a_genome_for_visualization
 import pickle
 
 def main():
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     env, state = init()
     genome, neat = get_genome_from_NEAT()
     num_mutations = 10
-    test(genome, num_mutations, neat)
+    create_a_genome_for_visualization(genome, num_mutations, neat)
     run_game(env, genome, debug = True)
 
     # env, state = init()
