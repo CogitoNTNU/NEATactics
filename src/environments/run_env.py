@@ -41,6 +41,7 @@ def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
     sr = env.step(0)
     i = 0
     timeout = 500
+    print(genome)
     while not sr.done: # Simulate 200 frames.
         insert_input(genome, sr.state)
         action = forward.traverse() 

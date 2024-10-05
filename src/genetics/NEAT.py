@@ -7,9 +7,8 @@ from src.genetics.create_base_genomes  import create_base_genomes
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
 from src.genetics.breed_two_genomes import breed_two_genomes
-from typing import List
+from typing import List, Tuple
 import multiprocessing
-import math
 import random
 import copy
 
@@ -18,20 +17,13 @@ class NEAT:
         self.config = config
         self.global_innovation_number = 7 # Because we innitialize 7 connections from the bias node
         self.species_number = 0
-        self.genome_id = 0
+        self.genome_id = 0 
+        self.node_id = 208 # Because we innitialize 208 nodes
         self.genomes: list[Genome] = []
         self.species: list[Species] = []
         self.connections: list[ConnectionGene] = []
+        self.connections_with_node_mutations: dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
         
-    def check_existing_connections(self, node1: int, node2: int):
-        for connection in self.connections:
-            if connection.in_node.id == node1 and connection.out_node.id == node2:
-                return connection.innovation_number
-        return -1
-            
-    def add_species(self, species: Species):
-        self.species.append(species)
-
     def generate_offspring(self, specie: Species):
         """
         Breeds the genomes in a species to create a new generation of genomes.
@@ -225,16 +217,63 @@ class NEAT:
             self.global_innovation_number += 1
             self.connections.append(connection)
     
+    def add_node_mutation(self, genome: Genome):
+        """
+        Adds a new node mutation to the genome.
+        """
+        connection = random.choice(genome.connections)
+        
+        # need to check if there has been a node mutation on this connection before
+        innovation_numbers = self.check_existing_node_mutations(connection)
+        
+        if innovation_numbers != None:
+            genome.add_node_mutation(connection, self.node_id, innovation_numbers)
+        else:
+            innovation_numbers = (self.global_innovation_number, self.global_innovation_number + 1)
+            self.connections_with_node_mutations[connection] = innovation_numbers # Keep track of the connection that has been mutated
+            self.global_innovation_number += 2
+            
+            in_to_new_connection, new_to_out_connection = genome.add_node_mutation(connection, self.node_id, innovation_numbers)
+            
+            self.node_id += 1
+            self.connections.append(in_to_new_connection)
+            self.connections.append(new_to_out_connection)
+    
     def adjust_weight_mutation(self, genome: Genome):
         """
         Mutation: Adjust the weight of a random connection.
         
         The weight is adjusted by a random value between -0.5 and 0.5.
         """
-        connections = genome.connections
-        connection = random.choice(connections)
+        connection = random.choice(genome.connections)
         genome.adjust_weight_mutation(connection)
     
+    
+    def check_existing_connections(self, node1: int, node2: int):
+        """ 
+        Check if a connection already exists between two nodes.
+        
+        returns:
+        - int: The innovation number of the connection if it exists, -1 otherwise
+        """
+        for connection in self.connections:
+            if connection.in_node.id == node1 and connection.out_node.id == node2:
+                return connection.innovation_number
+        return -1
+    
+    
+    def check_existing_node_mutations(self, connection: ConnectionGene):
+        """
+        Check if a connection has already had a node mutation.
+        
+        returns:
+        - tuple[int, int]: The innovation numbers of the new connections if the connection has been mutated, None otherwise.
+        """
+        for existing_connection in self.connections_with_node_mutations:
+            if existing_connection.innovation_number == connection.innovation_number:
+                return self.connections_with_node_mutations[existing_connection]
+        return None
+
     def select_breeding_pool(self, breeding_pool: List[Genome]) -> List[Genome]:
         """
         Selects genomes for breeding by removing a percentage of the worst-performing genomes.

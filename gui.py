@@ -53,7 +53,7 @@ def main():
 
     # Load and resize the image using PIL
     image = Image.open("docs/images/logo.png")
-    resized_image = image.resize((400, 400), Image.ANTIALIAS)
+    resized_image = image.resize((400, 400), Image.LANCZOS)
     bg = ImageTk.PhotoImage(resized_image)
 
     # Create a canvas to display the image

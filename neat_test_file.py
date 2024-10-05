@@ -5,8 +5,14 @@ from src.genetics.NEAT import NEAT
 
 
 def create_a_genome_for_visualization(genome: Genome, mutations, neat: NEAT):
+    neat.add_node_mutation(genome)
+    neat.add_node_mutation(genome)
+    neat.add_node_mutation(genome)
+    neat.add_node_mutation(genome)
+    
     for i in range(mutations):
         neat.add_connection_mutation(genome)
+        neat.adjust_weight_mutation(genome)
     print(genome)
 
 def main():

@@ -1,7 +1,7 @@
 import random
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Tuple
 
 if TYPE_CHECKING:
     from src.genetics.node import Node
@@ -38,7 +38,7 @@ class Genome:
         """ Disables a connection. """
         connection.is_enabled = False
     
-    def add_node_mutation(self, connection: ConnectionGene, node_id: int, innovation_number: int):
+    def add_node_mutation(self, connection: ConnectionGene, node_id: int, innovation_numbers: Tuple[int, int]):
         """
         Mutation: add a new node to the network. 
         The new node is placed between the two nodes of the connection.
@@ -59,8 +59,8 @@ class Genome:
         out_node = connection.out_node
         
         # Create two new connections, 
-        connection1 = ConnectionGene(in_node, new_node, 1, True, innovation_number)
-        connection2 = ConnectionGene(new_node, out_node, connection.weight, True, innovation_number + 1)
+        connection1 = ConnectionGene(in_node, new_node, 1, True, innovation_numbers[0])
+        connection2 = ConnectionGene(new_node, out_node, connection.weight, True, innovation_numbers[1])
 
         self.disable_connection(connection)
         self.add_connection(connection1)    
@@ -70,7 +70,7 @@ class Genome:
         new_node.add_outgoing_connection(connection2) 
         in_node.add_outgoing_connection(connection1)
         
-        return connection1, connection2, new_node
+        return connection1, connection2
     
 
     def add_connection_mutation(self, node1: Node, node2: Node, global_innovation_number: int): 

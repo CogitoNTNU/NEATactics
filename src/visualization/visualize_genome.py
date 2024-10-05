@@ -112,6 +112,7 @@ def visualize_genome(genome: Genome, frame_number: int):
     
     layers = get_node_in_layers(genome)
     pos_dict = get_position_dict(layers)
+    
     nx.draw(G, pos_dict, with_labels=True, edgelist=edges, edge_color=edge_colz, node_size=500,
             font_size=8, font_color='y', font_weight='bold',
             node_color=node_colz, ax=ax)
