@@ -31,5 +31,3 @@ def normalize_negative_values(negative_vals: np.ndarray) -> None:
     where the most negative input gets the value 1."""
     negative_vals *= -1
     normalize_positive_values(negative_vals)
-
-

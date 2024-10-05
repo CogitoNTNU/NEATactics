@@ -20,8 +20,9 @@ def main():
 if __name__ == "__main__":
     # main()
     env, state = init()
-    genome = get_genome_from_NEAT()
-    test(genome, 1)
+    genome, neat = get_genome_from_NEAT()
+    num_mutations = 10
+    test(genome, num_mutations, neat)
     run_game(env, genome, debug = True)
 
     # env, state = init()

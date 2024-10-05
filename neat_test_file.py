@@ -19,22 +19,14 @@ def test_generate_genome(neat: NEAT):
         for i in range(7, 207):
             genome.add_node(Node(i, 'input'))
         
-        inn_number = test(genome, inn_number)
+        inn_number = test(genome, inn_number, neat)
         neat.add_genome(genome)
 
 
-def test(genome: Genome, inn_number):
-    rand1 = random.randint(0, len(genome.nodes)-1)
-    rand2 = random.randint(0, len(genome.nodes)-1)
-    for i in range(20): # how many connections and node mutations
-        while not genome.add_connection_mutation(node1=genome.nodes[rand1], node2=genome.nodes[rand2], global_innovation_number=inn_number):
-            rand1 = random.randint(0, len(genome.nodes)-1)
-            rand2 = random.randint(0, len(genome.nodes)-1)
-        rand3 = random.randint(0, len(genome.connections)-1)
-        inn_number += 1
-        genome.add_node_mutation(genome.connections[rand3], len(genome.nodes)+1, inn_number)
-        inn_number += 1
-    return inn_number
+def test(genome: Genome, mutations, neat: NEAT):
+    for i in range(mutations):
+        neat.add_mutation_connection(genome)
+    print(genome)
 
 def main():
     config_instance = Config()

@@ -3,6 +3,7 @@ import numpy as np
 from typing import List
 import matplotlib.cm as cm
 from src.genetics.node import Node
+import matplotlib.colors as mcolors
 
 GREEN = cm.Greens # type: ignore
 GRAY = cm.gray # type: ignore
@@ -46,10 +47,9 @@ def get_weight_color(edge_weights: List[float]) -> List[float]:
     Output: A list of RGBA values."""
 
     norm_negative = np.array([w for w in edge_weights if w < 0])
-    normalize_negative_values(norm_negative)
     norm_positive = np.array([w for w in edge_weights if w >= 0])
+    normalize_negative_values(norm_negative)
     normalize_positive_values(norm_positive)
-
     
     edge_colors = [] # Create a full edge color list matching original order
     index_neg, index_pos = 0, 0  # To track position in the normalized lists 

@@ -27,12 +27,12 @@ def get_genome_from_NEAT():
     conf = Config(population_size=4)
     neat = NEAT(conf)
     neat.initiate_genomes()
-    return neat.genomes[0]
+    return neat.genomes[0], neat
     
 def test_visualize_genome():
     state = get_state(os.path.join(os.path.dirname(__file__), "state_frame_151.pkl"))
 
-    genome = get_genome_from_NEAT()
+    genome, neat = get_genome_from_NEAT()
     set_input_node_values(state, genome.nodes)
     traverse = Traverse(genome)
     traverse.traverse()

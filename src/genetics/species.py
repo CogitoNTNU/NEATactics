@@ -10,7 +10,6 @@ class Species:
         self.new_population_size = 1 # The number of children the species should have
         self.config = config
         self.genomes: List[Genome] = []
-        # TODO may need to reset the fitness of each specie to 0 after a generation
 
     def add_genome(self, genome: Genome):
         """Add a genome to the species."""
@@ -32,26 +31,6 @@ class Species:
 
     def adjust_new_population_size(self, add_member):
         self.new_population_size += add_member
-
-    def calculate_fitness(self):
-        # Calculate the fitness of each member in the species
-        pass
-
-    def adjust_fitness(self):
-        # Adjust the fitness of each member in the species based on its compatibility distance
-        pass
-
-    def remove_weak_members(self):
-        # Remove weak members from the species
-        pass
-
-    def reproduce(self):
-        # Reproduce and create new members for the next generation
-        pass
-
-    def update_representative(self):
-        # Update the representative member of the species
-        pass
 
     def __repr__(self):
         return (f"Specie number: {self.species_number}, "

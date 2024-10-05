@@ -103,7 +103,7 @@ def visualize_genome(genome: Genome, frame_number: int):
         if connection.is_enabled:
             G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
             edge_weights.append(connection.weight)
-
+            
     node_colz = get_node_colz(list(genome.nodes)) # Make a copy of the genome.nodes list
     edge_colz = get_weight_color(edge_weights)
     

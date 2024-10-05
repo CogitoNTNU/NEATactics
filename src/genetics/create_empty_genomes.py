@@ -30,7 +30,7 @@ def create_empty_genomes(number_of_genomes=None) -> List[Genome]:
                 genome.add_node(Node(i, 'input'))
                 
             # Create bias node with connections to all output nodes
-            bias_node = Node(num_output_nodes + num_input_nodes, 'input', 1)
+            bias_node = Node(num_output_nodes + num_input_nodes, 'input', 1.0)
             genome.add_node(bias_node)
             for output_node in genome.output_nodes:
                 genome.add_connection_mutation(bias_node, output_node, output_node.id)

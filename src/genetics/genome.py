@@ -150,7 +150,7 @@ class Genome:
     @property
     def nodes(self) -> List[Node]:
         # Combine all nodes into one list when accessing .nodes
-        return self.input_nodes + self.output_nodes + self.hidden_nodes
+        return self.output_nodes + self.input_nodes + self.hidden_nodes
     
     def __repr__(self):
         return (f"Genome(id={self.id}, hidden nodes={[node.id for node in self.hidden_nodes]}, "

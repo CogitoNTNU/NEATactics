@@ -30,12 +30,9 @@ def insert_input(genome:Genome, state: list) -> None:
     config = Config()
     start_idx_input_node = config.num_output_nodes
     num_input_nodes = config.num_input_nodes
-    for node in genome.nodes:
-        node.value = 0
     
     for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
         node.value = state[i//20][i % 20] # (Not sure if this is correct)
-            
 
 def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
     

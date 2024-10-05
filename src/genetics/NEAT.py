@@ -95,10 +95,10 @@ class NEAT:
                     genome.fitness_value = fitness  # Assign the fitness value
                     break  # Move to the next result once a match is found
     
-    def initiate_genomes(self): 
+    def initiate_genomes(self, num_genomes=None): 
         # Everyone starts in the same species
         # Initialize random population
-        genomes = create_empty_genomes()
+        genomes = create_empty_genomes(num_genomes)
         for genome in genomes:
             self.add_mutation_connection(genome)
             self.genomes.append(genome)
@@ -209,7 +209,7 @@ class NEAT:
         innovation_number = self.check_existing_connections(node1.id, node2.id)
         
         if (innovation_number != -1):
-            connection = genome.add_connection_mutation(node1, node2, innovation_number)
+            connection = genome.add_connection_mutation(node1, node2, innovation_number) # If connection exists in genome, update its value
             self.connections.append(connection)
         else:
             while node1.id == node2.id:
