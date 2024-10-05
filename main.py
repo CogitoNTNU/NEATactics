@@ -3,6 +3,7 @@ from src.environments.env import init, test_gym_environment, get_state_from_envi
 from src.environments.run_env import run_game
 from test.visualization.visualize_genome_test import get_genome_from_NEAT
 from neat_test_file import test
+import pickle
 
 def main():
 

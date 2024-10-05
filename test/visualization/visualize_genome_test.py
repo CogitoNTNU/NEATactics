@@ -19,7 +19,7 @@ def get_state(file_path: str) -> np.ndarray:
 def set_input_node_values(state: np.ndarray, node_list: List[Node]):
     i = 0
     for node in node_list:
-        if node.type == 'input':
+        if node.type == 'input' and node.value != 1: # Avoid bias node
             node.set_value(state[i//XLEN][i%XLEN])
             i += 1
 

@@ -97,24 +97,30 @@ def visualize_genome(genome: Genome, frame_number: int):
 
     G = nx.DiGraph()
     add_nodes_to_graph(G, genome) 
-
     edge_weights = []
+    edges = []  # Track the edges explicitly
+
     for connection in genome.connections:
         if connection.is_enabled:
-            G.add_edge(connection.in_node.id, connection.out_node.id, weight = connection.weight)
-            edge_weights.append(connection.weight)
-            
+            edge = (connection.in_node.id, connection.out_node.id)
+            G.add_edge(*edge, weight=connection.weight)
+            edges.append(edge)  # Add edge to the list
+            edge_weights.append(connection.weight) 
+
     node_colz = get_node_colz(list(genome.nodes)) # Make a copy of the genome.nodes list
     edge_colz = get_weight_color(edge_weights)
     
     layers = get_node_in_layers(genome)
     pos_dict = get_position_dict(layers)
-    nx.draw(G, pos_dict, with_labels=True, edge_color=edge_colz, node_size=500,
+    nx.draw(G, pos_dict, with_labels=True, edgelist=edges, edge_color=edge_colz, node_size=500,
             font_size=8, font_color='y', font_weight='bold',
             node_color=node_colz, ax=ax)
 
     fig.set_facecolor('#d4e6f1') # Background color of network popup.
-    
+    edge_labels = {(connection.in_node.id, connection.out_node.id): round(connection.weight, 2)
+                   for connection in genome.connections if connection.is_enabled}
+    nx.draw_networkx_edge_labels(G, pos_dict, edge_labels=edge_labels, font_size=8, ax=ax) 
+
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
     directory = "./genome_frames"
