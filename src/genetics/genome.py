@@ -96,6 +96,14 @@ class Genome:
         node1.add_outgoing_connection(connection) # The genome needs a list of outgoing connections for Kahns algorithm
         return connection
     
+    def adjust_weight_mutation(self, connection: ConnectionGene):
+        """
+        Mutation: Adjust the weight of a connection.
+        
+        The weight is adjusted by a random value between -0.5 and 0.5.
+        """
+        connection.weight += random.uniform(-0.5, 0.5)
+    
     def generate_new_weight(self):
         """
         A helper function to create a random weight for a connection.
