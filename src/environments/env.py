@@ -5,6 +5,7 @@ import numpy as np
 import time
 from typing import Tuple
 from src.utils.utils import save_state_as_png
+from src.visualization.visualize_genome import visualize_genome
 from src.environments.fitness_function import Fitness
 import pickle
 
@@ -30,6 +31,7 @@ def test_gym_environment(env: MarioJoypadSpace):
         action = SIMPLE_MOVEMENT.index(["right"]) # Choose to go right
         sr = env.step(action) # State, Reward, Done, Info
         save_state_as_png(i + 1, sr.state) 
+
         time.sleep(0.02)
         # print(sr.state)
         if sr.info["life"] == 2:

@@ -1,7 +1,7 @@
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
 from src.genetics.genome import Genome
-from genetics.create_empty_genomes import create_empty_genomes
+from src.genetics.create_empty_genomes import create_empty_genomes
 import random
 
 def add_connection_to_new_genome(new_genome, new_nodes_dict, connection):

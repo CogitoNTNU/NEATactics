@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import numpy as np
 import os
-from typing import Union
+from typing import Union, List
+
 
 def save_state_as_png(i, state: np.ndarray) -> None:
     """
@@ -12,19 +14,22 @@ def save_state_as_png(i, state: np.ndarray) -> None:
         os.makedirs(directory)
     plt.imsave(f"./mario_frames/frame{i}.png", state, cmap='gray', vmin=0, vmax=1)
 
-def get_color(type: str, value: float) -> Union[str, float]:
-    """
-    Takes a value which is assumed to be in range [0, 1],
-    and returns a simple string like 'r' which representsn the color.
-    """
-    if type == 'input':
-        return value
+def normalize_positive_values(positive_vals: np.ndarray) -> None:
+    """Takes an ndarray with positive floats as inputs,
+    and modifies the array such that all values end up in the range [0, 1]"""
+    if len(positive_vals) > 0:
+        wmin, wmax = 0, positive_vals.max()
+        if wmax == 0:
+            positive_vals.fill(0)
+            return
+        positive_vals -= wmin # Normalize positives to [0, 1]
+        positive_vals /= (wmax-wmin)  
 
-    if type == 'hidden':
-        return 0.384
+def normalize_negative_values(negative_vals: np.ndarray) -> None:
+    """Takes an ndarray with negative floats as inputs,
+    and modifies the array such that all values end up in the range [0, 1],
+    where the most negative input gets the value 1."""
+    negative_vals *= -1
+    normalize_positive_values(negative_vals)
 
-    if type == 'output':
-        return 0.796 # TODO: Try to see if passing 'r' is stable.
 
-    raise ValueError(f"Encountered invalid type: {type}")
- 

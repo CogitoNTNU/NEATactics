@@ -7,6 +7,7 @@ from typing import Tuple
 from src.utils.utils import save_state_as_png
 from src.genetics.genome import Genome
 from src.genetics.traverse import Traverse
+from src.visualization.visualize_genome import visualize_genome
 import numpy as np
 from src.environments.fitness_function import Fitness
 from src.utils.config import Config
@@ -44,7 +45,7 @@ def run_game(env: MarioJoypadSpace, genome: Genome):
     i = 0
     timeout = 500
     while not sr.done: # Simulate 200 frames.
-        
+        insert_input(genome, sr.state)
         action = forward.traverse() 
         if action == -1:
             quit()
@@ -53,7 +54,8 @@ def run_game(env: MarioJoypadSpace, genome: Genome):
         # move = SIMPLE_MOVEMENT[simple_movement_dict[action]] # Choose to go in the direction NN chooses. BE CAREFUL WITH THE ID OF OUTPUT NODES
         sr = env.step(action) # State, Reward, Done, Info
         save_state_as_png(i + 1, sr.state)
-        insert_input(genome, sr.state)
+        visualize_genome(genome, i)
+        
         # print(sr.state) 
         # time.sleep(0.02)
         # if sr.info["life"] == 2 and life2==0:

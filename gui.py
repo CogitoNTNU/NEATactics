@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-import test_file
+import neat_test_file
 import threading
 import sys
 
@@ -24,7 +24,7 @@ def run_test(spinner_label, output_text):
         sys.stdout = TextRedirector(output_text)
 
         print("Starting test...")
-        genomes = test_file.main()  # Run the function and capture the genomes list
+        genomes = neat_test_file.main()  # Run the function and capture the genomes list
         print("Test completed.")
         print(f"Genomes: {genomes}")
         

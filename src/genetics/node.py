@@ -23,8 +23,10 @@ class Node:
         return type
 
     def set_value(self, value: float):
-        if type == "input":
+        if self.type == "input":
             self.value = value
+        else:
+            raise Exception("Only the input nodes should get different values!")
 
     def update_value(self, value: float):
         self.value += value
@@ -36,7 +38,7 @@ class Node:
         self.connections_to_output.append(connection)
 
     def __repr__(self):
-        return f"Node(id={self.id}, type={self.type})"
+        return f"Node(id={self.id}, type={self.type}, value={self.value})"
 
 
 if __name__ == '__main__':
