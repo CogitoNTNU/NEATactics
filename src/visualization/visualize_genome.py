@@ -12,7 +12,7 @@ from src.utils.colors_visualization import get_weight_color, get_node_colz
 # Adjust the size of the visualization whiteboard for the NN:
 GRAPH_XMIN = -1.5
 GRAPH_XMAX = 17
-GRAPH_YMIN = -20
+GRAPH_YMIN = -21
 GRAPH_YMAX = 3
 BOX_HEIGHT = 18
 
