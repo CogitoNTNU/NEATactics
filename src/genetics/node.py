@@ -13,8 +13,8 @@ class Node:
         self.id = id
         self.type = self._validate_type(type)
         """Type is one of the following: {input, hidden, output, "bias"}"""
-        self.connected_nodes: List[int] = [] #hmm
-        self.connections_to_output: List[ConnectionGene] = []
+        self.connected_nodes: List[int] = [] # Used to check if a connection already exists
+        self.connections_to_output: List[ConnectionGene] = [] # Currently needed for traversing the network (see kahns algorithm)
         self.value = value
 
     def _validate_type(self, type: str) -> str:

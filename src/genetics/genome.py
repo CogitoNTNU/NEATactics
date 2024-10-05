@@ -1,5 +1,4 @@
 import random
-import bisect
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
 from typing import TYPE_CHECKING
@@ -35,19 +34,24 @@ class Genome:
         self.connections.append(connection)
         
     def disable_connection(self, connection: ConnectionGene):
-        #self.connections.remove(connection)
+        """
+        Disables a connection.
+        """
         connection.is_enabled = False
     
     def add_node_mutation(self, connection: ConnectionGene, node_id: int, innovation_number: int) -> int:
         """
-        Returns the updated innovation number.
+        Add a new node to the network. The new node is placed between the two nodes of the connection.
+        The connection is disabled and two new connections are added, one from the input node to the new node
+        and one from the new node to the output node. The new node is added to the network and the innovation
+        number is updated.
         """
         node1 = connection.in_node
         node2 = connection.out_node
         new_node = Node(node_id, 'hidden')
         self.add_node(new_node)
         
-        connection1 = ConnectionGene(node1, new_node, 1, True, innovation_number)
+        connection1 = ConnectionGene(node1, new_node, 1, True, innovation_number) # First connections weight is set to 1
         innovation_number += 1 #Hvordan funker innovation number? Skal de to nye connections ha ulike innovation numbers?
         connection2 = ConnectionGene(new_node, node2, connection.weight, True, innovation_number)
         innovation_number += 1
@@ -121,6 +125,7 @@ class Genome:
             return False
         else:
             return True
+        
     def get_nodes(self):
         return self.nodes
     def __repr__(self):
