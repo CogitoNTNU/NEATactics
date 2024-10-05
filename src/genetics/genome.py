@@ -14,9 +14,11 @@ class Genome:
     """
     def __init__(self, id: int):
         self.id = id
+        
         self.input_nodes: list[Node] = []
         self.output_nodes: list[Node] = []
         self.hidden_nodes: list[Node] = []
+        
         self.connections: list[ConnectionGene] = []
         self.fitness_value: float = 0.0
 

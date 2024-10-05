@@ -203,8 +203,6 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)    
         print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
 
-    
-
     def add_connection_mutation(self, genome: Genome):
         """
         Adds a new connection mutation to the genome.
@@ -226,6 +224,16 @@ class NEAT:
             connection = genome.add_connection_mutation(node1, node2, self.global_innovation_number)
             self.global_innovation_number += 1
             self.connections.append(connection)
+    
+    def adjust_weight_mutation(self, genome: Genome):
+        """
+        Mutation: Adjust the weight of a random connection.
+        
+        The weight is adjusted by a random value between -0.5 and 0.5.
+        """
+        connections = genome.connections
+        connection = random.choice(connections)
+        genome.adjust_weight_mutation(connection)
     
     def select_breeding_pool(self, breeding_pool: List[Genome]) -> List[Genome]:
         """
