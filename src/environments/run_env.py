@@ -37,7 +37,7 @@ def insert_input(genome:Genome, state: list) -> None:
         node.value = state[i//20][i % 20] # (Not sure if this is correct)
             
 
-def run_game(env: MarioJoypadSpace, genome: Genome):
+def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
     
     forward = Traverse(genome)
     fitness = Fitness("Hallo") # TODO this probably needs to get fixed
@@ -49,22 +49,11 @@ def run_game(env: MarioJoypadSpace, genome: Genome):
         action = forward.traverse() 
         if action == -1:
             quit()
-        # print([node.value for node in genome.output_nodes])
-        # print(f"Chosen action: {action}. This is {SIMPLE_MOVEMENT[action]} in SIMPLE_MOVEMENT")
-        # move = SIMPLE_MOVEMENT[simple_movement_dict[action]] # Choose to go in the direction NN chooses. BE CAREFUL WITH THE ID OF OUTPUT NODES
         sr = env.step(action) # State, Reward, Done, Info
-        save_state_as_png(i + 1, sr.state)
-        visualize_genome(genome, i)
+        if debug:
+            save_state_as_png(i + 1, sr.state)
+            visualize_genome(genome, i)
         
-        # print(sr.state) 
-        # time.sleep(0.02)
-        # if sr.info["life"] == 2 and life2==0:
-        #     print(f"Lost a life at frame {i}.")
-        #     life2 = 1
-        
-        # if sr.info["life"] == 0:
-        #     print(f"Zero lives at fram: {i}.")
-
         fitness.calculate_fitness(sr.info, action)
 
         if sr.done or i > timeout:
@@ -79,4 +68,4 @@ def run_game(env: MarioJoypadSpace, genome: Genome):
         i += 1
     env.close()
     return -1000
-    
+

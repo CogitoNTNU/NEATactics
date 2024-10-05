@@ -22,7 +22,7 @@ if __name__ == "__main__":
     env, state = init()
     genome = get_genome_from_NEAT()
     test(genome, 1)
-    run_game(env, genome)
+    run_game(env, genome, debug = True)
 
     # env, state = init()
     # get_state_from_environment(env) # Will save state 150 in the root folder as pkl, will also save corresponding png in mario_frames.
