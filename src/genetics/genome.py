@@ -1,7 +1,7 @@
 import random
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.node import Node
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from src.genetics.node import Node
@@ -14,15 +14,13 @@ class Genome:
     """
     def __init__(self, id: int):
         self.id = id
-        self.nodes: list[Node] = []
-        self.connections: list[ConnectionGene] = []
         self.input_nodes: list[Node] = []
         self.output_nodes: list[Node] = []
         self.hidden_nodes: list[Node] = []
+        self.connections: list[ConnectionGene] = []
         self.fitness_value: float = 0.0
 
     def add_node(self, node: Node):
-        self.nodes.append(node)
         if node.type == 'input':
             self.input_nodes.append(node)
         elif node.type == 'output':
@@ -31,17 +29,18 @@ class Genome:
             self.hidden_nodes.append(node)
 
     def add_connection(self, connection: ConnectionGene):
+        """ Adds a connection to the genome. """
         self.connections.append(connection)
         
     def disable_connection(self, connection: ConnectionGene):
-        """
-        Disables a connection.
-        """
+        """ Disables a connection. """
         connection.is_enabled = False
     
     def add_node_mutation(self, connection: ConnectionGene, node_id: int, innovation_number: int) -> int:
         """
-        Add a new node to the network. The new node is placed between the two nodes of the connection.
+        Mutation: add a new node to the network. 
+        The new node is placed between the two nodes of the connection.
+        
         The connection is disabled and two new connections are added, one from the input node to the new node
         and one from the new node to the output node. The new node is added to the network and the innovation
         number is updated.
@@ -83,51 +82,76 @@ class Genome:
         - bool: True if the connection was successfully added, False otherwise.
         """
         weight = self.create_weight()
+        excisting_connection = self.check_existing_connection(node1, node2) # check if connection already exists
+        if excisting_connection:
+            excisting_connection.is_enabled = True
+            self.weight_mutation(excisting_connection)
+            return excisting_connection
+        
         connection = ConnectionGene(node1, node2, weight, True, global_innovation_number)
-        global_innovation_number += 1
         self.add_connection(connection)
         node2.add_node_connection(node1.id)
         node1.add_node_connection(node2.id)
         node1.add_outgoing_connection(connection)
         return connection
     
+    def weight_mutation(self, connection: 'ConnectionGene'):
+        connection.weight = self.create_weight() 
+    
     def create_weight(self):
+        """
+        A helper function to create a random weight for a connection.
+        
+        Weights are initialized to a random value between -1 and 1. (could be changed)
+
+        Returns:
+        - float: A random weight value between -1 and 1.
+        """
         return 2*random.random()-1  #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
     
-    def get_random_node(self):
-        return self.nodes[random.randint(0, len(self.nodes) - 1)]
+    def get_random_in_node(self):
+        """ Returns a random input or hidden node from the genome. """
+        combined_nodes = self.input_nodes + self.hidden_nodes
+        return random.choice(combined_nodes)
+        
+
+    def get_random_out_node(self):
+        """ Returns a random output or hidden node from the genome. """
+        combined_nodes = self.output_nodes + self.hidden_nodes
+        return random.choice(combined_nodes)
 
     def add_fitnessvalue(self, fitness: float):
+        """
+        
+        """
         self.fitness_value = fitness
 
     def get_total_weight(self):
+        """ Calculate the total weight of all connections in the genome. """
         total_weight = 0
         count = 0
         for connection in self.connections:
             count += 1
             total_weight += connection.get_connection_weight()
         return total_weight, count
-
-    def weight_mutation(self, connection: 'ConnectionGene'):
-        connection.weight = self.create_weight() #TODO Make this better. Chooses a random value between -1 and 1 for the new weight
-
-    def is_valid_connection(self, node1: Node, node2: Node) -> bool:
-        # check if it is valid to add a connection between two nodes
-        # not valid if node1 is output, node2 is input or if they are the same node.
-        # (Maybe other restrictions) 
-        if node1.id == node2.id:
-            return False
-        elif node1.type == "output":
-            return False
-        elif node2.type == "input" or node2.type == "bias":
-            return False
-        elif node1.id in node2.connected_nodes: # TODO Hva skjer hvis connectionen er disabled? svar: enable og oppdater vekten 
-            return False
-        else:
-            return True
+    
+    def check_existing_connection(self, node1: Node, node2: Node):
+        """
+        Check if a connection between two nodes already exists in the genome.
         
-    def get_nodes(self):
-        return self.nodes
+        Returns:
+        - ConnectionGene: The existing connection if it exists, None otherwise
+        """
+        for connection in self.connections:
+            if connection.in_node == node1 and connection.out_node == node2:
+                return connection
+        return None
+    
+    @property
+    def nodes(self) -> List[Node]:
+        # Combine all nodes into one list when accessing .nodes
+        return self.input_nodes + self.output_nodes + self.hidden_nodes
+    
     def __repr__(self):
         return (f"Genome(id={self.id}, hidden nodes={[node.id for node in self.hidden_nodes]}, "
                 f"connections={[connection for connection in self.connections]}, fitness_value={self.fitness_value})")

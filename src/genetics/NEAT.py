@@ -199,15 +199,22 @@ class NEAT:
 
 
     def add_mutation_connection(self, genome: Genome):
-        node1 = genome.get_random_node()
-        node2 = genome.get_random_node()
+        """
+        Adds a new connection mutation to the genome.
+        """
+        # Need to see if the connection already exists in the genome
+        node1 = genome.get_random_in_node()
+        node2 = genome.get_random_out_node()
+        
         innovation_number = self.check_existing_connections(node1.id, node2.id)
-        if (innovation_number !=-1):
-            genome.add_connection_mutation(node1, node2, innovation_number)
+        
+        if (innovation_number != -1):
+            connection = genome.add_connection_mutation(node1, node2, innovation_number)
+            self.connections.append(connection)
         else:
-            while not genome.is_valid_connection(node1, node2):
-                node1 = genome.get_random_node()
-                node2 = genome.get_random_node()
+            while node1.id == node2.id:
+                node1 = genome.get_random_in_node()
+                node2 = genome.get_random_out_node()
     
             connection = genome.add_connection_mutation(node1, node2, self.global_innovation_number)
             self.global_innovation_number += 1
