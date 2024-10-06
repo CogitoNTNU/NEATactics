@@ -27,6 +27,9 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     return env, state
 
 def insert_input(genome:Genome, state: list) -> None:
+    """
+    Insert the state of the game into the input nodes of the genome.
+    """
     config = Config()
     start_idx_input_node = config.num_output_nodes
     num_input_nodes = config.num_input_nodes
@@ -41,7 +44,6 @@ def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
     sr = env.step(0)
     i = 0
     timeout = 500
-    print(genome)
     while not sr.done: # Simulate 200 frames.
         insert_input(genome, sr.state)
         action = forward.traverse() 

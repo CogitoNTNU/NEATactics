@@ -5,9 +5,9 @@ class Config:
     c1: float = 1.
     c2: float = 1.
     c3: float = 0.4
-    genomic_distance_threshold: float = 1
-    population_size: int = 8
-    generations: int = 2
+    genomic_distance_threshold: float = 3.0
+    population_size: int = 20
+    generations: int = 10
 
     connection_weight_mutation_chance: float = 0.8
     # if mutate gene:

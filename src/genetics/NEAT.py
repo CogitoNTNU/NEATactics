@@ -41,6 +41,9 @@ class NEAT:
         # Sort genomes by fitness (descending order)
         breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
         
+        for genome in breeding_pool:
+            print(f"Genome: {genome.id}, Fitness: {genome.fitness_value}")
+        
         # If there are less than two genomes in the species, clone the genomes to fill the new generation and return
         if len(breeding_pool) < 2:
             for genome in breeding_pool:
@@ -195,6 +198,43 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)    
         print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
 
+    def add_mutation(self, genome: Genome):
+        """
+        Adds a random mutation to the genome.
+        """
+        # 1. Connection Weight Mutation
+        for connection in genome.connections:
+            if random.random() < self.config.connection_weight_mutation_chance:
+                # Determine if we should perturb or assign a new random value
+                if random.random() < self.config.connection_weight_perturbance_chance:
+                    # Perturb the weight slightly
+                    perturbation = random.uniform(-0.5, 0.5)  # Adjust the range as needed
+                    connection.weight += perturbation
+                else:
+                    # Assign a new random weight
+                    connection.weight = random.uniform(-1.0, 1.0)  # Adjust the range as needed
+            
+            # 2. Disable connection if one parent has it disabled
+            if not connection.is_enabled and random.random() < self.config.connection_disable_if_one_parent_disable_chance:
+                connection.is_enabled = False
+            else:
+                connection.is_enabled = True
+
+        # 3. Determine whether to add a node mutation (based on population size)
+        if self.config.population_size < 150:  # This threshold is adjustable based on your problem's requirements
+            node_mutation_chance = self.config.new_node_small_pop_chance
+        else:
+            node_mutation_chance = self.config.new_node_small_big_chance
+
+        if random.random() < node_mutation_chance:
+            self.add_node_mutation(genome)
+
+        # 4. Add Connection Mutation
+        if random.random() < self.config.new_connection_chance:
+            self.add_connection_mutation(genome)
+
+        return genome
+
     def add_connection_mutation(self, genome: Genome):
         """
         Adds a new connection mutation to the genome.
@@ -239,15 +279,23 @@ class NEAT:
             self.connections.append(in_to_new_connection)
             self.connections.append(new_to_out_connection)
     
-    def adjust_weight_mutation(self, genome: Genome):
+    def adjust_perturbance_weight_mutation(self, genome: Genome):
         """
         Mutation: Adjust the weight of a random connection.
         
         The weight is adjusted by a random value between -0.5 and 0.5.
         """
         connection = random.choice(genome.connections)
-        genome.adjust_weight_mutation(connection)
+        connection.weight = random.uniform(-0.5, 0.5)
     
+    def random_weight_mutation(self, genome: Genome):
+        """
+        Mutation: Adjust the weight of a random connection.
+        
+        The weight is adjusted by a random value between -1 and 1.
+        """
+        connection = random.choice(genome.connections)
+        connection.weight = random.uniform(-1, 1)
     
     def check_existing_connections(self, node1: int, node2: int):
         """ 

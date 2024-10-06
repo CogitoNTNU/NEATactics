@@ -89,24 +89,16 @@ class Genome:
         # If the connection is already a in the genome, make sure it's enabled and assign it a new weight
         if excisting_connection:
             excisting_connection.is_enabled = True
-            excisting_connection.weight = self.generate_new_weight()
+            excisting_connection.weight = self.random_weight_mutation()
             return excisting_connection
         
-        connection = ConnectionGene(node1, node2, self.generate_new_weight(), True, global_innovation_number)
+        connection = ConnectionGene(node1, node2, self.random_weight_mutation(), True, global_innovation_number)
         
         self.add_connection(connection)
         node1.add_outgoing_connection(connection) # The genome needs a list of outgoing connections for Kahns algorithm
         return connection
     
-    def adjust_weight_mutation(self, connection: ConnectionGene):
-        """
-        Mutation: Adjust the weight of a connection.
-        
-        The weight is adjusted by a random value between -0.5 and 0.5.
-        """
-        connection.weight += random.uniform(-0.5, 0.5)
-    
-    def generate_new_weight(self):
+    def random_weight_mutation(self):
         """
         A helper function to create a random weight for a connection.
         

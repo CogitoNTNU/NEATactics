@@ -39,14 +39,3 @@ class Node:
 
     def __repr__(self):
         return f"Node(id={self.id}, type={self.type}, value={self.value})"
-
-
-if __name__ == '__main__':
-    esel = Genome(1)
-    node1 = Node(1, 'input')
-    node2 = Node(2, 'output')
-    connection1 = ConnectionGene(node1, node2, 3.4, True, 1)
-    esel.add_connection(connection1)
-    print(esel)
-    print(node1)
-    print(connection1)

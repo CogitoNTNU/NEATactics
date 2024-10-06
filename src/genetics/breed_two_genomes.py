@@ -48,8 +48,8 @@ def breed_two_genomes(genome1: Genome, genome2: Genome, genome_id: int) -> Genom
     
     A node is only created if it is required by an inherited connection.
     """
-    print(f"Breeding genome: {genome1}")
-    print(f"with genome2: {genome2}")
+    # print(f"Breeding genome: {genome1}")
+    # print(f"with genome2: {genome2}")
     
     # Determine which genome is alpha (more fit) and beta (less fit)
     if genome1.fitness_value >= genome2.fitness_value:
@@ -105,5 +105,5 @@ def breed_two_genomes(genome1: Genome, genome2: Genome, genome_id: int) -> Genom
             connection = alpha_connections_dict[num]
             # Add the connection to the new genome
             add_connection_to_new_genome(new_genome, new_nodes_dict, connection)
-    print(f"new genome: {new_genome}")
+    # print(f"new genome: {new_genome}")
     return new_genome
