@@ -44,15 +44,15 @@ def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
     sr = env.step(0)
     i = 0
     timeout = 500
-    while not sr.done: # Simulate 200 frames.
+    while not sr.done: # Simulate 200 frames. 
         insert_input(genome, sr.state)
         action = forward.traverse() 
         if action == -1:
             quit()
         sr = env.step(action) # State, Reward, Done, Info
-        if debug:
-            save_state_as_png(i + 1, sr.state)
-            visualize_genome(genome, i)
+        if i == 1:
+            # save_state_as_png(i + 1, sr.state)
+            visualize_genome(genome, genome.id)
         
         fitness.calculate_fitness(sr.info, action)
 

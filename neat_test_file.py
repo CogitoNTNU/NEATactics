@@ -1,16 +1,7 @@
-import signal
-import multiprocessing
 from src.genetics.genome import Genome
 from src.environments.run_env import env_init, run_game
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
-
-def signal_handler(sig, frame):
-    print("Ctrl+C caught, terminating the program...")
-    # Terminate all child processes
-    for process in multiprocessing.active_children():
-        process.terminate()
-    exit(0)
 
 def create_a_genome_for_visualization(genome: Genome, mutations, neat: NEAT):
     neat.add_node_mutation(genome)
