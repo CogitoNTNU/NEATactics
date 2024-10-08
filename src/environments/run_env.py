@@ -21,7 +21,6 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
     env.metadata['render_modes'] = "human"
     env.metadata['render_fps'] = 144
-    # env.unwrapped._lives = 1 # Have mario have one life
  
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
@@ -43,20 +42,20 @@ def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
     fitness = Fitness("Hallo") # TODO this probably needs to get fixed
     sr = env.step(0)
     i = 0
-    timeout = 500
-    while not sr.done: # Simulate 200 frames. 
+    timeout = 250
+    while not sr.done:
         insert_input(genome, sr.state)
         action = forward.traverse() 
         if action == -1:
             quit()
         sr = env.step(action) # State, Reward, Done, Info
-        if i == 1:
+        if i == 1 and genome.id % 10 == 0:
             # save_state_as_png(i + 1, sr.state)
             visualize_genome(genome, genome.id)
         
         fitness.calculate_fitness(sr.info, action)
 
-        if sr.done or i > timeout:
+        if sr.info["life"] == 1 or i > timeout:
             print(f"Game over at frame {i}.")
             reward = fitness.get_fitness()
             env.reset() # Discard the new initial state if done.

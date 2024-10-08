@@ -5,9 +5,9 @@ class Config:
     c1: float = 1.
     c2: float = 1.
     c3: float = 0.4
-    genomic_distance_threshold: float = 1.0
-    population_size: int = 5
-    generations: int = 4
+    genomic_distance_threshold: float = 0.4
+    population_size: int = 60
+    generations: int = 10
 
     connection_weight_mutation_chance: float = 0.8
     # if mutate gene:
@@ -33,9 +33,8 @@ class Config:
     # What we use: ReLU
     # Paper: 1/(1+exp(-0.49*x))
     
-    elitism_rate: float = 0.0 # percentage of the best genomes are copied to the next generation
-    remove_worst_percentage: float = 0.08 # percentage of the worst genomes are removed from the population when breeding
-
+    elitism_rate: float = 0.05 # percentage of the best genomes are copied to the next generation
+    remove_worst_percentage: float = 0.8 # percentage of the worst genomes are removed from the population when breeding
 
     # Paper said that the max differnce in weights was about 3.0
     max_weight_difference: float = 3.0

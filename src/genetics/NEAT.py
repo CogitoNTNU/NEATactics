@@ -286,7 +286,7 @@ class NEAT:
         The weight is adjusted by a random value between -0.5 and 0.5.
         """
         connection = random.choice(genome.connections)
-        connection.weight = random.uniform(-0.5, 0.5)
+        connection.weight += random.uniform(-0.5, 0.5)
     
     def random_weight_mutation(self, genome: Genome):
         """
