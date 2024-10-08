@@ -40,7 +40,7 @@ def test_gym_environment(env: MarioJoypadSpace):
             print(f"Zero lives at fram: {i}.")
             
         if sr.done:
-            print(f"Game over at frame {i}.")
+            # print(f"Game over at frame {i}.")
             
             break
             _ = env.reset() # Discard the new initial state if done.
@@ -62,7 +62,7 @@ def get_state_from_environment(env: MarioJoypadSpace):
             save_state_as_png(f"pickled{i}", sr.state)
         
         if sr.done:
-            print(f"Game over at frame {i}.")
+            # print(f"Game over at frame {i}.")
             break
 
         env.render()

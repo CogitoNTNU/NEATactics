@@ -80,7 +80,7 @@ class Fitness:
 
         # Lose #########################
         if info["life"] < self.prev_lives:
-            print("DIED")
+            # print("DIED")
             self.prev_lives = info["life"]
 
             self.fitness += self.rewards["lose_life"]
@@ -118,7 +118,7 @@ class Fitness:
         #self.prev_action = action
 
     def get_fitness(self):
-        return self.fitness
+        return self.fitness+100
 
 
 
