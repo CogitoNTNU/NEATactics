@@ -25,6 +25,9 @@ def save_best_genome(genome: Genome, id):
     filehandler = open('best_genome'+str(id)+'.obj', 'w') 
     pickle.dump(genome, filehandler)
 
+def load_best_genome(filename):
+    return pickle.load(open(filename, 'r'))
+
 def main():
     config_instance = Config()
     neat = NEAT(config_instance)
