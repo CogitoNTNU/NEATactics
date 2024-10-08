@@ -9,6 +9,7 @@ from src.genetics.node import Node
 from src.genetics.breed_two_genomes import breed_two_genomes
 from typing import List, Tuple
 import multiprocessing
+import warnings
 import random
 import copy
 
@@ -41,8 +42,8 @@ class NEAT:
         # Sort genomes by fitness (descending order)
         breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
         
-        for genome in breeding_pool:
-            print(f"Genome: {genome.id}, Fitness: {genome.fitness_value}")
+        # for genome in breeding_pool:
+        #     print(f"Genome: {genome.id}, Fitness: {genome.fitness_value}")
         
         # If there are less than two genomes in the species, clone the genomes to fill the new generation and return
         if len(breeding_pool) < 2:
@@ -81,9 +82,11 @@ class NEAT:
         return new_generation_genomes
 
     def test_genome(self, genome: Genome):
-        env, _ = env_init()
-        fitness = run_game(env=env, genome=genome)
-        return genome.id, fitness  # Return the genome's ID and its fitness
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.")
+            env, _ = env_init()
+            fitness = run_game(env=env, genome=genome)
+            return genome.id, fitness  # Return the genome's ID and its fitness
         
     def test_genomes(self):
         """ Test all the genomes in the population in the environment. """
@@ -179,7 +182,6 @@ class NEAT:
         for specie in self.species:
             num_new_population = round((specie.fitness_value)/(mean_total_adjusted_fitness))
             specie.set_new_population_size(num_new_population)
-            print(specie.fitness_value)
         
          # Ensures that the total sum of new genomes is the total population_size
         num_new_for_each_specie = []
@@ -192,11 +194,6 @@ class NEAT:
 
         self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
 
-        # TODO Delete this, only for debug
-        num_new_for_each_specie = []
-        for specie in self.species:
-            num_new_for_each_specie.append(specie.new_population_size)    
-        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
 
     def add_mutation(self, genome: Genome):
         """
@@ -286,7 +283,7 @@ class NEAT:
         The weight is adjusted by a random value between -0.5 and 0.5.
         """
         connection = random.choice(genome.connections)
-        connection.weight = random.uniform(-0.5, 0.5)
+        connection.weight += random.uniform(-0.5, 0.5)
     
     def random_weight_mutation(self, genome: Genome):
         """
