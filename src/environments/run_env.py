@@ -19,8 +19,8 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     ENV_NAME = "SuperMarioBros-v3"
     env = gym_super_mario_bros.make(ENV_NAME)
     env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
-    env.metadata['render_modes'] = "human"
-    env.metadata['render_fps'] = 144
+    env.metadata['render_modes'] = "rgb_array"
+    env.metadata['render_fps'] = 10000
     # env.unwrapped._lives = 1 # Have mario have one life
  
     state = env.reset() # Good practice to reset the env before using it.
@@ -64,7 +64,6 @@ def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
             env.close()
             return reward
             
-        env.render()
         i += 1
     env.close()
     return -1000
