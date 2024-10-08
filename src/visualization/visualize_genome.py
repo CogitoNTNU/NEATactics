@@ -47,8 +47,11 @@ def get_position_dict(layers):
     :return: A dictionary with node positions suitable for visualization.
     """
     pos = {}
-    layer_gap = 5  # Horizontal gap between layers
-    node_gap = 2   # Vertical gap between nodes in the same layer
+    
+    horizontal_gap_input = 0.5
+
+    layer_gap_output = 5  # Horizontal gap between layers
+    vertical_gap = 2   # Vertical gap between nodes in the same layer
     
     # Total number of layers
     total_layers = len(layers)
@@ -60,12 +63,13 @@ def get_position_dict(layers):
         if layer_idx == 0:
             x_pos = 0  # Input layer starts at the far left
             # Organize the first layer into a 20x10 grid, starting from top-left (0,0)
-            for i, node in enumerate(layer):
+            for i, node in enumerate(layer[:-1]):
                 row = i // 20  # There are 10 rows, so row is determined by i // 20
                 col = i % 20  # Columns are determined by i % 20
-                pos[node] = (x_pos + col * 0.5, -row * node_gap)  # Adjust x (columns) and y (rows)
+                pos[node] = (x_pos + col * horizontal_gap_input, -row * vertical_gap)  # Adjust x (columns) and y (rows)
+            pos[layer[-1]] = ((x_pos + 19 * horizontal_gap_input), -10 * vertical_gap) # bias node
         elif layer_idx == total_layers - 1:  # Output layer case
-            x_pos = total_layers * layer_gap   # Place output nodes at the farthest right
+            x_pos = total_layers * layer_gap_output   # Place output nodes at the farthest right
             y_gap = (BOX_HEIGHT) / (len(layer))  # Center the output layer vertically
             
             for i, node in enumerate(layer):
@@ -73,7 +77,7 @@ def get_position_dict(layers):
                 pos[node] = (x_pos, y_pos)  # Place nodes vertically
         else:
             # Hidden layers are placed regularly between the input and output layers
-            y_start = -(len(layer) - 1) * node_gap / 2  # Center the layer vertically
+            y_start = -(len(layer) - 1) * vertical_gap / 2  # Center the layer vertically
             for i, node in enumerate(layer):
                 x_pos = round(random.uniform(10.5, 14.5), 2)
                 y_pos = round(random.uniform(0, 18), 2)
