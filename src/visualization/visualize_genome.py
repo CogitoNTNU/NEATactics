@@ -8,15 +8,15 @@ import os
 import random
 from typing import List
 from src.utils.colors_visualization import get_weight_color, get_node_colz
+from src.visualization.visualization_position_utils import get_position_dict
 
 # Adjust the size of the visualization whiteboard for the NN:
 GRAPH_XMIN = -1.5
 GRAPH_XMAX = 17
 GRAPH_YMIN = -21
 GRAPH_YMAX = 3
-BOX_HEIGHT = 18
 
-def get_node_in_layers(genome: Genome) -> List[List[Node]]:
+def get_node_in_layers(genome: Genome) -> List[List[int]]:
     """
     Input:
     - genome
@@ -37,53 +37,6 @@ def get_node_in_layers(genome: Genome) -> List[List[Node]]:
         else:
             layers[2].append(node.id)
     return layers
-
-def get_position_dict(layers):
-    """
-    Creates a custom layout for the graph G, ensuring nodes are separated by layers.
-    
-    :param G: The directed graph (DiGraph) representing the neural network or genome.
-    :param layers: A list of lists, where each inner list contains the nodes in that layer.
-    :return: A dictionary with node positions suitable for visualization.
-    """
-    pos = {}
-    
-    horizontal_gap_input = 0.5
-
-    layer_gap_output = 5  # Horizontal gap between layers
-    vertical_gap = 2   # Vertical gap between nodes in the same layer
-    
-    # Total number of layers
-    total_layers = len(layers)
-    random.seed(10)
-    
-    # Loop through layers and assign positions
-    for layer_idx, layer in enumerate(layers):
-        # Special case for the input layer (first layer)
-        if layer_idx == 0:
-            x_pos = 0  # Input layer starts at the far left
-            # Organize the first layer into a 20x10 grid, starting from top-left (0,0)
-            for i, node in enumerate(layer[:-1]):
-                row = i // 20  # There are 10 rows, so row is determined by i // 20
-                col = i % 20  # Columns are determined by i % 20
-                pos[node] = (x_pos + col * horizontal_gap_input, -row * vertical_gap)  # Adjust x (columns) and y (rows)
-            pos[layer[-1]] = ((x_pos + 19 * horizontal_gap_input), -10 * vertical_gap) # bias node
-        elif layer_idx == total_layers - 1:  # Output layer case
-            x_pos = total_layers * layer_gap_output   # Place output nodes at the farthest right
-            y_gap = (BOX_HEIGHT) / (len(layer))  # Center the output layer vertically
-            
-            for i, node in enumerate(layer):
-                y_pos = - y_gap * i - y_gap/2
-                pos[node] = (x_pos, y_pos)  # Place nodes vertically
-        else:
-            # Hidden layers are placed regularly between the input and output layers
-            y_start = -(len(layer) - 1) * vertical_gap / 2  # Center the layer vertically
-            for i, node in enumerate(layer):
-                x_pos = round(random.uniform(10.5, 14.5), 2)
-                y_pos = round(random.uniform(0, 18), 2)
-                pos[node] = (x_pos, -y_pos)  # Place nodes vertically
-    
-    return pos
 
 def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
     """Takes a graph and genome as input, and adds all of the nodes connected to that genome to the graph."""
