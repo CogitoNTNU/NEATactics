@@ -9,12 +9,8 @@ import random
 from typing import List
 from src.visualization.colors_visualization import get_weight_color, get_node_colz
 from src.visualization.visualization_position_utils import get_position_dict
-
+from src.visualization.viz_config import GRAPH_XMIN, GRAPH_XMAX, GRAPH_YMIN, GRAPH_YMAX
 # Adjust the size of the visualization whiteboard for the NN:
-GRAPH_XMIN = -1.5
-GRAPH_XMAX = 17
-GRAPH_YMIN = -21
-GRAPH_YMAX = 3
 
 def get_node_in_layers(genome: Genome) -> List[List[int]]:
     """

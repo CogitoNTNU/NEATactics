@@ -1,11 +1,6 @@
 import random
 from typing import List, Dict, Tuple
-from src.genetics.node import Node
-
-BOX_HEIGHT = 18
-HORIZONTAL_GAP_INPUT = 0.5
-LAYER_GAP_OUTPUT = 5
-VERTICAL_GAP = 2
+from src.visualization.viz_config import HORIZONTAL_GAP_INPUT, VERTICAL_GAP, LAYER_GAP_OUTPUT, BOX_HEIGHT
 
 def get_position_dict(layers: List[List[int]]) -> Dict[int, Tuple[float, float]]:
     """
