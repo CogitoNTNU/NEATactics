@@ -7,7 +7,7 @@ from src.genetics.node import Node
 import os
 import random
 from typing import List
-from src.utils.colors_visualization import get_weight_color, get_node_colz
+from src.visualization.colors_visualization import get_weight_color, get_node_colz
 from src.visualization.visualization_position_utils import get_position_dict
 
 # Adjust the size of the visualization whiteboard for the NN:
