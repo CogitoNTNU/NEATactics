@@ -263,3 +263,5 @@ genome_frames
 
 # Good_genomes folder which contains a collection of best genomes from different generations.
 good_genomes
+
+fitness_values.txt
