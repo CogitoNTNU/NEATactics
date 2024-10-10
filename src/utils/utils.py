@@ -3,6 +3,7 @@ from src.utils.config import Config
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import pickle
 
 def save_state_as_png(i, state: np.ndarray) -> None:
     """Save a frame."""
@@ -38,3 +39,18 @@ def insert_input(genome:Genome, state: np.ndarray) -> None:
     
     for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
         node.value = state[i//num_columns][i % num_columns]
+
+def save_fitness(best: list, avg: list, min: list):
+    with open("fitness_values.txt", "w") as f:
+        for i in range(len(best)):
+            f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
+
+def save_best_genome(genome: Genome, id: int):
+    os.makedirs('good_genomes', exist_ok=True)
+    with open(f'good_genomes/best_genome_{id}.obj', 'wb') as f:
+        pickle.dump(genome, f) # type: ignore
+
+def load_best_genome(id: int):
+    with open(f'good_genomes/best_genome_{id}.obj', 'rb') as f:
+        return pickle.load(f)
+
