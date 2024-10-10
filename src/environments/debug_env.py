@@ -9,6 +9,7 @@ import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 from typing import Tuple
 import numpy as np
+import time
 
 def env_debug_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment in human_mode"
@@ -21,20 +22,21 @@ def env_debug_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
 
-def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
+def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome, num: int):
     
     forward = Traverse(genome)
-    fitness = Fitness("Hallo") # TODO this probably needs to get fixed
+    fitness = Fitness()
     i = 0
     timeout = 250
     insert_input(genome, initial_state)
-
     while True:
         action = forward.traverse() 
+        time.sleep(0.01)
         sr = env.step(action) # State, Reward, Done, Info
-        if i == 1 and genome.id % 10 == 0:
+        env.render()
+        if i == 0:
             save_state_as_png(i + 1, sr.state)
-            visualize_genome(genome, genome.id)
+            visualize_genome(genome, num)
         
         fitness.calculate_fitness(sr.info, action)
 

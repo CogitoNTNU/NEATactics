@@ -177,4 +177,5 @@ def main():
     while True:
         game.tick()
 
-main()
+if __name__ == "__main__":
+    main()
