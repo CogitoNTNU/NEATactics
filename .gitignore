@@ -266,3 +266,5 @@ good_genomes
 
 # Trained_population folder which contains a collection of best genomes from different generations.
 trained_population
+
+fitness_values.txt
