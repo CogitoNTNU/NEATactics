@@ -84,8 +84,8 @@ class NEAT:
     def test_genome(self, genome: Genome):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.")
-            env, _ = env_init()
-            fitness = run_game(env=env, genome=genome)
+            env, state = env_init()
+            fitness = run_game(env, state, genome)
             return genome.id, fitness  # Return the genome's ID and its fitness
         
     def test_genomes(self):

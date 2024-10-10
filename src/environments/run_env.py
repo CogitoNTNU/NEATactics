@@ -26,34 +26,22 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
 
-def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
+def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
     
     forward = Traverse(genome)
     fitness = Fitness("Hallo") # TODO this probably needs to get fixed
-    sr = env.step(0)
     i = 0
     timeout = 250
-    while not sr.done:
-        insert_input(genome, sr.state)
+    insert_input(genome, initial_state)
+    
+    while True:
         action = forward.traverse() 
-        if action == -1:
-            quit()
-        sr = env.step(action) # State, Reward, Done, Info
-        if i == 1 and genome.id % 10 == 0:
-            # save_state_as_png(i + 1, sr.state)
-            # visualize_genome(genome, genome.id)
-            pass
-        
+        sr = env.step(action)
         fitness.calculate_fitness(sr.info, action)
 
-        if sr.info["life"] == 1 or i > timeout:
-            # print(f"Game over at frame {i}.")
-            reward = fitness.get_fitness()
-            env.reset() # Discard the new initial state if done.
-            # print(reward)
+        if sr.info["life"] == 1 or i > timeout or sr.done: # What is happening here?
             env.close()
-            return reward
+            return fitness.get_fitness()
             
+        insert_input(genome, sr.state) # Prepare for next iteration
         i += 1
-    env.close()
-    return -1000
