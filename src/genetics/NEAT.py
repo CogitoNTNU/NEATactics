@@ -42,9 +42,6 @@ class NEAT:
         # Sort genomes by fitness (descending order)
         breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
         
-        # for genome in breeding_pool:
-        #     print(f"Genome: {genome.id}, Fitness: {genome.fitness_value}")
-        
         # If there are less than two genomes in the species, clone the genomes to fill the new generation and return
         if len(breeding_pool) < 2:
             for genome in breeding_pool:
@@ -65,7 +62,7 @@ class NEAT:
             cloned_elite.id = self.genome_id 
             self.genome_id += 1
             new_generation_genomes.append(cloned_elite)  # Add the cloned genome to the new generation
-        
+
         # Remove a percentage of the worst-performing genomes from the breeding pool
         breeding_pool = self.select_breeding_pool(breeding_pool)
             

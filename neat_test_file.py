@@ -1,9 +1,10 @@
 from src.genetics.genome import Genome
-from src.environments.run_env import env_init, run_game
+from src.environments.run_env import env_init, run_game, run_game_with_animation, env_init_with_animation
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
 import warnings
 import pickle
+
 
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
@@ -21,12 +22,18 @@ def save_fitness(best: list, avg: list, min: list):
         for i in range(len(best)):
             f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
 
-def save_best_genome(genome: Genome, id):
-    filehandler = open('best_genome'+str(id)+'.obj', 'w') 
+def save_best_genome(genome: Genome, generation: int):
+    filehandler = open('best_genome'+ str(generation) +'.obj', 'wb') 
     pickle.dump(genome, filehandler)
 
 def load_best_genome(filename):
-    return pickle.load(open(filename, 'r'))
+    return pickle.load(open(filename, 'rb'))
+
+def test_genome(i):
+    genome = load_best_genome("best_genome"+str(i)+".obj")
+    env, _ = env_init_with_animation()
+    fitness = run_game_with_animation(env, genome, i)
+    print(fitness)
 
 def main():
     config_instance = Config()
@@ -37,7 +44,7 @@ def main():
     avg_fitnesses = []
     min_fitnesses = []
     try:
-        for _ in range(config_instance.generations):
+        for generation in range(config_instance.generations):
             neat.test_genomes()
             
             # Store the best, avg and min fitness value for each generation.
@@ -46,11 +53,11 @@ def main():
             for genome in neat.genomes: 
                 fitnesses.append(genome.fitness_value)
                 best_genome[genome.fitness_value] = genome
-            save_best_genome(best_genome[max(fitnesses)], best_genome[max(fitnesses)].id)
+            save_best_genome(best_genome[max(fitnesses)], generation)
             best_fitnesses.append(max(fitnesses))
             avg_fitnesses.append(sum(fitnesses)/len(fitnesses))
             min_fitnesses.append(min(fitnesses))
-            print(f"Generation: {_} - Best: {best_fitnesses[-1]} - Avg: {avg_fitnesses[-1]} - Min: {min_fitnesses[-1]}")
+            print(f"Generation: {generation} - Best: {best_fitnesses[-1]} - Avg: {avg_fitnesses[-1]} - Min: {min_fitnesses[-1]}")
             
             neat.sort_species(neat.genomes)
             neat.adjust_fitness()
@@ -63,7 +70,8 @@ def main():
             neat.genomes = flattened_genomes
                 
             for genome in neat.genomes:
-                neat.add_mutation(genome)
+                if genome.fitness_value == 0:
+                    neat.add_mutation(genome)
     except KeyboardInterrupt:
         print("\nProcess interrupted! Saving fitness data...")
     finally:
@@ -75,4 +83,7 @@ def main():
 
 # need if __name__ == "__main__": when running test_genomes.
 if __name__ == "__main__":
-    main()
+    # main()
+    for i in range(40):
+        test_genome(i)
+    
