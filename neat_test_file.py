@@ -20,7 +20,10 @@ def create_a_genome_for_visualization(genome: Genome, mutations, neat: NEAT):
         neat.add_mutation(genome)
 
 def main():
-    config_instance = Config()
+    config_instance = Config(
+        generations=400,
+        
+    )
     neat = NEAT(config_instance)
     neat.initiate_genomes()
 
