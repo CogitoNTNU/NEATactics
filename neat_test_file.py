@@ -4,6 +4,7 @@ from src.utils.config import Config
 from src.genetics.NEAT import NEAT
 import warnings
 import pickle
+import os
 
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
@@ -21,12 +22,14 @@ def save_fitness(best: list, avg: list, min: list):
         for i in range(len(best)):
             f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
 
-def save_best_genome(genome: Genome, id):
-    filehandler = open('best_genome'+str(id)+'.obj', 'w') 
-    pickle.dump(genome, filehandler)
+def save_best_genome(genome: Genome, id: int):
+    os.makedirs('good_genomes', exist_ok=True)
+    with open(f'good_genomes/best_genome_{id}.obj', 'wb') as f:
+        pickle.dump(genome, f) # type: ignore
 
-def load_best_genome(filename):
-    return pickle.load(open(filename, 'r'))
+def load_best_genome(id: int):
+    with open(f'good_genomes/best_genome_{id}.obj', 'rb') as f:
+        return pickle.load(f)
 
 def main():
     config_instance = Config()
