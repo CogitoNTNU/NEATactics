@@ -1,16 +1,11 @@
-import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 from src.genetics.genome import Genome
-from src.genetics.node import Node
 import os
-import random
 from typing import List
 from src.visualization.colors_visualization import get_weight_color, get_node_colz
 from src.visualization.visualization_position_utils import get_position_dict
 from src.visualization.viz_config import GRAPH_XMIN, GRAPH_XMAX, GRAPH_YMIN, GRAPH_YMAX
-# Adjust the size of the visualization whiteboard for the NN:
 
 def get_node_in_layers(genome: Genome) -> List[List[int]]:
     """
@@ -38,11 +33,11 @@ def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
     """Takes a graph and genome as input, and adds all of the nodes connected to that genome to the graph."""
     for node in genome.nodes:
         if node.type == 'input':
-            graph.add_node(node.id, layer_number = 0)
+            graph.add_node(node.id)
         elif node.type == 'hidden':
-            graph.add_node(node.id, layer_number = 1)
+            graph.add_node(node.id)
         elif node.type == 'output':
-            graph.add_node(node.id, layer_number = 2)
+            graph.add_node(node.id)
 
 def visualize_genome(genome: Genome, frame_number: int):
     fig = plt.figure(figsize=(15, 10))
