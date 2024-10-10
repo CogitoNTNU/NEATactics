@@ -1,11 +1,12 @@
 from src.genetics.genome import Genome
-from src.environments.run_env import env_init, run_game
+from src.environments.train_env import env_init, run_game
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
 from src.utils.utils import save_fitness, save_best_genome, load_best_genome
 import warnings
 import pickle
 import os
+from typing import Dict
 
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
@@ -32,7 +33,7 @@ def main():
             
             # Store the best, avg and min fitness value for each generation.
             fitnesses = []
-            best_genome = {}
+            best_genome: Dict[float, Genome] = {}
             for genome in neat.genomes: 
                 fitnesses.append(genome.fitness_value)
                 best_genome[genome.fitness_value] = genome

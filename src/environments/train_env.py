@@ -1,15 +1,13 @@
-from src.environments.mario_env import MarioJoypadSpace, StepResult
+from src.environments.mario_env import MarioJoypadSpace
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 import numpy as np
 from typing import Tuple
-from src.utils.utils import save_state_as_png, insert_input
+from src.utils.utils import insert_input
 from src.genetics.genome import Genome
 from src.genetics.traverse import Traverse
-from src.visualization.visualize_genome import visualize_genome
 import numpy as np
 from src.environments.fitness_function import Fitness
-from src.utils.config import Config
 import warnings
 
 def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:

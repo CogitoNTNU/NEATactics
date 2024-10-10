@@ -1,11 +1,10 @@
 from src.genetics.species import Species
 from src.genetics.genome import Genome
 from src.utils.config import Config
-from src.environments.run_env import env_init, run_game
+from src.environments.train_env import env_init, run_game
 from src.genetics.genomic_distance import *
 from src.genetics.create_base_genomes  import create_base_genomes 
 from src.genetics.connection_gene import ConnectionGene
-from src.genetics.node import Node
 from src.genetics.breed_two_genomes import breed_two_genomes
 from typing import List, Tuple
 import multiprocessing
