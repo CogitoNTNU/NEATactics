@@ -23,7 +23,7 @@ class Config:
     genome_mutatuin_mating_chance: float = 1-genome_mutation_without_crossover_chance-genome_interspecies_mating_chance
 
     new_node_small_pop_chance: float = 0.03 # for small populations
-    new_node_small_big_chance: float = 0.3 # for big populations
+    new_node_small_big_chance: float = 0.3 # for big populations (big pop = 150)
     new_connection_chance: float = 0.05
     # Connections should be added way more often than nodes
 
