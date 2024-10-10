@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pickle
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    # These imports will only be used for type hinting, not at runtime
+    from src.genetics.NEAT import NEAT
 
 def save_state_as_png(i, state: np.ndarray) -> None:
     """Save a frame."""
@@ -54,11 +59,11 @@ def load_best_genome(generation: int):
     with open(f'good_genomes/best_genome_{generation}.obj', 'rb') as f:
         return pickle.load(f)
 
-def save_neat(neat):
+def save_neat(neat: 'NEAT', name: str):
     os.makedirs('trained_population', exist_ok=True)
-    with open('trained_population/neat.obj', 'wb') as f:
+    with open(f'trained_population/neat_{name}.obj', 'wb') as f:
         pickle.dump(neat, f) # type: ignore
         
-def load_neat():
-    with open('neat.obj', 'rb') as f:
+def load_neat(name: str):
+    with open(f'trained_population/neat_{name}.obj', 'rb') as f:
         return pickle.load(f) # type: ignore

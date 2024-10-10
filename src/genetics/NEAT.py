@@ -23,6 +23,7 @@ class NEAT:
         self.species: list[Species] = []
         self.connections: list[ConnectionGene] = []
         self.connections_with_node_mutations: dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
+        generation: int = 0
         
     def generate_offspring(self, specie: Species):
         """
@@ -77,19 +78,19 @@ class NEAT:
             new_generation_genomes.append(new_genome)
         return new_generation_genomes
 
-    def test_genome(self, genome: Genome):
+    def train_genome(self, genome: Genome):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.")
             env, state = env_init()
             fitness = run_game(env, state, genome)
             return genome.id, fitness  # Return the genome's ID and its fitness
         
-    def test_genomes(self):
-        """ Test all the genomes in the population in the environment. """
+    def train_genomes(self):
+        """ Train all the genomes in the population in the environment. """
         # Create a multiprocessing pool
         with multiprocessing.Pool() as pool:
             # Run `test_genome` in parallel for each genome
-            results = pool.map(self.test_genome, self.genomes)
+            results = pool.map(self.train_genome, self.genomes)
         
         # Update genomes with the returned fitness values
         for genome_id, fitness in results:

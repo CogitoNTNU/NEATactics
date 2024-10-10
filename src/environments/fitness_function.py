@@ -60,7 +60,7 @@ class Fitness:
             "lose_life": -15,
             "win": 100,
             "move_forward": 0.1,
-            "dont_move_forward": -0.2,
+            "dont_move_forward": 0.0,
             "coins": 1,
             "jump_multiple": - 0.01
         }
