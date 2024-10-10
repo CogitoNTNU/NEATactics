@@ -3,7 +3,7 @@ import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 import numpy as np
 from typing import Tuple
-from src.utils.utils import save_state_as_png
+from src.utils.utils import save_state_as_png, insert_input
 from src.genetics.genome import Genome
 from src.genetics.traverse import Traverse
 from src.visualization.visualize_genome import visualize_genome
@@ -25,17 +25,6 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
  
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
-
-def insert_input(genome:Genome, state: list) -> None:
-    """
-    Insert the state of the game into the input nodes of the genome.
-    """
-    config = Config()
-    start_idx_input_node = config.num_output_nodes
-    num_input_nodes = config.num_input_nodes
-    
-    for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
-        node.value = state[i//20][i % 20] # (Not sure if this is correct)
 
 def run_game(env: MarioJoypadSpace, genome: Genome, debug = False):
     

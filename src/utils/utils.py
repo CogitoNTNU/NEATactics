@@ -1,3 +1,5 @@
+from src.genetics.genome import Genome
+from src.utils.config import Config
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -26,3 +28,13 @@ def normalize_negative_values(negative_vals: np.ndarray) -> None:
     where the most negative input gets the value 1."""
     negative_vals *= -1
     normalize_positive_values(negative_vals)
+
+def insert_input(genome:Genome, state: np.ndarray) -> None:
+    """Insert the state of the game into the input nodes of the genome."""
+    config = Config()
+    start_idx_input_node = config.num_output_nodes
+    num_input_nodes = config.num_input_nodes
+    num_columns = config.input_shape[-1]
+    
+    for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
+        node.value = state[i//num_columns][i % num_columns]
