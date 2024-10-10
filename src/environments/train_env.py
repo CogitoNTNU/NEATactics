@@ -27,7 +27,7 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
 def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
     
     forward = Traverse(genome)
-    fitness = Fitness("Hallo") # TODO this probably needs to get fixed
+    fitness = Fitness()
     i = 0
     timeout = 250
     insert_input(genome, initial_state)

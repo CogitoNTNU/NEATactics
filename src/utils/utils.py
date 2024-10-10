@@ -45,12 +45,12 @@ def save_fitness(best: list, avg: list, min: list):
         for i in range(len(best)):
             f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
 
-def save_best_genome(genome: Genome, id: int):
+def save_best_genome(genome: Genome, generation: int):
     os.makedirs('good_genomes', exist_ok=True)
-    with open(f'good_genomes/best_genome_{id}.obj', 'wb') as f:
+    with open(f'good_genomes/best_genome_{generation}.obj', 'wb') as f:
         pickle.dump(genome, f) # type: ignore
 
-def load_best_genome(id: int):
-    with open(f'good_genomes/best_genome_{id}.obj', 'rb') as f:
+def load_best_genome(generation: int):
+    with open(f'good_genomes/best_genome_{generation}.obj', 'rb') as f:
         return pickle.load(f)
 
