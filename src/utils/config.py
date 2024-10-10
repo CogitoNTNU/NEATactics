@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Tuple
 
 @dataclass
 class Config:
@@ -27,7 +28,8 @@ class Config:
     # Connections should be added way more often than nodes
 
     num_output_nodes: int = 7
-    num_input_nodes: int = 200 
+    num_input_nodes: int = 200
+    input_shape: Tuple[int, int] = (10, 20)
 
     # Activation function
     # What we use: ReLU

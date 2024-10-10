@@ -1,6 +1,6 @@
 import argparse
-from src.environments.env import init, test_gym_environment, get_state_from_environment
-from src.environments.run_env import run_game
+from src.environments.train_env import env_init, run_game
+from environments.train_env import run_game
 from test.visualization.visualize_genome_test import get_genome_from_NEAT
 from neat_test_file import create_a_genome_for_visualization
 import pickle
@@ -20,11 +20,11 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    env, state = init()
+    env, state = env_init()
     genome, neat = get_genome_from_NEAT()
     num_mutations = 10
     create_a_genome_for_visualization(genome, num_mutations, neat)
-    run_game(env, genome, debug = True)
+    run_game(env, state, genome)
 
     # env, state = init()
     # get_state_from_environment(env) # Will save state 150 in the root folder as pkl, will also save corresponding png in mario_frames.

@@ -1,9 +1,37 @@
 import numpy as np
 from nes_py.wrappers import JoypadSpace
-from collections import namedtuple
 from skimage.transform import resize
+from typing import NamedTuple, Dict, Any
+import numpy as np
 
-StepResult = namedtuple('StepResult', ['state', 'reward', 'done', 'info'])
+class StepResult(NamedTuple):
+    """A namedtuple-like class representing the result of an environment step.
+    
+    Attributes:
+        state (np.ndarray): The current state of the environment, processed and downsampled.
+        reward (float): The reward obtained from the step.
+        done (bool): Whether the game/episode is finished.
+        info (dict): Additional information about the environment state, with the following keys:
+            - coins (int): The number of coins collected.
+            - flag_get (bool): Whether the flag has been reached.
+            - life (int): The remaining life count.
+            - score (int): The current score.
+            - stage (int): The current stage number.
+            - status (str): The player status (e.g., 'small', 'big', 'fire').
+            - time (int): The remaining time in the level.
+            - world (int): The current world number.
+            - x_pos (int): The x-coordinate of the player.
+            - y_pos (int): The y-coordinate of the player.
+    """
+    state: np.ndarray
+    """The current state."""
+    reward: float
+    """The reward obtained when getting to this state."""
+    done: bool
+    """Whether you are finished playing or not."""
+    info: Dict[str, Any]
+    """A dictionary containing detailed information about the environment state."""
+
 
 class MarioJoypadSpace(JoypadSpace):
     """A custom JoypadSpace makes the type hinter happy :)"""

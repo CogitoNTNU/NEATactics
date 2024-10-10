@@ -1,9 +1,12 @@
 from src.genetics.genome import Genome
-from src.environments.run_env import env_init, run_game
+from src.environments.train_env import env_init, run_game
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
+from src.utils.utils import save_fitness, save_best_genome, load_best_genome
 import warnings
 import pickle
+import os
+from typing import Dict
 
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
@@ -15,18 +18,6 @@ def create_a_genome_for_visualization(genome: Genome, mutations, neat: NEAT):
     
     for i in range(mutations):
         neat.add_mutation(genome)
-
-def save_fitness(best: list, avg: list, min: list):
-    with open("fitness_values.txt", "w") as f:
-        for i in range(len(best)):
-            f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
-
-def save_best_genome(genome: Genome, id):
-    filehandler = open('best_genome'+str(id)+'.obj', 'w') 
-    pickle.dump(genome, filehandler)
-
-def load_best_genome(filename):
-    return pickle.load(open(filename, 'r'))
 
 def main():
     config_instance = Config()
@@ -42,7 +33,7 @@ def main():
             
             # Store the best, avg and min fitness value for each generation.
             fitnesses = []
-            best_genome = {}
+            best_genome: Dict[float, Genome] = {}
             for genome in neat.genomes: 
                 fitnesses.append(genome.fitness_value)
                 best_genome[genome.fitness_value] = genome
