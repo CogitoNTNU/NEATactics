@@ -214,7 +214,7 @@ class NEAT:
                 connection.is_enabled = True
 
         # 3. Determine whether to add a node mutation (based on population size)
-        if self.config.population_size < 150:  # This threshold is adjustable based on your problem's requirements
+        if self.config.population_size <= 150:  # This threshold is adjustable based on your problem's requirements
             node_mutation_chance = self.config.new_node_small_pop_chance
         else:
             node_mutation_chance = self.config.new_node_small_big_chance

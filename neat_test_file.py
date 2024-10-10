@@ -11,15 +11,6 @@ from typing import Dict
 
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
-def create_a_genome_for_visualization(genome: Genome, mutations, neat: NEAT):
-    neat.add_node_mutation(genome)
-    neat.add_node_mutation(genome)
-    neat.add_node_mutation(genome)
-    neat.add_node_mutation(genome)
-    
-    for i in range(mutations):
-        neat.add_mutation(genome)
-
 def test_genome(i):
     genome = load_best_genome(i)
     env, state = env_debug_init()
