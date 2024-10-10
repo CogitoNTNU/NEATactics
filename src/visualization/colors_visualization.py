@@ -3,7 +3,6 @@ import numpy as np
 from typing import List
 import matplotlib.cm as cm
 from src.genetics.node import Node
-import matplotlib.colors as mcolors
 
 GREEN = cm.Greens # type: ignore
 GRAY = cm.gray # type: ignore
@@ -26,7 +25,6 @@ def get_node_colz(nodez: List[Node]) -> List[float]:
 
     hidden_idx, output_idx = 0, 0
     colors = []
-
 
     for node in nodez:
         if node.type == 'input':

@@ -1,14 +1,12 @@
+from src.genetics.genome import Genome
+from src.utils.config import Config
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np
 import os
-from typing import Union, List
-
+import pickle
 
 def save_state_as_png(i, state: np.ndarray) -> None:
-    """
-    Save a frame.
-    """
+    """Save a frame."""
     directory = "./mario_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -31,3 +29,28 @@ def normalize_negative_values(negative_vals: np.ndarray) -> None:
     where the most negative input gets the value 1."""
     negative_vals *= -1
     normalize_positive_values(negative_vals)
+
+def insert_input(genome:Genome, state: np.ndarray) -> None:
+    """Insert the state of the game into the input nodes of the genome."""
+    config = Config()
+    start_idx_input_node = config.num_output_nodes
+    num_input_nodes = config.num_input_nodes
+    num_columns = config.input_shape[-1]
+    
+    for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
+        node.value = state[i//num_columns][i % num_columns]
+
+def save_fitness(best: list, avg: list, min: list):
+    with open("fitness_values.txt", "w") as f:
+        for i in range(len(best)):
+            f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
+
+def save_best_genome(genome: Genome, generation: int):
+    os.makedirs('good_genomes', exist_ok=True)
+    with open(f'good_genomes/best_genome_{generation}.obj', 'wb') as f:
+        pickle.dump(genome, f) # type: ignore
+
+def load_best_genome(generation: int):
+    with open(f'good_genomes/best_genome_{generation}.obj', 'rb') as f:
+        return pickle.load(f)
+

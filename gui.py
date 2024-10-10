@@ -65,20 +65,7 @@ def main():
 
     # Load and resize the background image while maintaining the aspect ratio
     image = Image.open("docs/images/logo.png")
-    screen_width = r.winfo_screenwidth()
-    screen_height = r.winfo_screenheight()
-
-    img_aspect_ratio = image.width / image.height
-    screen_aspect_ratio = screen_width / screen_height
-
-    if img_aspect_ratio > screen_aspect_ratio:
-        new_width = screen_width
-        new_height = int(screen_width / img_aspect_ratio)
-    else:
-        new_height = screen_height
-        new_width = int(screen_height * img_aspect_ratio)
-
-    resized_image = image.resize((new_width, new_height), Image.LANCZOS)
+    resized_image = image.resize((400, 400), Image.LANCZOS)
     bg = ImageTk.PhotoImage(resized_image)
 
     # Create a canvas to display the image

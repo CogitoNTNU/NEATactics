@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Tuple
 
 @dataclass
 class Config:
@@ -6,8 +7,8 @@ class Config:
     c2: float = 1.
     c3: float = 0.4
     genomic_distance_threshold: float = 3
-    population_size: int = 150
-    generations: int = 30
+    population_size: int = 10
+    generations: int = 5
 
     connection_weight_mutation_chance: float = 0.8
     # if mutate gene:
@@ -27,7 +28,8 @@ class Config:
     # Connections should be added way more often than nodes
 
     num_output_nodes: int = 7
-    num_input_nodes: int = 200 
+    num_input_nodes: int = 200
+    input_shape: Tuple[int, int] = (10, 20)
 
     # Activation function
     # What we use: ReLU
