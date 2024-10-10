@@ -36,7 +36,7 @@ def test_visualize_genome():
     set_input_node_values(state, genome.nodes)
     traverse = Traverse(genome)
     traverse.traverse()
-    visualize_genome(genome, 0)
+    visualize_genome(genome, -1)
 
 if __name__ == "__main__":
     get_genome_from_NEAT()
