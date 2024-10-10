@@ -1,14 +1,9 @@
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np
 import os
-from typing import Union, List
-
 
 def save_state_as_png(i, state: np.ndarray) -> None:
-    """
-    Save a frame.
-    """
+    """Save a frame."""
     directory = "./mario_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
