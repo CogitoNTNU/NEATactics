@@ -13,7 +13,7 @@ import time
 
 def env_debug_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment in human_mode"
-    ENV_NAME = "SuperMarioBros-v3"
+    ENV_NAME = "SuperMarioBros-v1"
     env = gym_super_mario_bros.make(ENV_NAME)
     env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
     env.metadata['render_modes'] = "human"
@@ -27,11 +27,11 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
     forward = Traverse(genome)
     fitness = Fitness()
     i = 0
-    timeout = 500
+    timeout = 300
     insert_input(genome, initial_state)
     while True:
         action = forward.traverse() 
-        time.sleep(0.001)
+        # time.sleep(0.001)
         sr = env.step(action) # State, Reward, Done, Info
         env.render()
         if i == 0:

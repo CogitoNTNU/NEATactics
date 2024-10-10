@@ -40,7 +40,6 @@ def main(neat_name: str = '', generations: int = 0):
     else:
         neat = load_neat(neat_name)
         config_instance = neat.config
-        generations = config_instance.generations
 
     min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
     try:

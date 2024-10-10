@@ -197,22 +197,22 @@ class NEAT:
         Adds a random mutation to the genome.
         """
         # 1. Connection Weight Mutation
-        for connection in genome.connections:
-            if random.random() < self.config.connection_weight_mutation_chance:
-                # Determine if we should perturb or assign a new random value
-                if random.random() < self.config.connection_weight_perturbance_chance:
-                    # Perturb the weight slightly
-                    perturbation = random.uniform(-0.5, 0.5)  # Adjust the range as needed
-                    connection.weight += perturbation
-                else:
-                    # Assign a new random weight
-                    connection.weight = random.uniform(-1.0, 1.0)  # Adjust the range as needed
-            
-            # 2. Disable connection if one parent has it disabled
-            if not connection.is_enabled and random.random() < self.config.connection_disable_if_one_parent_disable_chance:
-                connection.is_enabled = False
+        connection = random.choice(genome.connections)
+        if random.random() < self.config.connection_weight_mutation_chance:
+            # Determine if we should perturb or assign a new random value
+            if random.random() < self.config.connection_weight_perturbance_chance:
+                # Perturb the weight slightly
+                perturbation = random.uniform(-0.5, 0.5)  # Adjust the range as needed
+                connection.weight += perturbation
             else:
-                connection.is_enabled = True
+                # Assign a new random weight
+                connection.weight = random.uniform(-1, 1)  # Adjust the range as needed
+        
+        # 2. Disable connection if one parent has it disabled
+        if not connection.is_enabled and random.random() < self.config.connection_disable_if_one_parent_disable_chance:
+            connection.is_enabled = False
+        else:
+            connection.is_enabled = True
 
         # 3. Determine whether to add a node mutation (based on population size)
         if self.config.population_size <= 150:  # This threshold is adjustable based on your problem's requirements
