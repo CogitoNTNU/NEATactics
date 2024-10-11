@@ -31,7 +31,7 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
     insert_input(genome, initial_state)
     while True:
         action = forward.traverse() 
-        # time.sleep(0.001)
+        time.sleep(0.007)
         sr = env.step(action) # State, Reward, Done, Info
         env.render()
         if i == 0:

@@ -1,5 +1,0 @@
-Generation: 0 - Best: 114.2 - Avg: 83.07999999999993 - Min: 53.799999999999876
-Generation: 1 - Best: 114.2 - Avg: 113.7 - Min: 111.89999999999999
-Generation: 2 - Best: 114.2 - Avg: 107.62 - Min: 53.799999999999876
-Generation: 3 - Best: 114.2 - Avg: 101.38999999999997 - Min: 53.799999999999876
-Generation: 4 - Best: 114.2 - Avg: 113.89000000000001 - Min: 111.5
