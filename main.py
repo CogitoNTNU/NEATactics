@@ -1,8 +1,7 @@
 import argparse
 from src.environments.train_env import env_init, run_game
-from environments.train_env import run_game
+from src.environments.train_env import run_game
 from test.visualization.visualize_genome_test import get_genome_from_NEAT
-from neat_test_file import create_a_genome_for_visualization
 import pickle
 
 def main():
@@ -19,11 +18,10 @@ def main():
         print("Run this script with --hello for a special surprise!")
 
 if __name__ == "__main__":
-    # main()
+    main()
     env, state = env_init()
     genome, neat = get_genome_from_NEAT()
     num_mutations = 10
-    create_a_genome_for_visualization(genome, num_mutations, neat)
     run_game(env, state, genome)
 
     # env, state = init()
