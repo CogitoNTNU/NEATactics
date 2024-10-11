@@ -23,7 +23,7 @@ class NEAT:
         self.species: list[Species] = []
         self.connections: list[ConnectionGene] = []
         self.connections_with_node_mutations: dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
-        generation: int = 0
+        # self.generation: int = 1
         
     def generate_offspring(self, specie: Species):
         """
@@ -38,7 +38,7 @@ class NEAT:
         :list[Genome]: List of new genomes for the next generation.
         """
         new_generation_genomes = []
-        
+        # self.generation += 1
         # Sort genomes by fitness (descending order)
         breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
         

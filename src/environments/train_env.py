@@ -29,7 +29,7 @@ def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
     forward = Traverse(genome)
     fitness = Fitness()
     i = 0
-    timeout = 500
+    timeout = 1200
     insert_input(genome, initial_state)
     
     while True:

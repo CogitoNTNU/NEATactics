@@ -32,18 +32,25 @@ def collect_fitnesses(genomes, generation, min_fitnesses, avg_fitnesses, best_fi
     print(f"Generation: {generation} - Best: {max_fitness} - Avg: {avg_fitness} - Min: {min_fitness}")
 
 
-def main(neat_name: str = '', generations: int = 0):
+def main(neat_name: str = '', to_generations: int = 0):
     if neat_name == '':
         config_instance = Config()
         neat = NEAT(config_instance)
         neat.initiate_genomes()
+        from_generation = 0
+        generations = config_instance.generations if to_generations == 0 else to_generations
     else:
         neat = load_neat(neat_name)
         config_instance = neat.config
+        # from_generation = neat.generation
+        from_generation = 0
+        generations = (config_instance.generations - from_generation) if to_generations == 0 else to_generations
 
     min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
+    print(f"Training from generation {from_generation} to generation {from_generation + generations}")
+    
     try:
-        for generation in range(generations, generations + config_instance.generations):
+        for generation in range(from_generation, from_generation + generations):
             neat.train_genomes()
             collect_fitnesses(neat.genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses)
             
@@ -87,7 +94,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.command == "train":
-        main(neat_name=args.neat_name, generations=args.extra_number)
+        main(neat_name=args.neat_name, to_generations=args.extra_number)
     elif args.command == "test":
         test_genome(args.from_gen, args.to_gen)
     else:
