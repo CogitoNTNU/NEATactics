@@ -23,7 +23,6 @@ class NEAT:
         self.species: list[Species] = []
         self.connections: list[ConnectionGene] = []
         self.connections_with_node_mutations: dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
-        # self.generation: int = 1
         
     def generate_offspring(self, specie: Species):
         """
@@ -124,26 +123,27 @@ class NEAT:
             specie.fitness_value = 0  # Reset the fitness value
 
         for genome in genomes:
-            found_species = False  # Track if the genome is assigned to a species
+            not_found_species = True  # Track if the genome is assigned to a species
 
             # Compare genome to each species' representative genome
             for specie, representative in test_species_genomes:
                 if genomic_distance(genome, representative, self.config) < self.config.genomic_distance_threshold:
                     # If the genome fits, add it to the correct species
                     specie.add_genome(genome)
-                    found_species = True
+                    not_found_species = False
+                    if not specie in new_species_list:
+                        new_species_list.append(specie)
                     break  # Stop searching once the genome is added to a species
 
             # If the genome does not fit into any existing species, create a new one
-            if not found_species:
+            if not_found_species:
                 new_species = self.create_species()
                 new_species.add_genome(genome)
                 new_species_list.append(new_species)  # Track new species
                 test_species_genomes.append((new_species, genome))  # Use this genome as the representative for the new species
 
         # After processing all genomes, update self.species
-        self.species = [specie for specie, _ in test_species_genomes if specie.genomes]  # Remove empty species
-        self.species.extend(new_species_list)  # Add newly created species
+        self.species = new_species_list  # swap with the new generation of species
 
     def create_species(self):
         """ Helper function to create a new species."""
@@ -165,7 +165,9 @@ class NEAT:
                 for genome in specie.genomes:
                     genome.fitness_value = genome.fitness_value / specie_size
                     specie.adjust_total_fitness(genome.fitness_value)  # Adjusts the total fitness of the specie
-    
+            else:
+                print("specie size bug - in adjust_fitness")
+
     def calculate_number_of_children_of_species(self):
         """Takes in all species and sets the number of children it should have"""
         config = Config()
@@ -180,17 +182,35 @@ class NEAT:
             num_new_population = round((specie.fitness_value)/(mean_total_adjusted_fitness))
             specie.set_new_population_size(num_new_population)
         
-         # Ensures that the total sum of new genomes is the total population_size
+        # Ensures that the total sum of new genomes is the total population_size
         num_new_for_each_specie = []
         for specie in self.species:
             num_new_for_each_specie.append(specie.new_population_size)
+            
+        print(f"The old popultaion sizes for each specie:{num_new_for_each_specie}, The old sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
+        
+        while(sum(num_new_for_each_specie) != config.population_size):
+            self.species = sorted(self.species, key=lambda x: len(x.genomes), reverse=True)
+            #for specie in self.species:
+            #    print(specie.new_population_size)
+            if (sum(num_new_for_each_specie) > config.population_size):
+                # remove from the species with the most genome
+                self.species[0].new_population_size -= 1
+                num_new_for_each_specie.append(-1)
+                
+            elif (sum(num_new_for_each_specie) < config.population_size):
+                self.species[0].new_population_size += 1
+                num_new_for_each_specie.append(1)
+        
+        num_new_for_each_specie = []
+        for specie in self.species:
+            num_new_for_each_specie.append(specie.new_population_size)
+        #difference_between_desired_and_real = config.population_size - sum(num_new_for_each_specie)
+        #idx_of_species_w_most_genomes = num_new_for_each_specie.index((max(num_new_for_each_specie)))
 
-        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        difference_between_desired_and_real = config.population_size - sum(num_new_for_each_specie)
-        idx_of_species_w_most_genomes = num_new_for_each_specie.index((max(num_new_for_each_specie)))
-
-        self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
-
+        #self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
+        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The new sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
+        
 
     def add_mutation(self, genome: Genome):
         """

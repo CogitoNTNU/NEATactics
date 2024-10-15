@@ -15,7 +15,7 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     warnings.filterwarnings("ignore")
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.")
-        ENV_NAME = "SuperMarioBros-v2"
+        ENV_NAME = "SuperMarioBros-v1"
         env = gym_super_mario_bros.make(ENV_NAME)
         env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
         env.metadata['render_modes'] = "rgb_array"
