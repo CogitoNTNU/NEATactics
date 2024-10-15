@@ -6,19 +6,16 @@ from typing import List
 import numpy as np
 
 class Traverse:
-    def __init__(self, genome: Genome, config: Config = None) -> None:
+    def __init__(self, genome: Genome) -> None:
         self.genome = genome
-        self.config = config
-        if config is not None:
-            a_func = self.config.activation_func.lower() 
-            if a_func == "relu":
-                self.activation_function = self.relu
-            elif a_func == "sigmoid":
-                self.activation_function = self.sigmoid
-            else:
-                raise NotImplementedError(f"We have not implemented {self.config.activation_func}")
-        else:
+        self.config = Config()
+        a_func = self.config.activation_func.lower() 
+        if a_func == "relu":
+            self.activation_function = self.relu
+        elif a_func == "sigmoid":
             self.activation_function = self.sigmoid
+        else:
+            raise NotImplementedError(f"We have not implemented {self.config.activation_func}")
     
     def traverse(self) -> int:
         """
