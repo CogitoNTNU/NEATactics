@@ -256,7 +256,7 @@ class Game():
             TextDisplay(50, 300, "Generations:", st.font, st.text_color)
         ]
 
-        # watching genomes
+        # Watch genomes play
         self.genomes = [
             {"id": 1, "fitness": 1.2},
             {"id": 2, "fitness": 3.4},
@@ -265,13 +265,17 @@ class Game():
             {"id": 5, "fitness": 1.5},
         ]
 
-        # Genome viewer
+        ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg)
 
-        # Run button
+        ## Run button
         self.run_button = Button(600, 350, 200, 50, "Run Selected Genomes", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
+        self.watch_back_button = Button(200, 450, 200, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
 
-
+        #Visualize best genome
+        self.visualize_back_button = Button(50, 50, 150, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
+        self.show_visualization_button = Button(100, 350, 200, 50, "Show Visualization", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.show_visualization)
+        self.get_which_frames_to_show_input = InputField(400, 350, 150, 50, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, initial_text="0")
 
 
     def event_handler(self):
@@ -288,6 +292,8 @@ class Game():
             if st.sc_selector == 3:
                 self.genome_viewer.handle_event(event)
 
+    def show_visualization(self):
+        print("Showing Visualization")
 
     def train_scene(self):
         st.sc_selector = 1
@@ -317,9 +323,9 @@ class Game():
         # Draw the genome viewer list
         self.genome_viewer.draw(self.screen)
 
-        # Draw the run button
+        # Draw the buttons
         self.run_button.draw(self.screen)
-
+        self.watch_back_button.draw(self.screen)
 
 
 
