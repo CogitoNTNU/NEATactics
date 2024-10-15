@@ -218,7 +218,7 @@ class NEAT:
         if self.config.population_size <= 150:  # This threshold is adjustable based on your problem's requirements
             node_mutation_chance = self.config.new_node_small_pop_chance
         else:
-            node_mutation_chance = self.config.new_node_small_big_chance
+            node_mutation_chance = self.config.new_node_big_pop_chance
 
         if random.random() < node_mutation_chance:
             self.add_node_mutation(genome)
