@@ -191,8 +191,6 @@ class NEAT:
         
         while(sum(num_new_for_each_specie) != config.population_size):
             self.species = sorted(self.species, key=lambda x: len(x.genomes), reverse=True)
-            #for specie in self.species:
-            #    print(specie.new_population_size)
             if (sum(num_new_for_each_specie) > config.population_size):
                 # remove from the species with the most genome
                 self.species[0].new_population_size -= 1

@@ -7,8 +7,8 @@ class Config:
     c2: float = 1.
     c3: float = 0.4
     genomic_distance_threshold: float = 0.9
-    population_size: int = 120
-    generations: int = 10
+    population_size: int = 150
+    generations: int = 8
 
     connection_weight_mutation_chance: float = 0.8
     # if mutate gene:
@@ -34,6 +34,7 @@ class Config:
     # Activation function
     # What we use: ReLU
     # Paper: 1/(1+exp(-0.49*x))
+    activation_func: str = "sigmoid"
     
     elitism_rate: float = 0.04 # percentage of the best genomes are copied to the next generation
     remove_worst_percentage: float = 0.75 # percentage of the worst genomes are removed from the population when breeding
