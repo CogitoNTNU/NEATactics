@@ -1,6 +1,7 @@
+import neat_test_file
 import pygame
 import sys
-import neat_test_file
+
 import src.utils.config as conf
 
 class Settings():
@@ -221,7 +222,7 @@ class Game():
             Button(140, 100, 200, 100, "Train!", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.train_scene),
             Button(460, 100, 200, 100, "Settings", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.settings_scene),
             Button(140, 250, 200, 100, "Watch best gene", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.watch_gene_scene),
-            Button(460, 250, 200, 100, "Visualize best genome", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.visualize_action),
+            Button(460, 250, 200, 100, "Visualize best genome", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.visualize_genome_scene),
             TextDisplay(300, 30, "Neat Tactics!", st.font, st.text_color, bg_color=st.DARK_BLUE)
         ]
 
@@ -256,7 +257,7 @@ class Game():
             TextDisplay(50, 300, "Generations:", st.font, st.text_color)
         ]
 
-        # watching genomes
+        # Watch genomes play
         self.genomes = [
             {"id": 1, "fitness": 1.2},
             {"id": 2, "fitness": 3.4},
@@ -265,13 +266,17 @@ class Game():
             {"id": 5, "fitness": 1.5},
         ]
 
-        # Genome viewer
+        ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg)
 
-        # Run button
+        ## Run button
         self.run_button = Button(600, 350, 200, 50, "Run Selected Genomes", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
+        self.watch_back_button = Button(200, 450, 200, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
 
-
+        #Visualize best genome
+        self.visualize_back_button = Button(50, 50, 150, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
+        self.show_visualization_button = Button(100, 350, 200, 50, "Show Visualization", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.visualize_genomes)
+        self.get_which_frames_to_show_input = InputField(400, 350, 150, 50, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, initial_text="0")
 
 
     def event_handler(self):
@@ -289,21 +294,23 @@ class Game():
                 self.genome_viewer.handle_event(event)
 
 
-    def train_scene(self):
-        st.sc_selector = 1
+    def visualize_genomes(self):
+        print("visualizing genomes...")
 
     def main_menu_scene(self):
         st.sc_selector = 0
- 
+
+    def train_scene(self):
+        st.sc_selector = 1
+
     def settings_scene(self):
         st.sc_selector = 2
     
     def watch_gene_scene(self):
         st.sc_selector = 3
 
-
-    def visualize_action(self):
-        print("Visualizing genome...")
+    def visualize_genome_scene(self):
+        st.sc_selector = 4
     
     def run_selected_genomes(self):
         # Get the selected genome IDs and run them
@@ -312,15 +319,28 @@ class Game():
         # Add logic here to execute the selected genomes (e.g., visualize, simulate, etc.)
     
     def watch_genome_scene(self):
-        self.screen.fill(st.DARK_BLUE)
+        self.screen.fill(st.LIGHT_BLUE)
 
         # Draw the genome viewer list
         self.genome_viewer.draw(self.screen)
 
-        # Draw the run button
+        # Draw the buttons
         self.run_button.draw(self.screen)
+        self.watch_back_button.draw(self.screen)
 
 
+    def draw_visualize_genome_scene(self):
+        """Draw the 'Visualize Best Genome' scene."""
+        self.screen.fill(st.LIGHT_BLUE)
+
+        # Draw the back button
+        self.visualize_back_button.draw(self.screen)
+
+        # Draw the show visualization button
+        self.show_visualization_button.draw(self.screen)
+
+        # Draw the input field for the frame selection
+        self.get_which_frames_to_show_input.draw(self.screen)
 
 
     def apply_changes(self):
@@ -346,7 +366,7 @@ class Game():
     
 
     def draw_settings_scene(self):
-        self.screen.fill(st.DARK_BLUE)
+        self.screen.fill(st.LIGHT_BLUE)
 
         # Draw titles and input fields
         for title in self.input_titles:
@@ -377,6 +397,8 @@ class Game():
             self.draw_settings_scene()
         elif st.sc_selector == 3:
             self.watch_genome_scene()
+        elif st.sc_selector == 4:
+            self.draw_visualize_genome_scene()
 
         pygame.display.flip()
 
