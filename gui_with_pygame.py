@@ -292,6 +292,8 @@ class Game():
                     input_field.handle_event(event)
             if st.sc_selector == 3:
                 self.genome_viewer.handle_event(event)
+            if st.sc_selector == 4:
+                self.get_which_frames_to_show_input.handle_event(event)
 
 
     def visualize_genomes(self):
