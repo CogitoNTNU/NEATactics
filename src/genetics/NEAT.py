@@ -202,6 +202,7 @@ class NEAT:
             # Determine if we should perturb or assign a new random value
             if random.random() < self.config.connection_weight_perturbance_chance:
                 # Perturb the weight slightly
+                perturbation = random.uniform(0, 1.)*random.uniform(-1, 1)  # Adjust the range as needed
                 perturbation = random.uniform(-0.5, 0.5)  # Adjust the range as needed
                 connection.weight += perturbation
             else:
