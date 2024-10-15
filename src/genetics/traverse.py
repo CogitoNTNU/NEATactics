@@ -1,12 +1,14 @@
 from src.genetics.genome import Genome
 from src.genetics.node import Node
 from src.genetics.connection_gene import ConnectionGene
+from src.utils.config import Config
 from typing import List
+import numpy as np
 
 class Traverse:
-    def __init__(self, genome: Genome) -> None:
+    def __init__(self, genome: Genome, config: Config) -> None:
         self.genome = genome
-    
+        self.config = config
     
     def traverse(self) -> int:
         """
@@ -100,11 +102,23 @@ class Traverse:
         connection.out_node.value += weighted_input
 
 
+    def relu(self, value: float) -> float:
+        if value < 0:
+            return 0.0
+        return value 
+
+    def sigmoid(self, z: float) -> float:
+        return 1/(1 + np.exp(-z))
         
     def activation_function(self, value: float) -> float:
         """
         Applies the ReLU activation function to the value
         """
-        if value < 0:
-            return 0.0
-        return value 
+        activation_func = self.config.activation_func.lower() 
+        if activation_func == "relu":
+            return self.relu(value)
+        elif activation_func == "sigmoid":
+            return self.sigmoid(value)
+        else:
+            raise NotImplementedError(f"We have not implemented {self.config.activation_func}")
+            

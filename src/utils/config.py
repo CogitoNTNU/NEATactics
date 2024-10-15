@@ -34,6 +34,7 @@ class Config:
     # Activation function
     # What we use: ReLU
     # Paper: 1/(1+exp(-0.49*x))
+    activation_func: str = "sigmoid"
     
     elitism_rate: float = 0.04 # percentage of the best genomes are copied to the next generation
     remove_worst_percentage: float = 0.75 # percentage of the worst genomes are removed from the population when breeding
