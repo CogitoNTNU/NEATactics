@@ -120,15 +120,3 @@ class Traverse:
     def sigmoid(self, z: float) -> float:
         return 1/(1 + np.exp(-z))
         
-    # def activation_functionx(self, value: float) -> float:
-        # """
-        # Applies the ReLU activation function to the value
-        # """
-        # activation_func = self.config.activation_func.lower() 
-        # if activation_func == "relu":
-            # return self.relu(value)
-        # elif activation_func == "sigmoid":
-            # return self.sigmoid(value)
-        # else:
-            # raise NotImplementedError(f"We have not implemented {self.config.activation_func}")
-            
