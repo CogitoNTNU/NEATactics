@@ -14,6 +14,8 @@ class Traverse:
             self.activation_function = self.relu
         elif a_func == "sigmoid":
             self.activation_function = self.sigmoid
+        elif a_func == "tanh":
+            self.activation_function = self.tanh
         else:
             raise NotImplementedError(f"We have not implemented {self.config.activation_func}")
     
@@ -32,7 +34,8 @@ class Traverse:
             for connection in node.connections_to_output:
                 if connection.is_enabled:
                     self.update_out_node_value(connection)
-            node.value = self.activation_function(node.value)
+            if node.type != "input":
+                node.value = self.activation_function(node.value)
         action = self.output()
         return action
     
@@ -117,3 +120,5 @@ class Traverse:
     def sigmoid(self, z: float) -> float:
         return 1/(1 + np.exp(-z))
         
+    def tanh(self, z: float) -> float:
+        return np.tanh(z)
