@@ -100,8 +100,8 @@ def breed_two_genomes(genome1: Genome, genome2: Genome, genome_id: int) -> Genom
                 add_connection_to_new_genome(new_genome, new_nodes_dict, connection)
     else:
         # Inherit disjoint and excess genes from the more fit parent (alpha_genome)
-        disjoint_and_excess_nums = alpha_num_set - beta_num_set
-        for num in disjoint_and_excess_nums:
+        unique_alpha_nums = alpha_num_set - beta_num_set
+        for num in unique_alpha_nums:
             connection = alpha_connections_dict[num]
             # Add the connection to the new genome
             add_connection_to_new_genome(new_genome, new_nodes_dict, connection)

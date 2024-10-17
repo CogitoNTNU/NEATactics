@@ -37,23 +37,16 @@ class NEAT:
         :list[Genome]: List of new genomes for the next generation.
         """
         new_generation_genomes = []
-        # self.generation += 1
-        # Sort genomes by fitness (descending order)
-        breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
+        elites = []
+                
+        print(f"Number of offspring: {specie.new_population_size}")
         
-        # If there are less than two genomes in the species, clone the genomes to fill the new generation and return
-        if len(breeding_pool) < 2:
-            for genome in breeding_pool:
-                if len(new_generation_genomes) < specie.new_population_size:
-                    cloned_genome = copy.deepcopy(genome)
-                    cloned_genome.id = self.genome_id
-                    self.genome_id += 1
-                    new_generation_genomes.append(cloned_genome)
-            return new_generation_genomes
+        breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
         
         # Select a percentage of the top genomes as elites (at least one elite survives)
         num_elites = min(max(1, int(self.config.elitism_rate * len(breeding_pool))), specie.new_population_size)
-        elites = breeding_pool[:num_elites]  # Get the top elites
+        if num_elites < len(breeding_pool):
+            elites = breeding_pool[:num_elites]  # Get the top elites
         
         # create new genomes from elites
         for elite in elites:
@@ -67,15 +60,34 @@ class NEAT:
             
         while len(new_generation_genomes) < specie.new_population_size:
             if len(breeding_pool) == 0:
-                break
-            parent1 = random.choice(breeding_pool)
-            parent2 = random.choice(breeding_pool)
-            
+                print("breeding pool is empty - error NEAT line 63")
+                return new_generation_genomes
+            parent1 = self.select_parent(breeding_pool)
+            parent2 = self.select_parent(breeding_pool)
+                
             # Generate two offspring from each pair to maintain population size
             new_genome = breed_two_genomes(parent1, parent2, self.genome_id)
             self.genome_id += 1
             new_generation_genomes.append(new_genome)
         return new_generation_genomes
+
+    def select_parent(self, breeding_pool: List[Genome]) -> Genome:
+        """
+        Selects a parent from the sorted breeding pool, where genomes at the top of the pool
+        have a higher chance of being chosen, and the chance lowers as you go down the list.
+        
+        The breeding_pool is sorted from best to worst.
+        
+        :param breeding_pool: List of genomes, sorted by fitness from best to worst.
+        :return: Selected parent genome.
+        """
+        # Create a weight list where the first genome has the highest weight and it decreases linearly
+        #weights = [len(breeding_pool) - i for i in range(len(breeding_pool))]
+        total_fitness = 0
+        for genome in breeding_pool:
+           total_fitness += genome.fitness_value
+        weights = [genome.fitness_value/total_fitness for genome in breeding_pool]
+        return random.choices(breeding_pool, weights=weights)[0]
 
     def train_genome(self, genome: Genome):
         with warnings.catch_warnings():
@@ -84,6 +96,14 @@ class NEAT:
             fitness = run_game(env, state, genome)
             return genome.id, fitness  # Return the genome's ID and its fitness
         
+    def rank_species(self, specie: Species) -> float:
+        """Combine best genome fitness and average fitness to rank species."""
+        best_genome_fitness = max(genome.fitness_value for genome in specie.genomes)
+        average_fitness = sum(genome.fitness_value for genome in specie.genomes) / len(specie.genomes)
+        
+        weighted_score = 0.7 * best_genome_fitness + 0.3 * average_fitness
+        return weighted_score
+
     def train_genomes(self):
         """ Train all the genomes in the population in the environment. """
         # Create a multiprocessing pool
@@ -123,27 +143,29 @@ class NEAT:
             specie.fitness_value = 0  # Reset the fitness value
 
         for genome in genomes:
-            not_found_species = True  # Track if the genome is assigned to a species
+            found_species = False  # Track if the genome is assigned to a species
 
             # Compare genome to each species' representative genome
             for specie, representative in test_species_genomes:
                 if genomic_distance(genome, representative, self.config) < self.config.genomic_distance_threshold:
                     # If the genome fits, add it to the correct species
                     specie.add_genome(genome)
-                    not_found_species = False
+                    found_species = True
                     if not specie in new_species_list:
                         new_species_list.append(specie)
                     break  # Stop searching once the genome is added to a species
 
             # If the genome does not fit into any existing species, create a new one
-            if not_found_species:
+            if not found_species:
                 new_species = self.create_species()
                 new_species.add_genome(genome)
                 new_species_list.append(new_species)  # Track new species
                 test_species_genomes.append((new_species, genome))  # Use this genome as the representative for the new species
 
+
         # After processing all genomes, update self.species
         self.species = new_species_list  # swap with the new generation of species
+
 
     def create_species(self):
         """ Helper function to create a new species."""
@@ -172,10 +194,6 @@ class NEAT:
         """Takes in all species and sets the number of children it should have"""
         config = Config()
         
-        # Check if config.population_size is greater than 0
-        if config.population_size <= 0:
-            raise ValueError("Population size must be greater than zero.")
-        
         mean_total_adjusted_fitness = sum([specie.fitness_value for specie in self.species])/config.population_size
         
         for specie in self.species:
@@ -188,16 +206,12 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)
             
         print(f"The old popultaion sizes for each specie:{num_new_for_each_specie}, The old sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        
-        while(sum(num_new_for_each_specie) != config.population_size):
-            sorting_list = []
-            for specie in self.species:
-                sorting_list.append([specie, len(specie.genomes)])
-            sorting_list.sort(key=lambda x: x[1], reverse=True)
-            self.species = []
-            for i in sorting_list:
-                self.species.append(i[0])
+        for specie in self.species:
+            print(len(specie.genomes))
+        self.species.sort(key=lambda x: len(x.genomes), reverse=True)
 
+        while(sum(num_new_for_each_specie) != config.population_size):
+            
             if (sum(num_new_for_each_specie) > config.population_size):
                 # remove from the species with the most genome
                 self.species[0].new_population_size -= 1
@@ -215,7 +229,8 @@ class NEAT:
 
         #self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
         print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The new sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        
+        for specie in self.species:
+            print((specie.new_population_size))
 
     def add_mutation(self, genome: Genome):
         """
@@ -227,7 +242,7 @@ class NEAT:
             # Determine if we should perturb or assign a new random value
             if random.random() < self.config.connection_weight_perturbance_chance:
                 # Perturb the weight slightly
-                perturbation = random.uniform(-0.5, 0.5)  # Adjust the range as needed
+                perturbation = random.uniform(0, 1.)*random.uniform(-1, 1)  # Adjust the range as needed
                 connection.weight += perturbation
             else:
                 # Assign a new random weight
@@ -355,7 +370,7 @@ class NEAT:
         # Remove the worst-performing genomes by slicing the ordered list
         breeding_pool = breeding_pool[:-num_to_remove] if num_to_remove > 0 else breeding_pool
         
-        if(len(breeding_pool)%2==1):
+        if (len(breeding_pool) % 2 == 1 and len(breeding_pool) > 1):
             breeding_pool.pop()
         
         return breeding_pool

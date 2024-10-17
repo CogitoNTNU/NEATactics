@@ -118,7 +118,7 @@ class Traverse:
         return value 
 
     def sigmoid(self, z: float) -> float:
-        return 1/(1 + np.exp(-z))
+        return 1/(1 + np.exp(-0.49 * z))
         
     def tanh(self, z: float) -> float:
         return np.tanh(z)
