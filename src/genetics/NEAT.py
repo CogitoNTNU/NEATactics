@@ -37,8 +37,6 @@ class NEAT:
         :list[Genome]: List of new genomes for the next generation.
         """
         new_generation_genomes = []
-        # self.generation += 1
-        # Sort genomes by fitness (descending order)
         breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
         
         # If there are less than two genomes in the species, clone the genomes to fill the new generation and return
@@ -67,15 +65,37 @@ class NEAT:
             
         while len(new_generation_genomes) < specie.new_population_size:
             if len(breeding_pool) == 0:
-                break
-            parent1 = random.choice(breeding_pool)
-            parent2 = random.choice(breeding_pool)
+                "error in breeding pool"
+            parent1 = self.select_parent(breeding_pool)
+            parent2 = self.select_parent(breeding_pool)
             
+            # Ensure parents are different
+            while parent2 == parent1:
+                parent2 = self.select_parent(breeding_pool)
+                
             # Generate two offspring from each pair to maintain population size
             new_genome = breed_two_genomes(parent1, parent2, self.genome_id)
             self.genome_id += 1
             new_generation_genomes.append(new_genome)
         return new_generation_genomes
+
+    def select_parent(self, breeding_pool: List[Genome]) -> Genome:
+        """
+        Selects a parent from the sorted breeding pool, where genomes at the top of the pool
+        have a higher chance of being chosen, and the chance lowers as you go down the list.
+        
+        The breeding_pool is sorted from best to worst.
+        
+        :param breeding_pool: List of genomes, sorted by fitness from best to worst.
+        :return: Selected parent genome.
+        """
+        # Create a weight list where the first genome has the highest weight and it decreases linearly
+        #weights = [len(breeding_pool) - i for i in range(len(breeding_pool))]
+        total_fitness = 0
+        for genome in breeding_pool:
+           total_fitness += genome.fitness_value
+        weights = [genome.fitness_value/total_fitness for genome in breeding_pool]
+        return random.choices(breeding_pool, weights=weights)[0]
 
     def train_genome(self, genome: Genome):
         with warnings.catch_warnings():
@@ -220,7 +240,7 @@ class NEAT:
             # Determine if we should perturb or assign a new random value
             if random.random() < self.config.connection_weight_perturbance_chance:
                 # Perturb the weight slightly
-                perturbation = random.uniform(-0.5, 0.5)  # Adjust the range as needed
+                perturbation = random.uniform(0, 1.)*random.uniform(-1, 1)  # Adjust the range as needed
                 connection.weight += perturbation
             else:
                 # Assign a new random weight
