@@ -269,3 +269,5 @@ trained_population
 
 # Fitness_values.txt file which contains the fitness values of the best genomes from different generations.
 fitness_values.txt
+
+data/*
