@@ -182,6 +182,9 @@ class TextDisplay:
         self.text_color = text_color
         self.bg_color = bg_color  # Background color, if specified
         self.center = center  # Center the text if needed
+        self.population_field = None
+        self.mutation_field = None
+        self.generation_field = None
 
     def draw(self, screen):
         # Render the text
@@ -292,6 +295,8 @@ class Game():
                     input_field.handle_event(event)
             if st.sc_selector == 3:
                 self.genome_viewer.handle_event(event)
+            if st.sc_selector == 4:
+                self.get_which_frames_to_show_input.handle_event(event)
 
 
     def visualize_genomes(self):

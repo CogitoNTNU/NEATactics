@@ -59,9 +59,11 @@ class MarioJoypadSpace(JoypadSpace):
         Output:
         - ndarray with shape (10, 20)        
         """
+        MAX_COLOR = 255
         state = state[80:216] # Cut the picture
         state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140]) # Convert to grayscale
         state = state.astype(np.uint8) # Ensure valid grayscale value (can't be float)
         state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8) # Reduce pixel count.
         state = np.array(state)
-        return state / 255
+        grayscale_pixel_values = state / MAX_COLOR
+        return grayscale_pixel_values

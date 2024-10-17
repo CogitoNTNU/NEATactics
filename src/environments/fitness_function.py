@@ -62,9 +62,9 @@ class Fitness:
             "move_forward": 1.0,
             "move_backward": -0.1,
             "dont_move_forward": -0.001,
-            "coins": 15,
-            "jump_multiple": - 0.01,
-            "score": 0.1,
+            "coins": 90,
+            "jump_multiple": - 1,
+            "score": 0.5,
         }
         
 

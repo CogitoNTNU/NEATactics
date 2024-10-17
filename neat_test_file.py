@@ -4,7 +4,8 @@ from src.utils.config import Config
 from src.genetics.NEAT import NEAT
 from src.utils.utils import save_fitness, save_best_genome, load_best_genome, save_neat, load_neat
 import warnings
-import sys
+import cProfile
+import pstats
 import argparse
 from typing import Dict
 
@@ -33,6 +34,8 @@ def collect_fitnesses(genomes, generation, min_fitnesses, avg_fitnesses, best_fi
 
 
 def main(neat_name: str = '', to_generations: int = 0):
+    profiler = cProfile.Profile()
+    profiler.enable()
     if neat_name == '':
         config_instance = Config()
         neat = NEAT(config_instance)
@@ -73,6 +76,12 @@ def main(neat_name: str = '', to_generations: int = 0):
         save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses)
         save_neat(neat, "latest")
         print("Fitness data saved.")
+    
+    profiler.disable()
+
+    # Create a stats object to print out profiling results
+    stats = pstats.Stats(profiler).sort_stats('cumtime')
+    stats.print_stats()
 
     return neat.genomes
 

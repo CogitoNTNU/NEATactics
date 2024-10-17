@@ -29,7 +29,7 @@ def genomic_distance(genome1: Genome, genome2: Genome, config: Config):
 
     # Calculate normalization factor n (number of genes in the larger genome)
     n = max(len(innovation_numbers1), len(innovation_numbers2), 1)  # Avoid division by 0
-
+    #n = 1
     # Return the genomic distance using the NEAT formula
     return (
         config.c1 * disjoint / (1+np.log(n))

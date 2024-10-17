@@ -15,7 +15,7 @@ def env_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     warnings.filterwarnings("ignore")
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.")
-        ENV_NAME = "SuperMarioBros-v2"
+        ENV_NAME = "SuperMarioBros-v1"
         env = gym_super_mario_bros.make(ENV_NAME)
         env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
         env.metadata['render_modes'] = "rgb_array"
@@ -36,7 +36,7 @@ def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
         action = forward.traverse() 
         sr = env.step(action)
         fitness.calculate_fitness(sr.info, action)
-
+        timeout = 600 + sr.info["x_pos"]
         if sr.info["life"] == 1 or i > timeout or sr.done: # What is happening here?
             env.close()
             return fitness.get_fitness()

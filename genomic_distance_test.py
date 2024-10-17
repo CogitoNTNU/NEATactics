@@ -52,7 +52,7 @@ def main():
     min_fitnesses = []
     try:
         for generation in range(config_instance.generations):
-            neat.test_genomes()
+            neat.train_genomes()
             
             # Store the best, avg and min fitness value for each generation.
             fitnesses = []
