@@ -1,4 +1,4 @@
-import main
+import main as neat_test_file
 import pygame
 import sys
 import threading
@@ -346,7 +346,7 @@ class Game():
         ]
 
 
-        genome_folder = 'good_genomes'
+        genome_folder = 'data/good_genomes'
         genome_manager = GenomeManager(genome_folder)
 
         # Load all genome objects from the folder
@@ -478,7 +478,7 @@ class Game():
         generations = self.training_input_fields[2].text
         print(f"Starting training with Population: {population}, Mutation Rate: {mutation_rate}, Generations: {generations}")
         # Insert your training code here (e.g. NEAT training)
-        main.main()
+        neat_test_file.main()
     
 
     def draw_settings_scene(self):
