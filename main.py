@@ -1,14 +1,11 @@
-from numpy import save
-from src.genetics.genome import Genome
 from src.environments.debug_env import env_debug_init, run_game_debug
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
-from src.utils.utils import save_fitness, save_best_genome, load_best_genome, save_neat, load_neat, save_fitness_data
+from src.utils.utils import save_fitness, save_best_genome, load_best_genome, save_neat, load_neat, save_fitness_data, get_fitnesses_from_file
 import warnings
 import cProfile
 import pstats
 import argparse
-from typing import Dict
 
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
@@ -39,9 +36,12 @@ def collect_fitnesses(genomes, generation, min_fitnesses, avg_fitnesses, best_fi
     print(f"Generation: {generation} - Best: {max_fitness} - Avg: {avg_fitness} - Min: {min_fitness}")
 
 
-def main(neat_name: str = '', to_generations: int = 0):
+def main(args):
+    neat_name = args.neat_name
     profiler = cProfile.Profile()
     profiler.enable()
+    min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
+    to_generations = args.extra_number
     if neat_name == '':
         config_instance = Config()
         neat = NEAT(config_instance)
@@ -51,11 +51,10 @@ def main(neat_name: str = '', to_generations: int = 0):
     else:
         neat = load_neat(neat_name)
         config_instance = neat.config
-        # from_generation = neat.generation
         from_generation = 0
         generations = (config_instance.generations - from_generation) if to_generations == 0 else to_generations
+        _, min_fitnesses, avg_fitnesses, best_fitnesses = get_fitnesses_from_file()
 
-    min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
     print(f"Training from generation {from_generation} to generation {from_generation + generations}")
     
     try:
@@ -108,12 +107,14 @@ if __name__ == "__main__":
 
     graph_parser = subparsers.add_parser('graph', help="Graph the fitness data")
     
-    play_parser = subparsers.add_parser('play', help="Play the best genome")
+    play_parser = subparsers.add_parser('play', help="Play the best genome from the lastest generation")
+    play_parser.add_argument('-g', '--generation', type=int, help="The generation of the genome to play")
+    play_parser.add_argument('-b', '--best', action='store_true', help="Play the best genome")
     
     args = parser.parse_args()
     
     if args.command == "train":
-        main(neat_name=args.neat_name, to_generations=args.extra_number)
+        main(args) #neat_name=args.neat_name, to_generations=args.extra_number)
     elif args.command == "test":
         test_genome(args.from_gen, args.to_gen)
     elif args.command == "graph":

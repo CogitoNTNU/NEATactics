@@ -110,3 +110,7 @@ def save_fitness_data():
     filename = 'data/fitness/fitness_values.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
     generations, best_values, avg_values, min_values = read_fitness_file(filename)
     plot_fitness_data(generations, best_values, avg_values, min_values)
+
+def get_fitnesses_from_file():
+    filename = 'data/fitness/fitness_values.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
+    return read_fitness_file(filename)
