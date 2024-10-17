@@ -362,9 +362,9 @@ class Game():
             print("Invalid input! Please enter valid numbers.")
 
     def start_training(self):
-        population = self.population_field.text
-        mutation_rate = self.mutation_field.text
-        generations = self.generation_field.text
+        population = self.training_input_fields[0].text
+        mutation_rate = self.training_input_fields[1].text
+        generations = self.training_input_fields[2].text
         print(f"Starting training with Population: {population}, Mutation Rate: {mutation_rate}, Generations: {generations}")
         # Insert your training code here (e.g. NEAT training)
         main.main()
