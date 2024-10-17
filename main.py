@@ -10,7 +10,7 @@ import argparse
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
 def play_genome():
-    genome = load_best_genome(0)
+    genome = load_best_genome(-1)
     env, state = env_debug_init()
     run_game_debug(env, state, genome, 0, visualize=False)
 
@@ -42,18 +42,24 @@ def main(args):
     profiler.enable()
     min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
     to_generations = args.extra_number
+
     if neat_name == '':
+        neat_name = "latest"
+    
+    neat, exists = load_neat(neat_name)
+    if exists:
+        generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = get_fitnesses_from_file("fitness_values")
+        print(f"Generation numbs: {generation_nums}")
+        from_generation = generation_nums[-1] + 1
+        print(f"From generation: {from_generation}")
+        config_instance = neat.config
+    else:
         config_instance = Config()
         neat = NEAT(config_instance)
         neat.initiate_genomes()
         from_generation = 0
-        generations = config_instance.generations if to_generations == 0 else to_generations
-    else:
-        neat = load_neat(neat_name)
-        config_instance = neat.config
-        from_generation = 0
-        generations = (config_instance.generations - from_generation) if to_generations == 0 else to_generations
-        _, min_fitnesses, avg_fitnesses, best_fitnesses = get_fitnesses_from_file()
+    
+    generations = (config_instance.generations) if to_generations == 0 else to_generations
 
     print(f"Training from generation {from_generation} to generation {from_generation + generations}")
     
@@ -78,7 +84,7 @@ def main(args):
         print("\nProcess interrupted! Saving fitness data...")
     finally:
         # Always save fitness data before exiting, whether interrupted or completed
-        save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses)
+        save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses, exists)
         save_neat(neat, "latest")
         print("Fitness data saved.")
     
