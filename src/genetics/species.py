@@ -33,6 +33,6 @@ class Species:
     def adjust_new_population_size(self, add_member):
         self.new_population_size += add_member
 
-    def __repr__(self):
-        return (f"Specie number: {self.species_number}, "
-                f"Number of genomes: {len(self.genomes)}")
+    #def __repr__(self):
+    #    return (f"Specie number: {self.species_number}, "
+    #            f"Number of genomes: {len(self.genomes)}")

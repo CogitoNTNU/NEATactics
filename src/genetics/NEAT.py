@@ -37,6 +37,9 @@ class NEAT:
         :list[Genome]: List of new genomes for the next generation.
         """
         new_generation_genomes = []
+                
+        print(f"Number of offspring: {specie.new_population_size}")
+        
         breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
         
         # If there are less than two genomes in the species, clone the genomes to fill the new generation and return
@@ -104,6 +107,14 @@ class NEAT:
             fitness = run_game(env, state, genome)
             return genome.id, fitness  # Return the genome's ID and its fitness
         
+    def rank_species(self, specie: Species) -> float:
+        """Combine best genome fitness and average fitness to rank species."""
+        best_genome_fitness = max(genome.fitness_value for genome in specie.genomes)
+        average_fitness = sum(genome.fitness_value for genome in specie.genomes) / len(specie.genomes)
+        
+        weighted_score = 0.7 * best_genome_fitness + 0.3 * average_fitness
+        return weighted_score
+
     def train_genomes(self):
         """ Train all the genomes in the population in the environment. """
         # Create a multiprocessing pool
@@ -118,7 +129,7 @@ class NEAT:
                     genome.fitness_value = fitness  # Assign the fitness value
                     break  # Move to the next result once a match is found
     
-    def sort_species(self, genomes: List[Genome]):
+    def sort_species(self, genomes: List[Genome], max_fitnesses: List[float]):
         """
         Sort genomes into species based on genomic distance.
         
@@ -143,27 +154,37 @@ class NEAT:
             specie.fitness_value = 0  # Reset the fitness value
 
         for genome in genomes:
-            not_found_species = True  # Track if the genome is assigned to a species
+            found_species = False  # Track if the genome is assigned to a species
 
             # Compare genome to each species' representative genome
             for specie, representative in test_species_genomes:
                 if genomic_distance(genome, representative, self.config) < self.config.genomic_distance_threshold:
                     # If the genome fits, add it to the correct species
                     specie.add_genome(genome)
-                    not_found_species = False
+                    found_species = True
                     if not specie in new_species_list:
                         new_species_list.append(specie)
                     break  # Stop searching once the genome is added to a species
 
             # If the genome does not fit into any existing species, create a new one
-            if not_found_species:
+            if not found_species:
                 new_species = self.create_species()
                 new_species.add_genome(genome)
                 new_species_list.append(new_species)  # Track new species
                 test_species_genomes.append((new_species, genome))  # Use this genome as the representative for the new species
+            #else:
+            #    print("bug in sort_species")
 
         # After processing all genomes, update self.species
         self.species = new_species_list  # swap with the new generation of species
+
+        # if len(max_fitnesses) > 10:
+        #     if all(max_fitnesses[-10] >= fitness for fitness in max_fitnesses[-10:]):
+        #         self.species.sort(key=lambda s: self.rank_species(s), reverse=True)
+        #         self.species = self.species[:2]
+        #         self.genomes = [g for s in self.species for g in s.genomes]
+                
+        
 
     def create_species(self):
         """ Helper function to create a new species."""
@@ -192,10 +213,6 @@ class NEAT:
         """Takes in all species and sets the number of children it should have"""
         config = Config()
         
-        # Check if config.population_size is greater than 0
-        if config.population_size <= 0:
-            raise ValueError("Population size must be greater than zero.")
-        
         mean_total_adjusted_fitness = sum([specie.fitness_value for specie in self.species])/config.population_size
         
         for specie in self.species:
@@ -208,16 +225,12 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)
             
         print(f"The old popultaion sizes for each specie:{num_new_for_each_specie}, The old sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        
-        while(sum(num_new_for_each_specie) != config.population_size):
-            sorting_list = []
-            for specie in self.species:
-                sorting_list.append([specie, len(specie.genomes)])
-            sorting_list.sort(key=lambda x: x[1], reverse=True)
-            self.species = []
-            for i in sorting_list:
-                self.species.append(i[0])
+        for specie in self.species:
+            print(len(specie.genomes))
+        self.species.sort(key=lambda x: len(x.genomes), reverse=True)
 
+        while(sum(num_new_for_each_specie) != config.population_size):
+            
             if (sum(num_new_for_each_specie) > config.population_size):
                 # remove from the species with the most genome
                 self.species[0].new_population_size -= 1
@@ -235,7 +248,8 @@ class NEAT:
 
         #self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
         print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The new sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        
+        for specie in self.species:
+            print((specie.new_population_size))
 
     def add_mutation(self, genome: Genome):
         """

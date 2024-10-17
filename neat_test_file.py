@@ -56,8 +56,8 @@ def main(neat_name: str = '', to_generations: int = 0):
         for generation in range(from_generation, from_generation + generations):
             neat.train_genomes()
             collect_fitnesses(neat.genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses)
-            
-            neat.sort_species(neat.genomes)
+
+            neat.sort_species(neat.genomes, best_fitnesses)
             neat.adjust_fitness()
             neat.calculate_number_of_children_of_species()
             new_genomes_list = []
@@ -66,9 +66,11 @@ def main(neat_name: str = '', to_generations: int = 0):
             
             flattened_genomes = [genome for sublist in new_genomes_list for genome in sublist]
             neat.genomes = flattened_genomes
+            print(f"test {len(neat.genomes)}")
                 
             for genome in neat.genomes:
                 neat.add_mutation(genome)
+                
     except KeyboardInterrupt:
         print("\nProcess interrupted! Saving fitness data...")
     finally:
