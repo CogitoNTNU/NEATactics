@@ -1,5 +1,6 @@
 from src.genetics.genome import Genome
 from src.utils.config import Config
+import numpy as np
 
 def genomic_distance(genome1: Genome, genome2: Genome, config: Config):
     # Collect innovation numbers of enabled connections for both genomes
@@ -31,7 +32,7 @@ def genomic_distance(genome1: Genome, genome2: Genome, config: Config):
     #n = 1
     # Return the genomic distance using the NEAT formula
     return (
-        config.c1 * disjoint / n
-        + config.c2 * excess / n
+        config.c1 * disjoint / (1+np.log(n))
+        + config.c2 * excess / (1+np.log(n))
         + config.c3 * avg_weight_diff
     )
