@@ -210,7 +210,14 @@ class NEAT:
         print(f"The old popultaion sizes for each specie:{num_new_for_each_specie}, The old sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
         
         while(sum(num_new_for_each_specie) != config.population_size):
-            self.species = sorted(self.species, key=lambda x: len(x.genomes), reverse=True)
+            sorting_list = []
+            for specie in self.species:
+                sorting_list.append([specie, len(specie.genomes)])
+            sorting_list.sort(key=lambda x: x[1], reverse=True)
+            self.species = []
+            for i in sorting_list:
+                self.species.append(i[0])
+
             if (sum(num_new_for_each_specie) > config.population_size):
                 # remove from the species with the most genome
                 self.species[0].new_population_size -= 1
