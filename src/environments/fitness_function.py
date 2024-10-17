@@ -59,12 +59,12 @@ class Fitness:
         self.rewards = {
             "lose_life": -15,
             "win": 100,
-            "move_forward": 1.0,
-            "move_backward": -0.1,
+            "move_forward": 0.02,
+            "move_backward": -0.05,
             "dont_move_forward": -0.001,
-            "coins": 90,
-            "jump_multiple": - 1,
-            "score": 0.5,
+            "coins": 2,
+            "score": 1,
+            "jump_multiple": 0,
         }
         
 
@@ -120,7 +120,7 @@ class Fitness:
         #self.prev_action = action
 
     def get_fitness(self):
-        return self.fitness+100
+        return self.fitness
 
 
 

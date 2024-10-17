@@ -72,6 +72,8 @@ def main(neat_name: str = '', to_generations: int = 0):
             
             flattened_genomes = [genome for sublist in new_genomes_list for genome in sublist]
             neat.genomes = flattened_genomes
+            
+            print(f"new generation size: {len(neat.genomes)}" )
                 
             for genome in neat.genomes:
                 neat.add_mutation(genome)
@@ -90,8 +92,8 @@ def main(neat_name: str = '', to_generations: int = 0):
     stats.print_stats()
 
     return neat.genomes
-
-if __name__ == "__main__":
+    
+def command_line_interface():
     parser = argparse.ArgumentParser(description="Train or Test Genomes")
     
     subparsers = parser.add_subparsers(dest="command", help="Choose 'train', 'test', 'graph', or 'play'")
@@ -122,3 +124,7 @@ if __name__ == "__main__":
         play_genome()
     else:
         parser.print_help()
+        
+if __name__ == "__main__":
+    # main()
+    command_line_interface()

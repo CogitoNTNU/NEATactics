@@ -37,24 +37,16 @@ class NEAT:
         :list[Genome]: List of new genomes for the next generation.
         """
         new_generation_genomes = []
+        elites = []
                 
         print(f"Number of offspring: {specie.new_population_size}")
         
         breeding_pool = sorted(specie.genomes, key=lambda x: x.fitness_value, reverse=True)
         
-        # If there are less than two genomes in the species, clone the genomes to fill the new generation and return
-        if len(breeding_pool) < 2:
-            for genome in breeding_pool:
-                if len(new_generation_genomes) < specie.new_population_size:
-                    cloned_genome = copy.deepcopy(genome)
-                    cloned_genome.id = self.genome_id
-                    self.genome_id += 1
-                    new_generation_genomes.append(cloned_genome)
-            return new_generation_genomes
-        
         # Select a percentage of the top genomes as elites (at least one elite survives)
         num_elites = min(max(1, int(self.config.elitism_rate * len(breeding_pool))), specie.new_population_size)
-        elites = breeding_pool[:num_elites]  # Get the top elites
+        if num_elites < len(breeding_pool):
+            elites = breeding_pool[:num_elites]  # Get the top elites
         
         # create new genomes from elites
         for elite in elites:
@@ -68,13 +60,10 @@ class NEAT:
             
         while len(new_generation_genomes) < specie.new_population_size:
             if len(breeding_pool) == 0:
-                "error in breeding pool"
+                print("breeding pool is empty - error NEAT line 63")
+                return new_generation_genomes
             parent1 = self.select_parent(breeding_pool)
             parent2 = self.select_parent(breeding_pool)
-            
-            # Ensure parents are different
-            while parent2 == parent1:
-                parent2 = self.select_parent(breeding_pool)
                 
             # Generate two offspring from each pair to maintain population size
             new_genome = breed_two_genomes(parent1, parent2, self.genome_id)
@@ -129,7 +118,7 @@ class NEAT:
                     genome.fitness_value = fitness  # Assign the fitness value
                     break  # Move to the next result once a match is found
     
-    def sort_species(self, genomes: List[Genome], max_fitnesses: List[float]):
+    def sort_species(self, genomes: List[Genome]):
         """
         Sort genomes into species based on genomic distance.
         
@@ -172,19 +161,11 @@ class NEAT:
                 new_species.add_genome(genome)
                 new_species_list.append(new_species)  # Track new species
                 test_species_genomes.append((new_species, genome))  # Use this genome as the representative for the new species
-            #else:
-            #    print("bug in sort_species")
+
 
         # After processing all genomes, update self.species
         self.species = new_species_list  # swap with the new generation of species
 
-        # if len(max_fitnesses) > 10:
-        #     if all(max_fitnesses[-10] >= fitness for fitness in max_fitnesses[-10:]):
-        #         self.species.sort(key=lambda s: self.rank_species(s), reverse=True)
-        #         self.species = self.species[:2]
-        #         self.genomes = [g for s in self.species for g in s.genomes]
-                
-        
 
     def create_species(self):
         """ Helper function to create a new species."""
@@ -389,7 +370,7 @@ class NEAT:
         # Remove the worst-performing genomes by slicing the ordered list
         breeding_pool = breeding_pool[:-num_to_remove] if num_to_remove > 0 else breeding_pool
         
-        if(len(breeding_pool)%2==1):
+        if (len(breeding_pool) % 2 == 1 and len(breeding_pool) > 1):
             breeding_pool.pop()
         
         return breeding_pool
