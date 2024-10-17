@@ -22,27 +22,36 @@ def env_debug_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
 
-def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome, num: int):
+def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome, num: int, visualize: bool = True) -> float:
     
     forward = Traverse(genome)
     fitness = Fitness()
-    i = 0
-    timeout = 500
     insert_input(genome, initial_state)
+    
+    last_fitness_val: float = 0
+    stagnation_counter: float = 0
+
     while True:
         action = forward.traverse()
         # time.sleep(0.001)
         sr = env.step(action) # State, Reward, Done, Info
         env.render()
-        timeout = 600 + sr.info["x_pos"]
-        save_state_as_png(i + 1, sr.state)
-        visualize_genome(genome, 0)
+        #timeout = 600 + sr.info["x_pos"]
+        if visualize:
+            save_state_as_png(i + 1, sr.state)
+            visualize_genome(genome, 0)
         
         fitness.calculate_fitness(sr.info, action)
 
-        if sr.info["life"] == 1 or i > timeout:
+        fitness_val: float = fitness.get_fitness()
+        if fitness_val > last_fitness_val:
+            last_fitness_val = fitness_val
+            stagnation_counter = 0
+        else:
+            stagnation_counter += 1
+
+        if sr.info["life"] == 1 or stagnation_counter > 50:
             env.close()
             return fitness.get_fitness()
             
-        i += 1
         insert_input(genome, sr.state)
