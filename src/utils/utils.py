@@ -5,6 +5,7 @@ import numpy as np
 import os
 import pickle
 from typing import TYPE_CHECKING
+import re
 
 if TYPE_CHECKING:
     # These imports will only be used for type hinting, not at runtime
@@ -45,25 +46,67 @@ def insert_input(genome:Genome, state: np.ndarray) -> None:
     for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
         node.value = state[i//num_columns][i % num_columns]
 
-def save_fitness(best: list, avg: list, min: list):
-    with open("fitness_values.txt", "w") as f:
+def save_fitness(best: list, avg: list, min: list, append: bool = False):
+    with open("data/fitness/fitness_values.txt", "w") as f:
         for i in range(len(best)):
             f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
 
 def save_best_genome(genome: Genome, generation: int):
-    os.makedirs('good_genomes', exist_ok=True)
-    with open(f'good_genomes/best_genome_{generation}.obj', 'wb') as f:
+    os.makedirs('data/good_genomes', exist_ok=True)
+    with open(f'data/good_genomes/best_genome_{generation}.obj', 'wb') as f:
         pickle.dump(genome, f) # type: ignore
 
 def load_best_genome(generation: int):
-    with open(f'good_genomes/best_genome_{generation}.obj', 'rb') as f:
+    with open(f'data/good_genomes/best_genome_{generation}.obj', 'rb') as f:
         return pickle.load(f)
 
 def save_neat(neat: 'NEAT', name: str):
-    os.makedirs('trained_population', exist_ok=True)
-    with open(f'trained_population/neat_{name}.obj', 'wb') as f:
+    os.makedirs('data/trained_population', exist_ok=True)
+    with open(f'data/trained_population/neat_{name}.obj', 'wb') as f:
         pickle.dump(neat, f) # type: ignore
         
 def load_neat(name: str):
-    with open(f'trained_population/neat_{name}.obj', 'rb') as f:
+    with open(f'data/trained_population/neat_{name}.obj', 'rb') as f:
         return pickle.load(f) # type: ignore
+
+# Function to read and parse the file
+def read_fitness_file(filename):
+    generations = []
+    best_values = []
+    avg_values = []
+    min_values = []
+
+    # Open the file and extract data
+    with open(filename, 'r') as file:
+        for line in file:
+            match = re.match(r"Generation: (\d+) - Best: ([\d\.]+) - Avg: ([\d\.]+) - Min: ([\d\.]+)", line)
+            if match:
+                generations.append(int(match.group(1)))
+                best_values.append(float(match.group(2)))
+                avg_values.append(float(match.group(3)))
+                min_values.append(float(match.group(4)))
+    
+    return generations, best_values, avg_values, min_values
+
+# Function to plot the data
+def plot_fitness_data(generations, best_values, avg_values, min_values):
+    plt.plot(generations, best_values, label='Best')
+    plt.plot(generations, avg_values, label='Avg')
+    plt.plot(generations, min_values, label='Min')
+
+    plt.xlabel('Generation')
+    plt.ylabel('Values')
+    plt.title('Generation vs Best, Avg, and Min')
+    
+    # Ensure x-axis ticks are integers
+    plt.xticks(generations)  # Set x-ticks to be the generation numbers (integers)
+    
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    plt.savefig('data/fitness/fitness_plot.png')
+
+def save_fitness_data():
+    filename = 'data/fitness/fitness_values.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
+    generations, best_values, avg_values, min_values = read_fitness_file(filename)
+    plot_fitness_data(generations, best_values, avg_values, min_values)

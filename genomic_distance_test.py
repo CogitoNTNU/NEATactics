@@ -1,5 +1,5 @@
 from copy import deepcopy
-import neat_test_file
+import main
 from src.genetics.genome import Genome
 from src.environments.train_env import env_init, run_game
 from src.environments.debug_env import env_debug_init, run_game_debug

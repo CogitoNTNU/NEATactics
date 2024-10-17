@@ -3,10 +3,10 @@ from typing import Tuple
 
 @dataclass
 class Config:
-    c1: float = 1.
-    c2: float = 1.
+    c1: float = 1.5
+    c2: float = 1.5
     c3: float = 0.4
-    genomic_distance_threshold: float = 1.69
+    genomic_distance_threshold: float = 2.69
     population_size: int = 150
     generations: int = 50
 
@@ -37,7 +37,7 @@ class Config:
     activation_func: str = "tanh"
     
     elitism_rate: float = 0.085 # percentage of the best genomes are copied to the next generation
-    remove_worst_percentage: float = 0.7 # percentage of the worst genomes are removed from the population when breeding
+    remove_worst_percentage: float = 0.85 # percentage of the worst genomes are removed from the population when breeding
 
     # Paper said that the max differnce in weights was about 3.0
     max_weight_difference: float = 3.0

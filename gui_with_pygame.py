@@ -1,4 +1,4 @@
-import neat_test_file
+import main
 import pygame
 import sys
 
@@ -367,7 +367,7 @@ class Game():
         generations = self.generation_field.text
         print(f"Starting training with Population: {population}, Mutation Rate: {mutation_rate}, Generations: {generations}")
         # Insert your training code here (e.g. NEAT training)
-        neat_test_file.main()
+        main.main()
     
 
     def draw_settings_scene(self):
