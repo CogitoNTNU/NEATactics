@@ -28,18 +28,45 @@ def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
     
     forward = Traverse(genome)
     fitness = Fitness()
-    i = 0
-    timeout = 600
     insert_input(genome, initial_state)
     
+    last_fitness_val: float = 0
+    stagnation_counter: float = 0
+
     while True:
-        action = forward.traverse() 
-        sr = env.step(action)
+        action = forward.traverse()
+        # time.sleep(0.001)
+        sr = env.step(action) # State, Reward, Done, Info
+        
         fitness.calculate_fitness(sr.info, action)
-        timeout = 600 + sr.info["x_pos"]
-        if sr.info["life"] == 1 or i > timeout or sr.done: # What is happening here?
+
+        fitness_val: float = fitness.get_fitness()
+        if fitness_val > last_fitness_val:
+            last_fitness_val = fitness_val
+            stagnation_counter = 0
+        else:
+            stagnation_counter += 1
+
+        if sr.info["life"] == 1 or stagnation_counter > 50:
             env.close()
             return fitness.get_fitness()
             
-        insert_input(genome, sr.state) # Prepare for next iteration
-        i += 1
+        insert_input(genome, sr.state)
+
+    # forward = Traverse(genome)
+    # fitness = Fitness()
+    # i = 0
+    # timeout = 600
+    # insert_input(genome, initial_state)
+    
+    # while True:
+        # action = forward.traverse() 
+        # sr = env.step(action)
+        # fitness.calculate_fitness(sr.info, action)
+        # timeout = 600 + sr.info["x_pos"]
+        # if sr.info["life"] == 1 or i > timeout or sr.done: # What is happening here?
+            # env.close()
+            # return fitness.get_fitness()
+            
+        # insert_input(genome, sr.state) # Prepare for next iteration
+        # i += 1
