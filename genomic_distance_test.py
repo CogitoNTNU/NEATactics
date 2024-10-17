@@ -19,17 +19,19 @@ def test_genomic_distance():
     genome1 = neat.genomes[0]
     genome2 = deepcopy(genome1)
     #neat.add_connection_mutation(genome2)
-    neat.add_node_mutation(genome2)
     neat.random_weight_mutation(genome2)
-    distance = genomic_distance(genome1, genome2, config_instance)
-    print(f"Genomic distance after weight mutation: {distance}")
-    for connection in genome1.connections:
-        if connection.is_enabled:
-            print(f"Genome1 innovation_number: {connection.innovation_number} weights: {round(connection.weight, 4)}")
-    print()
-    for connection in genome2.connections:
-        if connection.is_enabled:
-            print(f"Genome2 innovation_number: {connection.innovation_number} weights: {round(connection.weight, 4)}")
+    for i in range(80):
+        neat.add_connection_mutation(genome2)
+        neat.add_connection_mutation(genome2)
+        distance = genomic_distance(genome1, genome2, config_instance)
+        print(f"Genomic distance after weight mutation: {distance}")
+    # for connection in genome1.connections:
+        # if connection.is_enabled:
+            # print(f"Genome1 innovation_number: {connection.innovation_number} weights: {round(connection.weight, 4)}")
+    # print()
+    # for connection in genome2.connections:
+        # if connection.is_enabled:
+            # print(f"Genome2 innovation_number: {connection.innovation_number} weights: {round(connection.weight, 4)}")
 
     genome3 = deepcopy(genome2)
     for _ in range(800):

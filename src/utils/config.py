@@ -6,7 +6,7 @@ class Config:
     c1: float = 1.
     c2: float = 1.
     c3: float = 0.4
-    genomic_distance_threshold: float = 1.5
+    genomic_distance_threshold: float = 1.69
     population_size: int = 150
     generations: int = 20
 
