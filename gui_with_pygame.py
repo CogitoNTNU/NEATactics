@@ -1,8 +1,41 @@
 import neat_test_file
 import pygame
 import sys
+import os
 
 import src.utils.config as conf
+
+import pickle
+
+class GenomeManager:
+    def __init__(self, folder_path):
+        """
+        Initialize the GenomeManager to load genome objects from a folder.
+        
+        :param folder_path: Path to the folder containing the genome files.
+        """
+        self.folder_path = folder_path
+        self.genomes = []
+
+    def load_genomes(self):
+        """
+        Load all genome objects from the specified folder.
+        """
+        for filename in os.listdir(self.folder_path):
+            file_path = os.path.join(self.folder_path, filename)
+            
+            # Open and load the genome object using pickle
+            with open(file_path, 'rb') as file:
+                genome_object = pickle.load(file)
+
+                # Append the loaded genome object to the list
+                self.genomes.append(genome_object)
+
+    def get_genomes(self):
+        """
+        Returns the list of loaded genome objects.
+        """
+        return self.genomes
 
 class Settings():
     def __init__(self):
@@ -37,7 +70,7 @@ class SelectableListItem:
     """Represents a genome item that can be selected."""
     def __init__(self, x, y, width, height, genome_id, fitness, font, text_color, bg_color, selected_color):
         self.rect = pygame.Rect(x, y, width, height)
-        self.genome_id = genome_id
+        self.id = genome_id
         self.fitness = fitness
         self.font = font
         self.text_color = text_color
@@ -51,7 +84,7 @@ class SelectableListItem:
         pygame.draw.rect(screen, color, self.rect)
 
         # Display genome info
-        text = f"ID: {self.genome_id}, Fitness: {self.fitness}"
+        text = f"ID: {self.id}, Fitness: {round(self.fitness)}"
         text_surface = self.font.render(text, True, self.text_color)
         screen.blit(text_surface, (self.rect.x + 10, self.rect.y + 10))
 
@@ -78,8 +111,8 @@ class GenomeViewer:
         self.items.clear()
         y_position = 50
         for genome in self.genomes:
-            genome_id = genome['id']
-            fitness = genome['fitness']
+            genome_id = genome.id
+            fitness = genome.fitness_value
             item = SelectableListItem(100, y_position, 400, 50, genome_id, fitness, self.font, self.text_color, self.bg_color, self.selected_color)
             self.items.append(item)
             y_position += 60
@@ -94,7 +127,7 @@ class GenomeViewer:
 
     def get_selected_genomes(self):
         # Return a list of selected genome IDs
-        return [item.genome_id for item in self.items if item.selected]
+        return [item.id for item in self.items if item.selected]
 
 
 class Button:
@@ -205,6 +238,47 @@ class TextDisplay:
         screen.blit(text_surface, text_rect)
 
 
+class ImageSprite:
+    def __init__(self, image_path, position=(0, 0), scale=None):
+        """
+        Initializes the ImageSprite object.
+        
+        :param image_path: Path to the image file.
+        :param position: A tuple (x, y) representing the top-left corner of the image.
+        :param scale: A tuple (width, height) to scale the image. If None, the image is used at its original size.
+        """
+        self.image_path = image_path
+        self.position = position
+        self.scale = scale
+
+        # Load the image
+        self.image = pygame.image.load(self.image_path)
+        
+        # If scaling is specified, scale the image
+        if self.scale:
+            self.image = pygame.transform.scale(self.image, self.scale)
+        
+        # Get the image rect for easier position management
+        self.rect = self.image.get_rect(topleft=self.position)
+    
+    def set_position(self, new_position):
+        """
+        Set a new position for the image sprite.
+        """
+        self.position = new_position
+        self.rect.topleft = self.position
+    
+    def draw(self, surface):
+        """
+        Draw the image sprite onto the provided surface.
+        
+        :param surface: The pygame surface to draw the image on.
+        """
+        surface.blit(self.image, self.rect)
+
+
+
+
 
 class Game():
     def __init__(self):
@@ -260,14 +334,20 @@ class Game():
             TextDisplay(50, 300, "Generations:", st.font, st.text_color)
         ]
 
-        # Watch genomes play
-        self.genomes = [
-            {"id": 1, "fitness": 1.2},
-            {"id": 2, "fitness": 3.4},
-            {"id": 3, "fitness": 2.8},
-            {"id": 4, "fitness": 4.1},
-            {"id": 5, "fitness": 1.5},
-        ]
+
+        genome_folder = 'good_genomes'
+        genome_manager = GenomeManager(genome_folder)
+
+        # Load all genome objects from the folder
+        genome_manager.load_genomes()
+
+        # Get the list of loaded genome objects
+        loaded_genomes = genome_manager.get_genomes()
+
+        self.genomes = []
+        # Use the loaded genome objects (printing as an example)
+        for genome in loaded_genomes:
+            self.genomes.append(genome)
 
         ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg)
@@ -322,7 +402,12 @@ class Game():
         selected_genomes = self.genome_viewer.get_selected_genomes()
         print(f"Running genomes: {selected_genomes}")
         # Add logic here to execute the selected genomes (e.g., visualize, simulate, etc.)
-    
+        for i in selected_genomes:
+            from_gen = i
+            to_gen = i
+            neat_test_file.test_genome(from_gen, to_gen)
+
+
     def watch_genome_scene(self):
         self.screen.fill(st.LIGHT_BLUE)
 
@@ -332,6 +417,7 @@ class Game():
         # Draw the buttons
         self.run_button.draw(self.screen)
         self.watch_back_button.draw(self.screen)
+
 
 
     def draw_visualize_genome_scene(self):
@@ -398,6 +484,8 @@ class Game():
                 element.draw(self.screen)
             for element in self.training_UI:
                 element.draw(self.screen)
+            
+
         elif st.sc_selector == 2:
             self.draw_settings_scene()
         elif st.sc_selector == 3:

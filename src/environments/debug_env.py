@@ -35,8 +35,8 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         sr = env.step(action) # State, Reward, Done, Info
         env.render()
         timeout = 600 + sr.info["x_pos"]
-        save_state_as_png(i + 1, sr.state)
-        visualize_genome(genome, 0)
+        #save_state_as_png(i + 1, sr.state)
+        #visualize_genome(genome, 0)
         
         fitness.calculate_fitness(sr.info, action)
 
