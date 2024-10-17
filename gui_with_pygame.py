@@ -1,6 +1,7 @@
 import neat_test_file
 import pygame
 import sys
+import threading
 
 import src.utils.config as conf
 
@@ -28,14 +29,13 @@ class Settings():
         self.hover_color = (150, 230, 255)
         self.pressed_color = (50, 150, 200)
         self.text_color = (255, 255, 255)
-        self.input_field_bg = (58,100,30)
-        self.input_field_active_bg = (78, 100, 30)
+        self.input_field_bg = (58, 58, 58)
+        self.input_field_active_bg = (58, 58, 58) 
         pygame.font.init()
         self.font = pygame.font.Font(None, 36)
-
 class SelectableListItem:
-    """Represents a genome item that can be selected."""
-    def __init__(self, x, y, width, height, genome_id, fitness, font, text_color, bg_color, selected_color):
+    """Represents a genome item that can be selected, with a checkbox."""
+    def __init__(self, x, y, width, height, genome_id, fitness, font, text_color, bg_color, selected_color, checkbox_size=20):
         self.rect = pygame.Rect(x, y, width, height)
         self.genome_id = genome_id
         self.fitness = fitness
@@ -44,11 +44,18 @@ class SelectableListItem:
         self.bg_color = bg_color
         self.selected_color = selected_color
         self.selected = False
+        self.checkbox_size = checkbox_size
+        self.checkbox_rect = pygame.Rect(x + width - checkbox_size - 10, y + (height - checkbox_size) // 2, checkbox_size, checkbox_size)
 
     def draw(self, screen):
         # Draw background based on whether it's selected
         color = self.selected_color if self.selected else self.bg_color
         pygame.draw.rect(screen, color, self.rect)
+
+        # Draw checkbox
+        pygame.draw.rect(screen, (255, 255, 255), self.checkbox_rect, 2)  # Checkbox border
+        if self.selected:
+            pygame.draw.rect(screen, (0, 255, 0), self.checkbox_rect.inflate(-4, -4))  # Filled when selected
 
         # Display genome info
         text = f"ID: {self.genome_id}, Fitness: {self.fitness}"
@@ -220,6 +227,10 @@ class Game():
         self.clock = pygame.time.Clock()
         self.frame = 0
 
+        # Threading
+        self.is_processing = False
+        self.process_thread = None
+
         # Main menu buttons
         self.main_menu_buttons = [
             Button(140, 100, 200, 100, "Train!", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.train_scene),
@@ -234,7 +245,7 @@ class Game():
                            InputField(140, 170, 200, 50, st.font, st.text_color, initial_text="Mutation rate"),
                            InputField(140, 240, 200, 50, st.font, st.text_color, initial_text="Generations")]
         self.training_UI = [
-                           Button(460, 170, 200, 50, "Start Training", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training),
+                           Button(460, 170, 200, 50, "Start Training", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
                            Button(460, 300, 200, 50, "Back to Menu", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
 
         # Settings scene
@@ -332,6 +343,20 @@ class Game():
         # Draw the buttons
         self.run_button.draw(self.screen)
         self.watch_back_button.draw(self.screen)
+    
+    def start_training_process(self):
+        """Start a long-running process in a separate thread."""
+        if not self.is_processing:
+            self.process_thread = threading.Thread(target=self.training_process)
+            self.process_thread.start()
+    
+    def training_process(self):
+        """Simulate a long-running process that takes time."""
+        self.is_processing = True
+        self.start_training()  # Simulate a process that takes 5 seconds
+        print("Long process completed")
+        self.is_processing = False
+
 
 
     def draw_visualize_genome_scene(self):
