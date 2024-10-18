@@ -65,6 +65,8 @@ def main(neat_name: str = '', to_generations: int = 0):
             
             neat.sort_species(neat.genomes)
             neat.adjust_fitness()
+
+            save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses)
             neat.calculate_number_of_children_of_species()
             new_genomes_list = []
             for specie in neat.species:
