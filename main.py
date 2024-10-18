@@ -82,6 +82,7 @@ def main(args):
                 
             for genome in neat.genomes:
                 neat.add_mutation(genome)
+            save_fitness_data()
     except KeyboardInterrupt:
         print("\nProcess interrupted! Saving fitness data...")
     finally:

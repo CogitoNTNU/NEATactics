@@ -52,21 +52,3 @@ def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
             return fitness.get_fitness()
             
         insert_input(genome, sr.state)
-
-    # forward = Traverse(genome)
-    # fitness = Fitness()
-    # i = 0
-    # timeout = 600
-    # insert_input(genome, initial_state)
-    
-    # while True:
-        # action = forward.traverse() 
-        # sr = env.step(action)
-        # fitness.calculate_fitness(sr.info, action)
-        # timeout = 600 + sr.info["x_pos"]
-        # if sr.info["life"] == 1 or i > timeout or sr.done: # What is happening here?
-            # env.close()
-            # return fitness.get_fitness()
-            
-        # insert_input(genome, sr.state) # Prepare for next iteration
-        # i += 1

@@ -120,7 +120,7 @@ class Fitness:
         #self.prev_action = action
 
     def get_fitness(self):
-        return self.fitness
+        return self.fitness if self.fitness > 0 else 0
 
 
 

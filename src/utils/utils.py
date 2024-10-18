@@ -62,6 +62,7 @@ def load_best_genome(generation: int):
         files = os.listdir('data/good_genomes')
         pattern = re.compile(r'best_genome_(\d+).obj')
         generation = max([int(pattern.match(file).group(1)) for file in files])
+        print("loading best genome from generation: ", generation)
     with open(f'data/good_genomes/best_genome_{generation}.obj', 'rb') as f:
         return pickle.load(f)
 
@@ -99,6 +100,8 @@ def read_fitness_file(filename):
 
 # Function to plot the data
 def plot_fitness_data(generations, best_values, avg_values, min_values):
+    plt.clf()
+
     plt.plot(generations, best_values, label='Best')
     plt.plot(generations, avg_values, label='Avg')
     plt.plot(generations, min_values, label='Min')
@@ -107,13 +110,9 @@ def plot_fitness_data(generations, best_values, avg_values, min_values):
     plt.ylabel('Values')
     plt.title('Generation vs Best, Avg, and Min')
     
-    # Ensure x-axis ticks are integers
-    plt.xticks(generations)  # Set x-ticks to be the generation numbers (integers)
-    
     plt.legend()
     plt.grid(True)
     plt.savefig('data/fitness/fitness_plot.png')
-    plt.show()
 
 def save_fitness_data():
     filename = 'data/fitness/fitness_values.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
