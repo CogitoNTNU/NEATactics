@@ -85,7 +85,7 @@ def read_fitness_file(filename):
                 best_values.append(float(match.group(2)))
                 avg_values.append(float(match.group(3)))
                 min_values.append(float(match.group(4)))
-    
+
     return generations, best_values, avg_values, min_values
 
 # Function to plot the data
