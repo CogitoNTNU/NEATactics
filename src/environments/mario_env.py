@@ -3,6 +3,13 @@ from nes_py.wrappers import JoypadSpace
 from skimage.transform import resize
 from typing import NamedTuple, Dict, Any
 import numpy as np
+from scipy.ndimage import gaussian_filter
+from gym.spaces import Box
+from gym.core import ObservationWrapper
+import numpy as np
+import cv2
+from scipy.ndimage import gaussian_filter
+from skimage.transform import resize
 
 class StepResult(NamedTuple):
     """A namedtuple-like class representing the result of an environment step.
@@ -63,7 +70,29 @@ class MarioJoypadSpace(JoypadSpace):
         state = state[80:216] # Cut the picture
         state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140]) # Convert to grayscale
         state = state.astype(np.uint8) # Ensure valid grayscale value (can't be float)
+        
+        # Apply Gaussian Blur to smooth out patterns
+        state = gaussian_filter(state, sigma=1)
+        
         state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8) # Reduce pixel count.
+        
         state = np.array(state)
         grayscale_pixel_values = state / MAX_COLOR
         return grayscale_pixel_values
+
+class ResizeEnv(ObservationWrapper):
+    def __init__(self, env, size):
+        super(ResizeEnv, self).__init__(env)
+        (oldh, oldw, oldc) = env.observation_space.shape
+        newshape = (size, size, oldc)
+        self.observation_space = Box(low=0, high=255, shape=newshape, dtype=np.uint8)
+
+    def observation(self, frame):
+        if self.observation_space.shape is not None:
+            height, width, _ = self.observation_space.shape
+        else:
+            raise ValueError("Observation space shape is None")
+        frame = cv2.resize(frame, (width, height), interpolation=cv2.INTER_AREA)
+        if frame.ndim == 2:
+            frame = frame[:, :, None]
+        return frame

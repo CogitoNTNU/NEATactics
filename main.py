@@ -76,7 +76,8 @@ def main(neat_name: str = '', to_generations: int = 0):
             print(f"new generation size: {len(neat.genomes)}" )
                 
             for genome in neat.genomes:
-                neat.add_mutation(genome)
+                if not genome.elite:
+                    neat.add_mutation(genome)
     except KeyboardInterrupt:
         print("\nProcess interrupted! Saving fitness data...")
     finally:

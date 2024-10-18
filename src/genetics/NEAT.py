@@ -52,11 +52,16 @@ class NEAT:
         for elite in elites:
             cloned_elite = copy.deepcopy(elite)  # Create an exact copy of the elite genome
             cloned_elite.id = self.genome_id 
+            cloned_elite.elite = True
             self.genome_id += 1
             new_generation_genomes.append(cloned_elite)  # Add the cloned genome to the new generation
 
         # Remove a percentage of the worst-performing genomes from the breeding pool
         breeding_pool = self.select_breeding_pool(breeding_pool)
+        
+        # Reset the elite status of all genomes
+        for genome in breeding_pool:
+            genome.elite = False 
             
         while len(new_generation_genomes) < specie.new_population_size:
             if len(breeding_pool) == 0:
@@ -206,31 +211,26 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)
             
         print(f"The old popultaion sizes for each specie:{num_new_for_each_specie}, The old sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        for specie in self.species:
-            print(len(specie.genomes))
-        self.species.sort(key=lambda x: len(x.genomes), reverse=True)
+        
+        self.species.sort(key=lambda x: x.new_population_size, reverse=True)
 
-        while(sum(num_new_for_each_specie) != config.population_size):
-            
-            if (sum(num_new_for_each_specie) > config.population_size):
-                # remove from the species with the most genome
+        current_sum = sum(specie.new_population_size for specie in self.species)
+
+        while current_sum != config.population_size:
+            if current_sum > config.population_size:
+                # Remove from the species with the largest population
                 self.species[0].new_population_size -= 1
-                num_new_for_each_specie.append(-1)
-                
-            elif (sum(num_new_for_each_specie) < config.population_size):
+                current_sum -= 1
+            elif current_sum < config.population_size:
+                # Add to the species with the largest population
                 self.species[0].new_population_size += 1
-                num_new_for_each_specie.append(1)
+                current_sum += 1
+    
+            self.species.sort(key=lambda x: x.new_population_size, reverse=True)
         
         num_new_for_each_specie = []
         for specie in self.species:
             num_new_for_each_specie.append(specie.new_population_size)
-        #difference_between_desired_and_real = config.population_size - sum(num_new_for_each_specie)
-        #idx_of_species_w_most_genomes = num_new_for_each_specie.index((max(num_new_for_each_specie)))
-
-        #self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
-        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The new sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        for specie in self.species:
-            print((specie.new_population_size))
 
     def add_mutation(self, genome: Genome):
         """
