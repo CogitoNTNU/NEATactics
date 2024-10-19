@@ -170,7 +170,20 @@ class NEAT:
 
         # After processing all genomes, update self.species
         self.species = new_species_list  # swap with the new generation of species
-
+        
+    def check_impovements(self):
+        """ Check if the species are improving. If not, remove them. """
+        for specie in self.species:
+            specie.genomes.sort(key=lambda x: x.fitness_value, reverse=True)
+            if specie.best_genome_fitness < specie.genomes[0].fitness_value:
+                specie.best_genome_fitness = specie.genomes[0].fitness_value
+                specie.improvement_counter = 0
+            else: 
+                specie.improvement_counter += 1
+        for specie in self.species:
+            print(f"Specie number: {specie.species_number}, Best fitness: {specie.best_genome_fitness}, Improvement counter: {specie.improvement_counter}")
+        if specie.improvement_counter > 15:
+            self.species.remove(specie)
 
     def create_species(self):
         """ Helper function to create a new species."""

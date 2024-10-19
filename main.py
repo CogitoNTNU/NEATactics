@@ -64,6 +64,7 @@ def main(neat_name: str = '', to_generations: int = 0):
             collect_fitnesses(neat.genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses)
             
             neat.sort_species(neat.genomes)
+            neat.check_impovements() # Check if the species are improving, remove the ones that are not after 15 generations
             neat.adjust_fitness()
 
             save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses)
