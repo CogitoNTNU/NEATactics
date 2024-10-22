@@ -107,7 +107,8 @@ class GenomeManager:
                 genome_object = pickle.load(file)
 
                 # Append the loaded genome object to the list
-                self.genomes.append(genome_object)
+                self.genomes.append((genome_object, int(str(file_path).split("_")[-1][:-4])))
+        print(genome_object)
 
     def get_genomes(self):
         """
@@ -194,24 +195,27 @@ class GenomeViewer:
     def populate_genomes(self):
         self.items.clear()
         y_position = 50
-        for genome in self.genomes:
+        for genome, file_path in self.genomes:
             genome_id = genome.id
             fitness = genome.fitness_value
             item = SelectableListItem(100, y_position, 400, 50, genome_id, fitness, self.font, self.text_color, self.bg_color, self.selected_color)
-            self.items.append(item)
+            self.items.append((item, file_path))
             y_position += 60
 
     def draw(self, screen):
         for item in self.items:
+            item = item[0]
+            print(item)
             item.draw(screen)
 
     def handle_event(self, event):
         for item in self.items:
+            item = item[0]
             item.handle_event(event)
 
     def get_selected_genomes(self):
         # Return a list of selected genome IDs
-        return [item.id for item in self.items if item.selected]
+        return [item[1] for item in self.items if item[0].selected]
 
 
 class Button:
