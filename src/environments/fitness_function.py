@@ -49,7 +49,6 @@ def fitness(xpos, time):
 class Fitness:
     def __init__(self) -> None:
         self.fitness = 0.0
-        
         self.prev_lives = 2
         self.prev_pos = 0
         self.stand_still_time = 0
@@ -91,12 +90,10 @@ class Fitness:
         ###################################
 
         # Move x-dir ################
-        if (info["x_pos"] - self.prev_pos) < -0.001:  # Moving backward
-            self.fitness += (self.prev_pos - info["x_pos"]) * self.rewards["move_backward"]
-        elif (info["x_pos"] - self.prev_pos) < 0.001:  # Not moving forward
+        if (info["x_pos"] - self.prev_pos) < 0.001:
             self.fitness += self.rewards["dont_move_forward"]
-        else:  # Moving forward
-            self.fitness += (info["x_pos"] - self.prev_pos) * self.rewards["move_forward"]
+        else:
+            self.fitness += (info["x_pos"] - self.prev_pos)*self.rewards["move_forward"]
         self.prev_pos = info["x_pos"]
         #################################
 
