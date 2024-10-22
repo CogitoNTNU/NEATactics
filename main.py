@@ -47,14 +47,14 @@ def main(args):
         neat_name = "latest"
     
     neat, exists = load_neat(neat_name)
+    config_instance = Config()
     if exists:
         generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = get_fitnesses_from_file("fitness_values")
         print(f"Generation numbs: {generation_nums}")
         from_generation = generation_nums[-1] + 1
         print(f"From generation: {from_generation}")
-        config_instance = neat.config
+        #config_instance = neat.config
     else:
-        config_instance = Config()
         neat = NEAT(config_instance)
         neat.initiate_genomes()
         from_generation = 0
