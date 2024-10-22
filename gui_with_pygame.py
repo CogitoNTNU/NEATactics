@@ -108,7 +108,6 @@ class GenomeManager:
 
                 # Append the loaded genome object to the list
                 self.genomes.append((genome_object, int(str(file_path).split("_")[-1][:-4])))
-        print(genome_object)
 
     def get_genomes(self):
         """
@@ -169,7 +168,7 @@ class SelectableListItem:
             pygame.draw.rect(screen, (0, 255, 0), self.checkbox_rect.inflate(-4, -4))  # Filled when selected
 
         # Display genome info
-        text = f"ID: {self.id}, Fitness: {round(self.fitness)}"
+        text = f"Generation: {self.id}, Fitness: {round(self.fitness)}"
         text_surface = self.font.render(text, True, self.text_color)
         screen.blit(text_surface, (self.rect.x + 10, self.rect.y + 10))
 
@@ -196,9 +195,9 @@ class GenomeViewer:
         self.items.clear()
         y_position = 50
         for genome, file_path in self.genomes:
-            genome_id = genome.id
+            genome_generation = file_path
             fitness = genome.fitness_value
-            item = SelectableListItem(100, y_position, 400, 50, genome_id, fitness, self.font, self.text_color, self.bg_color, self.selected_color)
+            item = SelectableListItem(100, y_position, 400, 50, genome_generation, fitness, self.font, self.text_color, self.bg_color, self.selected_color)
             self.items.append((item, file_path))
             y_position += 60
 
@@ -401,8 +400,11 @@ class Game():
         self.training_UI = [
                            Button(460, 170, 200, 50, "Start Training", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
                            Button(460, 300, 200, 50, "Back to Menu", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
-
-        #self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
+        try:
+            self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
+        except:
+            print("ERROR: Could not find image path")
+            self.fitness_graph = 0
 
 
         
@@ -444,6 +446,7 @@ class Game():
         # Use the loaded genome objects (printing as an example)
         for genome in loaded_genomes:
             self.genomes.append(genome)
+            print(genome)
 
         ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg)
@@ -498,6 +501,7 @@ class Game():
     def run_selected_genomes(self):
         # Get the selected genome IDs and run them
         selected_genomes = self.genome_viewer.get_selected_genomes()
+        
         print(f"Running genomes: {selected_genomes}")
         # Add logic here to execute the selected genomes (e.g., visualize, simulate, etc.)
         for i in selected_genomes:
