@@ -57,13 +57,13 @@ class Fitness:
         self.prev_num_coins = 0
         # Rewards
         self.rewards = {
-            "lose_life": -15,
+            "lose_life": -2,
             "win": 100,
             "move_forward": 0.02,
-            "move_backward": -0.05,
-            "dont_move_forward": -0.001,
-            "coins": 2,
-            "score": 1,
+            "move_backward": -0.005,
+            "dont_move_forward": 0,
+            "coins": 0,
+            "score": 0,
             "jump_multiple": 0,
         }
         

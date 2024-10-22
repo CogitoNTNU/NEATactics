@@ -29,30 +29,29 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
     insert_input(genome, initial_state)
     last_fitness_val: float = 0
     stagnation_counter: float = 0
-
+    i = 0
+    
     while True:
         action = forward.traverse()
-        time.sleep(0.03)
+        # time.sleep(0.03)
         sr = env.step(action) # State, Reward, Done, Info
         env.render()
         #timeout = 600 + sr.info["x_pos"]
-        # if visualize:
-        #     save_state_as_png(0, sr.state)
-        #     visualize_genome(genome, 0)
+        if visualize and i % 10 == 0:
+            save_state_as_png(0, sr.state)
+            visualize_genome(genome, 0)
         
         fitness.calculate_fitness(sr.info, action)
-        print(f"score: {sr.info['score']}")
 
         fitness_val: float = fitness.get_fitness()
-        # print(f"Fitness: {fitness_val}")
         if fitness_val > last_fitness_val:
             last_fitness_val = fitness_val
             stagnation_counter = 0
         else:
             stagnation_counter += 1
 
-        if sr.info["life"] == 1 or stagnation_counter > 50:
+        if sr.info["life"] == 1 or stagnation_counter > 100:
             env.close()
             return fitness.get_fitness()
-            
+        i += 1
         insert_input(genome, sr.state)

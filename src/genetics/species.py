@@ -11,6 +11,8 @@ class Species:
         self.new_population_size = 1 # The number of children the species should have
         self.config = config
         self.genomes: List[Genome] = []
+        self.improvement_counter = 0
+        self.best_genome_fitness = 0.0
 
     def add_genome(self, genome: Genome):
         """Add a genome to the species."""

@@ -21,6 +21,7 @@ class Genome:
         
         self.connections: list[ConnectionGene] = []
         self.fitness_value: float = 0.0
+        self.elite = False
 
     def add_node(self, node: Node):
         if node.type == 'input':

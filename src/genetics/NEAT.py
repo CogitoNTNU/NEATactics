@@ -23,6 +23,8 @@ class NEAT:
         self.species: list[Species] = []
         self.connections: list[ConnectionGene] = []
         self.connections_with_node_mutations: dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
+        self.highest_found_fitness = 0.0
+        self.improvement_counter = 0
         
     def generate_offspring(self, specie: Species):
         """
@@ -52,11 +54,16 @@ class NEAT:
         for elite in elites:
             cloned_elite = copy.deepcopy(elite)  # Create an exact copy of the elite genome
             cloned_elite.id = self.genome_id 
+            cloned_elite.elite = True
             self.genome_id += 1
             new_generation_genomes.append(cloned_elite)  # Add the cloned genome to the new generation
 
         # Remove a percentage of the worst-performing genomes from the breeding pool
         breeding_pool = self.select_breeding_pool(breeding_pool)
+        
+        # Reset the elite status of all genomes
+        for genome in breeding_pool:
+            genome.elite = False 
             
         while len(new_generation_genomes) < specie.new_population_size:
             if len(breeding_pool) == 0:
@@ -165,7 +172,49 @@ class NEAT:
 
         # After processing all genomes, update self.species
         self.species = new_species_list  # swap with the new generation of species
-
+        
+    def check_population_improvements(self):
+        """ Check if there have been improvements overall in the population."""
+        for specie in self.species:
+            if specie.best_genome_fitness > self.highest_found_fitness:
+                self.highest_found_fitness = specie.best_genome_fitness
+                self.improvement_counter = 0
+                print(f"New highest fitness: {self.highest_found_fitness}")
+                return
+        self.improvement_counter += 1
+        print(f"Improvement counter: {self.improvement_counter}")
+        if self.improvement_counter > 20:
+            print("No improvements in 20 generations - RIP")
+            self.species.sort(key=lambda x: self.rank_species(x), reverse=True)
+            if len(self.species) > 2:
+                self.species = self.species[:2]  # Keep the top two species
+            self.improvement_counter = 0
+            for specie in self.species:
+                specie.improvement_counter = 0
+            
+        
+    def check_individual_impovements(self):
+        """ Check each species if they are improving, remove the ones that are not after 15 generations"""
+        for specie in self.species:
+            specie.genomes.sort(key=lambda x: x.fitness_value, reverse=True)
+            if specie.best_genome_fitness < specie.genomes[0].fitness_value:
+                specie.best_genome_fitness = specie.genomes[0].fitness_value
+                specie.improvement_counter = 0
+            else: 
+                specie.improvement_counter += 1
+        for specie in self.species:
+            print(f"Specie number: {specie.species_number}, Best fitness: {specie.best_genome_fitness}, Improvement counter: {specie.improvement_counter}")
+            if specie.improvement_counter > 20:
+                if len(self.species) > 2:
+                    self.species.remove(specie)
+                else:
+                    # if there are only two species left, reset their imrovement counters
+                    self.improvement_counter = 0
+                    for specie in self.species:
+                        specie.improvement_counter = 0
+        if self.species == []:
+            print("All species have been removed - RIP")
+            self.initiate_genomes()
 
     def create_species(self):
         """ Helper function to create a new species."""
@@ -206,31 +255,26 @@ class NEAT:
             num_new_for_each_specie.append(specie.new_population_size)
             
         print(f"The old popultaion sizes for each specie:{num_new_for_each_specie}, The old sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        for specie in self.species:
-            print(len(specie.genomes))
-        self.species.sort(key=lambda x: len(x.genomes), reverse=True)
+        
+        self.species.sort(key=lambda x: x.new_population_size, reverse=True)
 
-        while(sum(num_new_for_each_specie) != config.population_size):
-            
-            if (sum(num_new_for_each_specie) > config.population_size):
-                # remove from the species with the most genome
+        current_sum = sum(specie.new_population_size for specie in self.species)
+
+        while current_sum != config.population_size:
+            if current_sum > config.population_size:
+                # Remove from the species with the largest population
                 self.species[0].new_population_size -= 1
-                num_new_for_each_specie.append(-1)
-                
-            elif (sum(num_new_for_each_specie) < config.population_size):
+                current_sum -= 1
+            elif current_sum < config.population_size:
+                # Add to the species with the largest population
                 self.species[0].new_population_size += 1
-                num_new_for_each_specie.append(1)
+                current_sum += 1
+    
+            self.species.sort(key=lambda x: x.new_population_size, reverse=True)
         
         num_new_for_each_specie = []
         for specie in self.species:
             num_new_for_each_specie.append(specie.new_population_size)
-        #difference_between_desired_and_real = config.population_size - sum(num_new_for_each_specie)
-        #idx_of_species_w_most_genomes = num_new_for_each_specie.index((max(num_new_for_each_specie)))
-
-        #self.species[idx_of_species_w_most_genomes].adjust_new_population_size(difference_between_desired_and_real)
-        print(f"The new popultaion sizes for each specie:{num_new_for_each_specie}, The new sum: {sum(num_new_for_each_specie)}, Total population: {config.population_size}")
-        for specie in self.species:
-            print((specie.new_population_size))
 
     def add_mutation(self, genome: Genome):
         """

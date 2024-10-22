@@ -5,8 +5,85 @@ import threading
 import os
 
 import src.utils.config as conf
-
 import pickle
+import math
+import src.utils.utils as util
+
+class Graph:
+    def __init__(self, surface, position, size, data=None, bg_color=(255, 255, 255), line_color=(0, 0, 255), axis_color=(0, 0, 0)):
+        """
+        Initializes the Graph object.
+        
+        :param surface: The pygame surface where the graph will be drawn
+        :param position: The (x, y) position of the top-left corner of the graph
+        :param size: A tuple (width, height) for the size of the graph
+        :param data: A list of data points to plot
+        :param bg_color: The background color of the graph area
+        :param line_color: The color of the graph line
+        :param axis_color: The color of the graph axes
+        """
+        self.surface = surface
+        self.position = position
+        self.width, self.height = size
+        self.bg_color = bg_color
+        self.line_color = line_color
+        self.axis_color = axis_color
+        self.data = data if data is not None else []
+        
+        self.padding = 20  # Padding for axes
+    
+    def add_data(self, point):
+        """
+        Add a single data point to the graph.
+        """
+        self.data.append(point)
+    
+    def draw_axes(self):
+        """
+        Draws the X and Y axes of the graph.
+        """
+        # X-axis
+        pygame.draw.line(self.surface, self.axis_color, 
+                         (self.position[0], self.position[1] + self.height - self.padding), 
+                         (self.position[0] + self.width, self.position[1] + self.height - self.padding), 2)
+        
+        # Y-axis
+        pygame.draw.line(self.surface, self.axis_color, 
+                         (self.position[0] + self.padding, self.position[1]), 
+                         (self.position[0] + self.padding, self.position[1] + self.height), 2)
+    
+    def draw(self):
+        """
+        Draw the graph onto the provided surface.
+        """
+        # Fill the graph area with background color
+        pygame.draw.rect(self.surface, self.bg_color, (*self.position, self.width, self.height))
+        
+        # Draw the axes
+        self.draw_axes()
+
+        # If there's no data to plot, return
+        if len(self.data) == 0:
+            return
+
+        # Determine the scaling factor based on data range
+        max_data_value = max(self.data)
+        min_data_value = min(self.data)
+        y_range = max_data_value - min_data_value if max_data_value != min_data_value else 1
+        
+        # Calculate scaling for x and y axes
+        x_scale = (self.width - 2 * self.padding) / max(1, len(self.data) - 1)
+        y_scale = (self.height - 2 * self.padding) / y_range
+
+        # Plot the data points
+        for i in range(1, len(self.data)):
+            x1 = self.position[0] + self.padding + (i - 1) * x_scale
+            y1 = self.position[1] + self.height - self.padding - (self.data[i - 1] - min_data_value) * y_scale
+            x2 = self.position[0] + self.padding + i * x_scale
+            y2 = self.position[1] + self.height - self.padding - (self.data[i] - min_data_value) * y_scale
+            
+            pygame.draw.line(self.surface, self.line_color, (x1, y1), (x2, y2), 2)
+
 
 class GenomeManager:
     def __init__(self, folder_path):
@@ -322,6 +399,11 @@ class Game():
                            Button(460, 170, 200, 50, "Start Training", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
                            Button(460, 300, 200, 50, "Back to Menu", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
 
+        self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
+
+
+        
+
         # Settings scene
         self.settings_input_fields = [
             InputField(200, 50, 200, 30, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.c1)),
@@ -509,6 +591,11 @@ class Game():
                 element.draw(self.screen)
             for element in self.training_UI:
                 element.draw(self.screen)
+            #self.fitness_graph.draw(self.screen)
+            gen_data,best_fitness_data,avg_fitness_data,min_fitness_data = util.read_fitness_file("data/fitness/fitness_values.txt")
+            self.new_fitness_graph = Graph(self.screen, (700, 100), (400, 400), best_fitness_data)
+
+            self.new_fitness_graph.draw()
             
 
         elif st.sc_selector == 2:
