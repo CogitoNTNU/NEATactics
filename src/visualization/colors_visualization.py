@@ -54,10 +54,10 @@ def get_weight_color(edge_weights: List[float]) -> List[float]:
 
     for w in edge_weights:
         if w < 0:
-            edge_colors.append(RED(norm_negative[index_neg]))  # type: ignore | Map negative weight to red shade
+            edge_colors.append(RED(norm_negative[index_neg])) # Map negative weight to red shade
             index_neg += 1
         else:
-            edge_colors.append(GREEN(norm_positive[index_pos]))  # type: ignore | positive weight to green shade
+            edge_colors.append(GREEN(norm_positive[index_pos]))  # Positive weight to green shade
             index_pos += 1
 
     return edge_colors

@@ -12,7 +12,7 @@ def get_position_dict(layers: List[List[int]]) -> Dict[int, Tuple[float, float]]
     :param layers: A list of lists, where each inner list contains the nodes in that layer.
     :return: A dictionary with node positions suitable for visualization.
     """
-    pos = {}
+    pos:  Dict[int, Tuple[float, float]] = {}
     total_layers = len(layers) # Total number of layers (currently 3: input, hidden, output)
     random.seed(10)
     

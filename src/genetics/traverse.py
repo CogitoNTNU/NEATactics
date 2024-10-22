@@ -82,7 +82,7 @@ class Traverse:
         Returns the output-node with the highest value after the traversal is done
         """
         output = 0
-        highest_value = -1000
+        highest_value = -1000.0
         for node in self.genome.output_nodes:
             if node.value > highest_value:
                 highest_value = node.value
@@ -117,8 +117,8 @@ class Traverse:
             return 0.0
         return value 
 
-    def sigmoid(self, z: float) -> float:
-        return 1/(1 + np.exp(-0.49 * z))
+    def sigmoid(self, value: float) -> float:
+        return 1/(1 + np.exp(-0.49 * value))
         
-    def tanh(self, z: float) -> float:
-        return np.tanh(z)
+    def tanh(self, value: float) -> float:
+        return np.tanh(value)

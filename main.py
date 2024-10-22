@@ -55,7 +55,9 @@ def main(neat_name: str = '', to_generations: int = 0):
         from_generation = 0
         generations = (config_instance.generations - from_generation) if to_generations == 0 else to_generations
 
-    min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
+    min_fitnesses: list[float] = []
+    avg_fitnesses: list[float] = []
+    best_fitnesses: list[float] = []
     print(f"Training from generation {from_generation} to generation {from_generation + generations}")
     
     try:
