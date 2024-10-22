@@ -138,7 +138,7 @@ python main.py graph
 Play the best genome:
 
 ```zsh
-python main.py play
+python main.py play --best
 ```
 
 ### Command Descriptions
@@ -161,7 +161,7 @@ python main.py train --neat_name my_neat_population --extra_number 50
 The `test` command tests a range of genomes in the environment. The command accepts:
 
 - `from_gen`: The starting generation number.
-- `to_gen`: The ending generation number (exclusive).
+- `to_gen`: The ending generation number (inclusive).
 
 Example:
 
@@ -169,7 +169,7 @@ Example:
 python main.py test 0 5
 ```
 
-This will test genomes from generation 0 up to generation 4.
+This will test genomes from generation 0 up to generation 5.
 
 #### Graph
 
@@ -191,13 +191,32 @@ Ensure that `fitness_values.txt` exists in the `data/fitness` directory before r
 
 #### Play
 
-The `play` command runs the environment using the best genome from the most recent training session. It is a quick way to visualize how a trained genome interacts with the environment.
+The `play` command runs the environment using the best genome from the most recent training session. It has two optional arguments:
 
-Example:
+`-g` or `--generation`: Specifies the generation of the genome you want to play. If not provided, the latest genome will be used.
+`-b` or `--best`: This flag indicates that the best genome from the specified generation (or the latest generation if `-g` is not provided) should be played.
+
+**Examples**:
+
+- To play the best genome from the latest generation:
 
 ```zsh
-python main.py play
+python main.py play --best
 ```
+
+- To play the genome from a specific generation (e.g., generation 10):
+
+```zsh
+python main.py play --generation 10
+```
+
+- To play the best genome from generation 10:
+
+```zsh
+python main.py play --generation 10 --best
+```
+
+This flexibility allows you to test and visualize the performance of genomes from different stages of evolution.
 
 ## Testing
 
