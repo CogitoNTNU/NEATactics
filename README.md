@@ -23,6 +23,10 @@
     - [Basic Command](#basic-command)
     - [Example Commands](#example-commands)
     - [Command Descriptions](#command-descriptions)
+      - [Train](#train)
+      - [Test](#test)
+      - [Graph](#graph)
+      - [Play](#play)
   - [Testing](#testing)
     - [Test execution environment](#test-execution-environment)
   - [Team](#team)
@@ -139,7 +143,7 @@ python main.py play
 
 ### Command Descriptions
 
-`train`
+#### Train
 
 The `train` command initializes and trains genomes using the NEAT algorithm. It supports the following options:
 
@@ -152,7 +156,8 @@ Example:
 python main.py train --neat_name my_neat_population --extra_number 50
 ```
 
-**`test`**
+#### Test
+
 The `test` command tests a range of genomes in the environment. The command accepts:
 
 - `from_gen`: The starting generation number.
@@ -166,8 +171,15 @@ python main.py test 0 5
 
 This will test genomes from generation 0 up to generation 4.
 
-**`graph`**
-The `graph` command visualizes the fitness data accumulated during training. This can be useful for analyzing the performance of the NEAT algorithm over time.
+#### Graph
+
+The `graph` command visualizes the fitness data accumulated during training. When executed, it reads the fitness data from the `data/fitness/fitness_values.txt` file and plots the best, average, and minimum fitness values for each generation. The generated plot is saved as `fitness_plot.png` in the `data/fitness` directory.
+
+- The fitness values are extracted from `fitness_values.txt` using the `read_fitness_file` function.
+- A line graph is generated where:
+  - The x-axis represents generations.
+  - The y-axis represents fitness values (Best, Average, Min).
+- The plot is displayed and saved automatically.
 
 Example:
 
@@ -175,7 +187,10 @@ Example:
 python main.py graph
 ```
 
-**`play`**
+Ensure that `fitness_values.txt` exists in the `data/fitness` directory before running this command, as it is the source file for generating the graph.
+
+#### Play
+
 The `play` command runs the environment using the best genome from the most recent training session. It is a quick way to visualize how a trained genome interacts with the environment.
 
 Example:
