@@ -47,7 +47,7 @@ def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
         else:
             stagnation_counter += 1
 
-        if sr.info["life"] == 1 or stagnation_counter > 150:
+        if sr.info["life"] == 1 or stagnation_counter > 100:
             env.close()
             return fitness.get_fitness()
             

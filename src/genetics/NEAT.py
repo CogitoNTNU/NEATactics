@@ -23,6 +23,8 @@ class NEAT:
         self.species: list[Species] = []
         self.connections: list[ConnectionGene] = []
         self.connections_with_node_mutations: dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
+        self.highest_found_fitness = 0.0
+        self.improvement_counter = 0
         
     def generate_offspring(self, specie: Species):
         """
@@ -171,8 +173,28 @@ class NEAT:
         # After processing all genomes, update self.species
         self.species = new_species_list  # swap with the new generation of species
         
-    def check_impovements(self):
-        """ Check if the species are improving. If not, remove them. """
+    def check_population_improvements(self):
+        """ Check if there have been improvements overall in the population."""
+        for specie in self.species:
+            if specie.best_genome_fitness > self.highest_found_fitness:
+                self.highest_found_fitness = specie.best_genome_fitness
+                self.improvement_counter = 0
+                print(f"New highest fitness: {self.highest_found_fitness}")
+                return
+        self.improvement_counter += 1
+        print(f"Improvement counter: {self.improvement_counter}")
+        if self.improvement_counter > 20:
+            print("No improvements in 20 generations - RIP")
+            self.species.sort(key=lambda x: self.rank_species(x), reverse=True)
+            if len(self.species) > 2:
+                self.species = self.species[:2]  # Keep the top two species
+            self.improvement_counter = 0
+            for specie in self.species:
+                specie.improvement_counter = 0
+            
+        
+    def check_individual_impovements(self):
+        """ Check each species if they are improving, remove the ones that are not after 15 generations"""
         for specie in self.species:
             specie.genomes.sort(key=lambda x: x.fitness_value, reverse=True)
             if specie.best_genome_fitness < specie.genomes[0].fitness_value:
@@ -182,8 +204,17 @@ class NEAT:
                 specie.improvement_counter += 1
         for specie in self.species:
             print(f"Specie number: {specie.species_number}, Best fitness: {specie.best_genome_fitness}, Improvement counter: {specie.improvement_counter}")
-        if specie.improvement_counter > 15:
-            self.species.remove(specie)
+            if specie.improvement_counter > 20:
+                if len(self.species) > 2:
+                    self.species.remove(specie)
+                else:
+                    # if there are only two species left, reset their imrovement counters
+                    self.improvement_counter = 0
+                    for specie in self.species:
+                        specie.improvement_counter = 0
+        if self.species == []:
+            print("All species have been removed - RIP")
+            self.initiate_genomes()
 
     def create_species(self):
         """ Helper function to create a new species."""

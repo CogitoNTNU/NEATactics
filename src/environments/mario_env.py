@@ -3,12 +3,10 @@ from nes_py.wrappers import JoypadSpace
 from skimage.transform import resize
 from typing import NamedTuple, Dict, Any
 import numpy as np
-from scipy.ndimage import gaussian_filter
 from gym.spaces import Box
 from gym.core import ObservationWrapper
 import numpy as np
 import cv2
-from scipy.ndimage import gaussian_filter
 from skimage.transform import resize
 
 class StepResult(NamedTuple):
@@ -70,9 +68,6 @@ class MarioJoypadSpace(JoypadSpace):
         state = state[80:216] # Cut the picture
         state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140]) # Convert to grayscale
         state = state.astype(np.uint8) # Ensure valid grayscale value (can't be float)
-        
-        # Apply Gaussian Blur to smooth out patterns
-        state = gaussian_filter(state, sigma=1)
         
         state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8) # Reduce pixel count.
         
