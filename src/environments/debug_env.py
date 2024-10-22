@@ -33,7 +33,7 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
     
     while True:
         action = forward.traverse()
-        # time.sleep(0.03)
+        time.sleep(0.01)
         sr = env.step(action) # State, Reward, Done, Info
         env.render()
         #timeout = 600 + sr.info["x_pos"]
@@ -44,6 +44,8 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         fitness.calculate_fitness(sr.info, action)
 
         fitness_val: float = fitness.get_fitness()
+        if i % 30 == 0:
+            print(fitness_val)
         if fitness_val > last_fitness_val:
             last_fitness_val = fitness_val
             stagnation_counter = 0

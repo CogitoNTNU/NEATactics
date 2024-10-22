@@ -1,3 +1,4 @@
+from genericpath import exists
 from src.environments.debug_env import env_debug_init, run_game_debug
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
@@ -9,8 +10,20 @@ import argparse
 
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
-def play_genome():
-    genome = load_best_genome(-1)
+def play_genome(args):
+    if args.to_gen is not None:
+        to_gen = args.to_gen
+        if args.from_gen is not None:
+            from_gen = args.from_gen
+        else:
+            from_gen = 0
+        test_genome(from_gen, to_gen)
+
+    if args.generation is not None:
+        generation_num = args.generation
+    else:
+        generation_num = -1
+    genome = load_best_genome(generation_num)
     env, state = env_debug_init()
     run_game_debug(env, state, genome, 0, visualize=False)
 
@@ -41,25 +54,26 @@ def main(args):
     profiler = cProfile.Profile()
     profiler.enable()
     min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
-    to_generations = args.extra_number
 
     if neat_name == '':
         neat_name = "latest"
     
-    neat, exists = load_neat(neat_name)
+    neat = load_neat(neat_name)
     config_instance = Config()
-    if exists:
+    if neat is None:
+        exists = False
         generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = get_fitnesses_from_file("fitness_values")
         print(f"Generation numbs: {generation_nums}")
         from_generation = generation_nums[-1] + 1
         print(f"From generation: {from_generation}")
         #config_instance = neat.config
     else:
+        exists = True
         neat = NEAT(config_instance)
         neat.initiate_genomes()
         from_generation = 0
     
-    generations = (config_instance.generations) if to_generations == 0 else to_generations
+    generations = (config_instance.generations) if args.n_generations == -1 else args.n_generations
 
     print(f"Training from generation {from_generation} to generation {from_generation + generations}")
     
@@ -111,30 +125,24 @@ def command_line_interface():
     
     # Train command (runs main())
     train_parser = subparsers.add_parser('train', help="Run the training process")
-    train_parser.add_argument('--neat_name', type=str, default='', help="The name of the NEAT object to load from 'trained_population/'")
-    train_parser.add_argument('extra_number', type=int, nargs='?', default=0, help="An optional extra number (e.g., the number of generations or any other parameter)")
-
-    # Test command (runs test_genome with a range of genomes)
-    test_parser = subparsers.add_parser('test', help="Test genomes in the environment")
-    test_parser.add_argument('from_gen', type=int, help="The starting genome to test")
-    test_parser.add_argument('to_gen', type=int, help="The ending genome to test (exclusive)")
+    train_parser.add_argument('-n', '--neat_name', type=str, default='', help="The name of the NEAT object to load from 'trained_population/'")
+    train_parser.add_argument('-g', '--n_generations', type=int, default=-1, help="The number of generations to train for")
 
     graph_parser = subparsers.add_parser('graph', help="Graph the fitness data")
     
     play_parser = subparsers.add_parser('play', help="Play the best genome from the lastest generation")
     play_parser.add_argument('-g', '--generation', type=int, help="The generation of the genome to play")
-    play_parser.add_argument('-b', '--best', action='store_true', help="Play the best genome")
+    play_parser.add_argument('-f', '--from_gen', type=int, help="The starting genome to test")
+    play_parser.add_argument('-t', '--to_gen', type=int, help="The ending genome to test (exclusive)")
     
     args = parser.parse_args()
     
     if args.command == "train":
-        main(args) #neat_name=args.neat_name, to_generations=args.extra_number)
-    elif args.command == "test":
-        test_genome(args.from_gen, args.to_gen)
+        main(args) 
     elif args.command == "graph":
-        save_fitness_data()
+        save_fitness_data(show=True)
     elif args.command == "play":
-        play_genome()
+        play_genome(args)
     else:
         parser.print_help()
         

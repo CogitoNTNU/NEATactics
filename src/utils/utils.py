@@ -74,9 +74,9 @@ def save_neat(neat: 'NEAT', name: str):
 def load_neat(name: str):
     # Check if file exists first
     if not os.path.exists(f'data/trained_population/neat_{name}.obj'):
-        return None, False
+        return None
     with open(f'data/trained_population/neat_{name}.obj', 'rb') as f:
-        return pickle.load(f), True # type: ignore
+        return pickle.load(f) # type: ignore
 
 # Function to read and parse the file
 def read_fitness_file(filename):
@@ -99,7 +99,7 @@ def read_fitness_file(filename):
     return generations, best_values, avg_values, min_values
 
 # Function to plot the data
-def plot_fitness_data(generations, best_values, avg_values, min_values):
+def plot_fitness_data(generations, best_values, avg_values, min_values, show=False):
     plt.clf()
 
     plt.plot(generations, best_values, label='Best')
@@ -113,11 +113,13 @@ def plot_fitness_data(generations, best_values, avg_values, min_values):
     plt.legend()
     plt.grid(True)
     plt.savefig('data/fitness/fitness_plot.png')
+    if show:
+        plt.show()
 
-def save_fitness_data():
+def save_fitness_data(show=False):
     filename = 'data/fitness/fitness_values.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
     generations, best_values, avg_values, min_values = read_fitness_file(filename)
-    plot_fitness_data(generations, best_values, avg_values, min_values)
+    plot_fitness_data(generations, best_values, avg_values, min_values, show=show)
 
 def get_fitnesses_from_file(f_name: str):
     filename = f'data/fitness/{f_name}.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
