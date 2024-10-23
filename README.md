@@ -20,6 +20,13 @@
     - [Note on venv](#note-on-venv)
     - [Prerequisites](#prerequisites)
   - [Usage](#usage)
+    - [Basic Command](#basic-command)
+    - [Example Commands](#example-commands)
+    - [Command Descriptions](#command-descriptions)
+      - [Train](#train)
+      - [Test](#test)
+      - [Graph](#graph)
+      - [Play](#play)
   - [Testing](#testing)
     - [Test execution environment](#test-execution-environment)
   - [Team](#team)
@@ -100,12 +107,116 @@ deactivate
 
 ## Usage
 
-To run the project, run the following command from the root directory of the project:
+The project can be run from the command line using the `main.py` script. The script supports several commands, including training and testing genomes, visualizing fitness data, and playing a trained genome.
 
-```bash
-python main.py
+### Basic Command
+
+```zsh
+python main.py <command> [options]
 ```
-<!-- TODO: Instructions on how to run the project and use its features. -->
+
+### Example Commands
+
+- Train genomes:
+
+```zsh
+python main.py train --neat_name my_saved_neat --extra_number 100
+```
+
+- Test genomes:
+
+```zsh
+python main.py test 0 10
+```
+
+- Graph fitness data:
+
+```zsh
+python main.py graph
+```
+
+Play the best genome:
+
+```zsh
+python main.py play --best
+```
+
+### Command Descriptions
+
+#### Train
+
+The `train` command initializes and trains genomes using the NEAT algorithm. It supports the following options:
+
+- `--neat_name`: The name of a previously trained NEAT object located in the `trained_population` directory (default: empty string).
+- `extra_number`: An optional parameter specifying the number of generations for training (default: 0). If not specified, the configuration’s default number of generations will be used.
+
+Example:
+
+```zsh
+python main.py train --neat_name my_neat_population --extra_number 50
+```
+
+#### Test
+
+The `test` command tests a range of genomes in the environment. The command accepts:
+
+- `from_gen`: The starting generation number.
+- `to_gen`: The ending generation number (inclusive).
+
+Example:
+
+```zsh
+python main.py test 0 5
+```
+
+This will test genomes from generation 0 up to generation 5.
+
+#### Graph
+
+The `graph` command visualizes the fitness data accumulated during training. When executed, it reads the fitness data from the `data/fitness/fitness_values.txt` file and plots the best, average, and minimum fitness values for each generation. The generated plot is saved as `fitness_plot.png` in the `data/fitness` directory.
+
+- The fitness values are extracted from `fitness_values.txt` using the `read_fitness_file` function.
+- A line graph is generated where:
+  - The x-axis represents generations.
+  - The y-axis represents fitness values (Best, Average, Min).
+- The plot is displayed and saved automatically.
+
+Example:
+
+```zsh
+python main.py graph
+```
+
+Ensure that `fitness_values.txt` exists in the `data/fitness` directory before running this command, as it is the source file for generating the graph.
+
+#### Play
+
+The `play` command runs the environment using the best genome from the most recent training session. It has two optional arguments:
+
+`-g` or `--generation`: Specifies the generation of the genome you want to play. If not provided, the latest genome will be used.
+`-b` or `--best`: This flag indicates that the best genome from the specified generation (or the latest generation if `-g` is not provided) should be played.
+
+**Examples**:
+
+- To play the best genome from the latest generation:
+
+```zsh
+python main.py play --best
+```
+
+- To play the genome from a specific generation (e.g., generation 10):
+
+```zsh
+python main.py play --generation 10
+```
+
+- To play the best genome from generation 10:
+
+```zsh
+python main.py play --generation 10 --best
+```
+
+This flexibility allows you to test and visualize the performance of genomes from different stages of evolution.
 
 ## Testing
 

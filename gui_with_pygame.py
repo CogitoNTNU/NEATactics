@@ -107,7 +107,7 @@ class GenomeManager:
                 genome_object = pickle.load(file)
 
                 # Append the loaded genome object to the list
-                self.genomes.append(genome_object)
+                self.genomes.append((genome_object, int(str(file_path).split("_")[-1][:-4])))
 
     def get_genomes(self):
         """
@@ -168,7 +168,7 @@ class SelectableListItem:
             pygame.draw.rect(screen, (0, 255, 0), self.checkbox_rect.inflate(-4, -4))  # Filled when selected
 
         # Display genome info
-        text = f"ID: {self.id}, Fitness: {round(self.fitness)}"
+        text = f"Generation: {self.id}, Fitness: {round(self.fitness)}"
         text_surface = self.font.render(text, True, self.text_color)
         screen.blit(text_surface, (self.rect.x + 10, self.rect.y + 10))
 
@@ -194,24 +194,26 @@ class GenomeViewer:
     def populate_genomes(self):
         self.items.clear()
         y_position = 50
-        for genome in self.genomes:
-            genome_id = genome.id
+        for genome, file_path in self.genomes:
+            genome_generation = file_path
             fitness = genome.fitness_value
-            item = SelectableListItem(100, y_position, 400, 50, genome_id, fitness, self.font, self.text_color, self.bg_color, self.selected_color)
-            self.items.append(item)
+            item = SelectableListItem(100, y_position, 400, 50, genome_generation, fitness, self.font, self.text_color, self.bg_color, self.selected_color)
+            self.items.append((item, file_path))
             y_position += 60
 
     def draw(self, screen):
         for item in self.items:
+            item = item[0]
             item.draw(screen)
 
     def handle_event(self, event):
         for item in self.items:
+            item = item[0]
             item.handle_event(event)
 
     def get_selected_genomes(self):
         # Return a list of selected genome IDs
-        return [item.id for item in self.items if item.selected]
+        return [item[1] for item in self.items if item[0].selected]
 
 
 class Button:
@@ -398,8 +400,11 @@ class Game():
         self.training_UI = [
                            Button(460, 170, 200, 50, "Start Training", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
                            Button(460, 300, 200, 50, "Back to Menu", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
-
-        self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
+        try:
+            self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
+        except:
+            print("ERROR: Could not find image path")
+            self.fitness_graph = 0
 
 
         
@@ -441,12 +446,15 @@ class Game():
         # Use the loaded genome objects (printing as an example)
         for genome in loaded_genomes:
             self.genomes.append(genome)
+            print(genome)
 
         ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg)
 
+        self.watch_genes_visualize = ImageSprite("genome_frames/genome_0.png", (700, 50), (600, 400))
+
         ## Run button
-        self.run_button = Button(600, 350, 200, 50, "Run Selected Genomes", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
+        self.run_button = Button(600, 20, 200, 50, "Run Selected Genomes", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_watching_process)
         self.watch_back_button = Button(200, 450, 200, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
 
         #Visualize best genome
@@ -493,6 +501,7 @@ class Game():
     def run_selected_genomes(self):
         # Get the selected genome IDs and run them
         selected_genomes = self.genome_viewer.get_selected_genomes()
+        
         print(f"Running genomes: {selected_genomes}")
         # Add logic here to execute the selected genomes (e.g., visualize, simulate, etc.)
         for i in selected_genomes:
@@ -510,6 +519,16 @@ class Game():
         # Draw the buttons
         self.run_button.draw(self.screen)
         self.watch_back_button.draw(self.screen)
+
+        # Visualize while watching
+        
+        self.watch_genes_visualize.draw(self.screen)
+
+    def start_watching_process(self):
+        """Start a long-running process in a separate thread."""
+        if not self.is_processing:
+            self.process_thread = threading.Thread(target=self.watching_process)
+            self.process_thread.start()
     
     def start_training_process(self):
         """Start a long-running process in a separate thread."""
@@ -517,6 +536,13 @@ class Game():
             self.process_thread = threading.Thread(target=self.training_process)
             self.process_thread.start()
     
+    def watching_process(self):
+        """Simulate a long-running process that takes time."""
+        self.is_processing = True
+        self.run_selected_genomes()  # Simulate a process that takes 5 seconds
+        print("Long process completed")
+        self.is_processing = False
+
     def training_process(self):
         """Simulate a long-running process that takes time."""
         self.is_processing = True
