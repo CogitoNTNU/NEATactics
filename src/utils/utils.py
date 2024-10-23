@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 
 def save_state_as_png(i, state: np.ndarray) -> None:
     """Save a frame."""
-    directory = "./mario_frames"
+    directory = "./data/mario_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.imsave(f"./mario_frames/frame{i}.png", state, cmap='gray', vmin=0, vmax=1)
+    plt.imsave(f"./data/mario_frames/frame{i}.png", state, cmap='gray', vmin=0, vmax=1)
 
 def normalize_positive_values(positive_vals: np.ndarray) -> None:
     """Takes an ndarray with positive floats as inputs,
@@ -47,6 +47,7 @@ def insert_input(genome:Genome, state: np.ndarray) -> None:
         node.value = state[i//num_columns][i % num_columns]
 
 def save_fitness(best: list, avg: list, min: list, append: bool = False):
+    os.makedirs('data/fitness', exist_ok=True)
     with open("data/fitness/fitness_values.txt", "w") as f:
         for i in range(len(best)):
             f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
@@ -57,6 +58,20 @@ def save_best_genome(genome: Genome, generation: int):
         pickle.dump(genome, f) # type: ignore
 
 def load_best_genome(generation: int):
+    if generation == -1:
+        files = os.listdir('data/good_genomes')
+        pattern = re.compile(r'best_genome_(\d+).obj')
+        generations = []
+        for file in files:
+            match = pattern.match(file)
+            if match:
+                generations.append(int(match.group(1)))
+        if generations:
+            generation = max(generations)
+            print("Loading best genome from generation:", generation)
+        else:
+            raise FileNotFoundError("No valid genome files found in 'data/good_genomes'.")
+    
     with open(f'data/good_genomes/best_genome_{generation}.obj', 'rb') as f:
         return pickle.load(f)
 
@@ -66,8 +81,11 @@ def save_neat(neat: 'NEAT', name: str):
         pickle.dump(neat, f) # type: ignore
         
 def load_neat(name: str):
+    # Check if file exists first
+    if not os.path.exists(f'data/trained_population/neat_{name}.obj'):
+        return None, False
     with open(f'data/trained_population/neat_{name}.obj', 'rb') as f:
-        return pickle.load(f) # type: ignore
+        return pickle.load(f), True # type: ignore
 
 # Function to read and parse the file
 def read_fitness_file(filename):
@@ -75,6 +93,7 @@ def read_fitness_file(filename):
     best_values = []
     avg_values = []
     min_values = []
+    os.makedirs('data/fitness', exist_ok=True)
 
     # Open the file and extract data
     with open(filename, 'r') as file:
@@ -90,6 +109,8 @@ def read_fitness_file(filename):
 
 # Function to plot the data
 def plot_fitness_data(generations, best_values, avg_values, min_values):
+    plt.clf()
+
     plt.plot(generations, best_values, label='Best')
     plt.plot(generations, avg_values, label='Avg')
     plt.plot(generations, min_values, label='Min')
@@ -98,15 +119,15 @@ def plot_fitness_data(generations, best_values, avg_values, min_values):
     plt.ylabel('Values')
     plt.title('Generation vs Best, Avg, and Min')
     
-    # Ensure x-axis ticks are integers
-    plt.xticks(generations)  # Set x-ticks to be the generation numbers (integers)
-    
     plt.legend()
     plt.grid(True)
     plt.savefig('data/fitness/fitness_plot.png')
-    plt.show()
 
 def save_fitness_data():
     filename = 'data/fitness/fitness_values.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
     generations, best_values, avg_values, min_values = read_fitness_file(filename)
     plot_fitness_data(generations, best_values, avg_values, min_values)
+
+def get_fitnesses_from_file(f_name: str):
+    filename = f'data/fitness/{f_name}.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
+    return read_fitness_file(filename)

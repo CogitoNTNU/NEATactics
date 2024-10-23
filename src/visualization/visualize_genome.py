@@ -19,7 +19,7 @@ def get_node_in_layers(genome: Genome) -> List[List[int]]:
     Seconds list: hidden layer.\n
     Third list: output layer.\n 
     """
-    layers = [[] for _ in range(3)]
+    layers: List[List[int]] = [[] for _ in range(3)]
     for node in genome.nodes:
         if node.type == 'input':
             layers[0].append(node.id)

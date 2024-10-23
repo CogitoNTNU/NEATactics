@@ -6,7 +6,7 @@ import numpy as np
 from gym.spaces import Box
 from gym.core import ObservationWrapper
 import numpy as np
-import cv2
+# import cv2
 from skimage.transform import resize
 
 class StepResult(NamedTuple):

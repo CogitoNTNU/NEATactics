@@ -90,7 +90,7 @@ class NEAT:
         """
         # Create a weight list where the first genome has the highest weight and it decreases linearly
         #weights = [len(breeding_pool) - i for i in range(len(breeding_pool))]
-        total_fitness = 0
+        total_fitness = 0.0
         for genome in breeding_pool:
            total_fitness += genome.fitness_value
         weights = [genome.fitness_value/total_fitness for genome in breeding_pool]
@@ -121,7 +121,7 @@ class NEAT:
         # Update genomes with the returned fitness values
         for genome_id, fitness in results:
             for genome in self.genomes:
-                if genome.id == genome_id:  # Match the genome by its ID
+               if genome.id == genome_id:  # Match the genome by its ID
                     genome.fitness_value = fitness  # Assign the fitness value
                     break  # Move to the next result once a match is found
     
