@@ -1,6 +1,8 @@
 from src.utils.utils import normalize_negative_values, normalize_positive_values
 import numpy as np
 from typing import List
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.cm as cm
 from src.genetics.node import Node
 

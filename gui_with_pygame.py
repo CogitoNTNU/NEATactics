@@ -3,6 +3,7 @@ import pygame
 import sys
 import threading
 import os
+import argparse
 
 import src.utils.config as conf
 import pickle
@@ -404,7 +405,7 @@ class Game():
             self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
         except:
             print("ERROR: Could not find image path")
-            self.fitness_graph = 0
+            self.fitness_graph = ImageSprite("genome_frames/genome_0.png", (700, 100))
 
 
         
@@ -454,7 +455,7 @@ class Game():
         self.watch_genes_visualize = ImageSprite("genome_frames/genome_0.png", (700, 50), (600, 400))
 
         ## Run button
-        self.run_button = Button(600, 20, 200, 50, "Run Selected Genomes", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_watching_process)
+        self.run_button = Button(600, 20, 200, 50, "Run Selected Genomes", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
         self.watch_back_button = Button(200, 450, 200, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
 
         #Visualize best genome
@@ -586,7 +587,20 @@ class Game():
         generations = self.training_input_fields[2].text
         print(f"Starting training with Population: {population}, Mutation Rate: {mutation_rate}, Generations: {generations}")
         # Insert your training code here (e.g. NEAT training)
-        neat_test_file.main()
+
+
+        parser = argparse.ArgumentParser(description="Train or Test Genomes")
+        subparsers = parser.add_subparsers(dest="command", help="Choose 'train', 'test', 'graph', or 'play'")
+    
+        # Train command (runs main())
+        train_parser = subparsers.add_parser('train', help="Run the training process")
+        train_parser.add_argument('-n', '--neat_name', type=str, default='', help="The name of the NEAT object to load from 'trained_population/'")
+        train_parser.add_argument('-g', '--n_generations', type=int, default=-1, help="The number of generations to train for")
+        
+        sim_args = ["train", "-g", generations]
+        args=parser.parse_args(sim_args)
+
+        neat_test_file.main(args=args)
     
 
     def draw_settings_scene(self):
@@ -617,11 +631,16 @@ class Game():
                 element.draw(self.screen)
             for element in self.training_UI:
                 element.draw(self.screen)
-            #self.fitness_graph.draw(self.screen)
+            
+            try:
+                self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
+            except:
+                pass
+            self.fitness_graph.draw(self.screen)
             gen_data,best_fitness_data,avg_fitness_data,min_fitness_data = util.read_fitness_file("data/fitness/fitness_values.txt")
-            self.new_fitness_graph = Graph(self.screen, (700, 100), (400, 400), best_fitness_data)
+            #self.new_fitness_graph = Graph(self.screen, (700, 100), (400, 400), best_fitness_data)
 
-            self.new_fitness_graph.draw()
+            #self.new_fitness_graph.draw()
             
 
         elif st.sc_selector == 2:
