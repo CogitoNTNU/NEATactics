@@ -101,7 +101,6 @@ Defines the nodes (neurons) in the neural networks.
     - connections_to_output: List of outgoing connections.
   - Methods:
     - set_value(value): Sets the value for input nodes.
-    - update_value(value): Updates the value of the node.
     - add_node_connection(nodeId): Records a connection to another node.
     - add_outgoing_connection(connection): Adds an outgoing connection.
 
