@@ -2,7 +2,7 @@ from src.genetics.genome import Genome
 from src.genetics.node import Node
 from src.genetics.connection_gene import ConnectionGene
 from src.utils.config import Config
-from typing import List
+from typing import List, Deque, DefaultDict
 import numpy as np
 from collections import defaultdict, deque
 
@@ -48,13 +48,13 @@ class Traverse:
         Returns a list with nodes.
         """
         order_of_traversal = []
-        in_degree = defaultdict(int) # How many connections are coming into the node
+        in_degree: DefaultDict[int, int] = defaultdict(int) # How many connections are coming into the node
 
         for connection in self.genome.connections:
             if connection.is_enabled:
                 in_degree[connection.out_node.id] += 1
 
-        queue: deque[Node] = deque([node for node in self.genome.nodes if in_degree[node.id] == 0])
+        queue: Deque[Node] = deque([node for node in self.genome.nodes if in_degree[node.id] == 0])
                 
         while queue:
             current_node = queue.popleft()
