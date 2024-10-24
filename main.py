@@ -1,7 +1,7 @@
 from src.environments.debug_env import env_debug_init, run_game_debug
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
-from src.utils.utils import save_fitness, save_best_genome, load_best_genome, save_neat, load_neat, save_fitness_data, get_fitnesses_from_file
+from src.utils.utils import read_fitness_file, save_fitness, save_best_genome, load_best_genome, save_neat, load_neat, save_fitness_data
 import warnings
 import cProfile
 import pstats
@@ -31,11 +31,11 @@ def test_genome(from_gen: int, to_gen: int):
         fitness = run_game_debug(env, state, genome, i)
         print(fitness)
 
-def collect_fitnesses(genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses):
+def collect_fitnesses(genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses, neat_name):
     fitnesses = [genome.fitness_value for genome in genomes]
 
     best_genome = max(genomes, key=lambda genome: genome.fitness_value)
-    save_best_genome(best_genome, generation)
+    save_best_genome(best_genome, generation, neat_name)
 
     min_fitness, avg_fitness, max_fitness = min(fitnesses), sum(fitnesses) / len(fitnesses), max(fitnesses)
     best_fitnesses.append(max_fitness)
@@ -56,7 +56,7 @@ def main(args):
     
     neat = load_neat(neat_name)
     if neat is not None: # TODO: Add option to insert new config into NEAT object.
-        generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = get_fitnesses_from_file("fitness_values")
+        generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = read_fitness_file(neat_name)
         print(f"Generation numbs: {generation_nums}")
         from_generation = generation_nums[-1] + 1
         print(f"From generation: {from_generation}")
@@ -73,14 +73,14 @@ def main(args):
     try:
         for generation in range(from_generation, from_generation + generations):
             neat.train_genomes()
-            collect_fitnesses(neat.genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses)
+            collect_fitnesses(neat.genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses, neat_name)
             
             neat.sort_species(neat.genomes)
             neat.check_population_improvements()
             neat.check_individual_impovements() # Check if the species are improving, remove the ones that are not after 15 generations
             neat.adjust_fitness()
 
-            save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses)
+            save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses, neat_name)
             neat.calculate_number_of_children_of_species()
             neat.genomes = [genome for specie in neat.species for genome in neat.generate_offspring(specie)] # Generate offspring in each specie
             
@@ -89,12 +89,13 @@ def main(args):
             for genome in neat.genomes:
                 if not genome.elite:
                     neat.add_mutation(genome)
-            save_fitness_data()
+            save_fitness_data(neat_name)
     except KeyboardInterrupt:
         print("\nProcess interrupted! Saving fitness data...")
-    finally: # Always save fitness data before exiting, whether interrupted or completed
-        save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses)
-        save_neat(neat, args.neat_name)
+    finally:
+        # Always save fitness data before exiting, whether interrupted or completed
+        save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses, neat_name)
+        save_neat(neat, neat_name)
         print("Fitness data saved.")
     
     profiler.disable()
