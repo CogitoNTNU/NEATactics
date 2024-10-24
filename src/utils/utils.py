@@ -131,6 +131,6 @@ def plot_fitness_data(generations: list, best_values: list, avg_values: list, mi
     if show:
         plt.show()
 
-def save_fitness_data(name, show=False):
+def save_fitness_graph_file(name, show=False):
     generations, best_values, avg_values, min_values = read_fitness_file(name)
     plot_fitness_data(generations, best_values, avg_values, min_values, name, show=show)
