@@ -1,8 +1,9 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 from src.genetics.genome import Genome
 import os
-from typing import List
+from typing import List, Dict, Tuple
 from src.visualization.colors_visualization import get_weight_color, get_node_colz
 from src.visualization.visualization_position_utils import get_position_dict
 from src.visualization.viz_config import GRAPH_XMIN, GRAPH_XMAX, GRAPH_YMIN, GRAPH_YMAX
@@ -39,6 +40,14 @@ def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
         elif node.type == 'output':
             graph.add_node(node.id)
 
+def add_labels_to_output_nodes(pos_dict: Dict[int, Tuple[float, float]], genome: Genome, ax: Axes, movement_list: List[List[str]]) -> None:
+    """Add value labels and movement [str] labels to output nodes."""
+    for output_node in genome.output_nodes:
+        x, y = pos_dict[output_node.id]
+        ax.text(x + 0.30, y, f'{output_node.value:.3f}', fontsize=10, fontweight='bold', color='red')  # Add label to the right    
+        ax.text(x, y + 0.50, '+'.join(movement_list[output_node.id]), fontsize=10, fontweight='bold', color='blue')  # Add label to the right    
+
+
 def visualize_genome(genome: Genome, frame_number: int):
     fig = plt.figure(figsize=(15, 10))
     ax = fig.add_subplot(111)
@@ -69,6 +78,9 @@ def visualize_genome(genome: Genome, frame_number: int):
     edge_labels = {(connection.in_node.id, connection.out_node.id): round(connection.weight, 2)
                    for connection in genome.connections if connection.is_enabled}
     nx.draw_networkx_edge_labels(G, pos_dict, edge_labels=edge_labels, font_size=8, ax=ax) 
+
+    SIMPLE_MOVEMENT = [['NOOP'], ['right'], ['right', 'A'], ['right', 'B'], ['right', 'A', 'B'], ['A'], ['left']] # add movement labels to output nodes.
+    add_labels_to_output_nodes(pos_dict, genome, ax, SIMPLE_MOVEMENT)
 
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)

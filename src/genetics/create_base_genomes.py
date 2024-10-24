@@ -10,7 +10,7 @@ def create_base_genomes(number_of_genomes=None) -> List[Genome]:
         config = Config()
         num_input_nodes = config.num_input_nodes
         num_output_nodes = config.num_output_nodes
-        genomes: list[Genome] = []
+        genomes: List[Genome] = []
         
         if number_of_genomes is None:
             number_of_genomes = config.population_size

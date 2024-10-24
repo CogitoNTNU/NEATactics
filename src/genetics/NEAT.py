@@ -6,7 +6,7 @@ from src.genetics.genomic_distance import *
 from src.genetics.create_base_genomes  import create_base_genomes 
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.breed_two_genomes import breed_two_genomes
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import multiprocessing
 import warnings
 import random
@@ -19,10 +19,10 @@ class NEAT:
         self.species_number = 0
         self.genome_id = 0 
         self.node_id = 208 # Because we innitialize 208 nodes
-        self.genomes: list[Genome] = []
-        self.species: list[Species] = []
-        self.connections: list[ConnectionGene] = []
-        self.connections_with_node_mutations: dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
+        self.genomes: List[Genome] = []
+        self.species: List[Species] = []
+        self.connections: List[ConnectionGene] = []
+        self.connections_with_node_mutations: Dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
         self.highest_found_fitness = 0.0
         self.improvement_counter = 0
         
@@ -113,13 +113,12 @@ class NEAT:
 
     def train_genomes(self):
         """ Train all the genomes in the population in the environment. """
-        # Create a multiprocessing pool
-        with multiprocessing.Pool() as pool:
-            # Run `test_genome` in parallel for each genome
-            results = pool.map(self.train_genome, self.genomes)
+        with multiprocessing.Pool() as pool: # Create a multiprocessing pool
+            results = pool.map(self.train_genome, self.genomes) # Run `test_genome` in parallel for each genome
         
-        # Update genomes with the returned fitness values
-        for genome_id, fitness in results:
+        # results = [self.train_genome(genome) for genome in self.genomes] # Uncomment for single process
+        
+        for genome_id, fitness in results: # Update genomes with the returned fitness values
             for genome in self.genomes:
                if genome.id == genome_id:  # Match the genome by its ID
                     genome.fitness_value = fitness  # Assign the fitness value
