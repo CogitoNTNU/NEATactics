@@ -113,14 +113,12 @@ class NEAT:
 
     def train_genomes(self):
         """ Train all the genomes in the population in the environment. """
-        # Create a multiprocessing pool
-        # with multiprocessing.Pool() as pool:
-        #     # Run `test_genome` in parallel for each genome
-        #     results = pool.map(self.train_genome, self.genomes)
+        with multiprocessing.Pool() as pool: # Create a multiprocessing pool
+            results = pool.map(self.train_genome, self.genomes) # Run `test_genome` in parallel for each genome
         
-        results = [self.train_genome(genome) for genome in self.genomes]
-        # Update genomes with the returned fitness values
-        for genome_id, fitness in results:
+        # results = [self.train_genome(genome) for genome in self.genomes] # Uncomment for single process
+        
+        for genome_id, fitness in results: # Update genomes with the returned fitness values
             for genome in self.genomes:
                if genome.id == genome_id:  # Match the genome by its ID
                     genome.fitness_value = fitness  # Assign the fitness value
