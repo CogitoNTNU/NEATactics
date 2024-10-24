@@ -4,7 +4,7 @@ from src.genetics.connection_gene import ConnectionGene
 from src.utils.config import Config
 from typing import List
 import numpy as np
-from collections import defaultdict
+from collections import defaultdict, deque
 
 class Traverse:
     def __init__(self, genome: Genome) -> None:
@@ -40,7 +40,7 @@ class Traverse:
                 node.value = self.activation_function(node.value)
         action = self.output()
         return action
-    
+
     def kahns_algorithm(self) -> List[Node]:
         """
         Kahns algorithm for topological sorting of the genome
@@ -54,13 +54,10 @@ class Traverse:
             if connection.is_enabled:
                 in_degree[connection.out_node.id] += 1
 
-        queue = []
-        for node in self.genome.nodes:
-            if in_degree[node.id] == 0:
-                queue.append(node)
+        queue: deque[Node] = deque([node for node in self.genome.nodes if in_degree[node.id] == 0])
                 
         while queue:
-            current_node = queue.pop(0)
+            current_node = queue.popleft()
             order_of_traversal.append(current_node)
 
             for connection in current_node.connections_to_output:
