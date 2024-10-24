@@ -10,27 +10,27 @@ import argparse
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.1.*")
 
 def play_genome(args):
+    neat_name = "latest"
+    if args.neat_name != '':
+        neat_name = args.neat_name
+
     if args.to_gen is not None:
         to_gen = args.to_gen
         if args.from_gen is not None:
             from_gen = args.from_gen
         else:
             from_gen = 0
-        test_genome(from_gen, to_gen)
+        test_genome(from_gen, to_gen, neat_name)
     
-    neat_name = "latest"
-    if args.neat_name != '':
-        neat_name = args.neat_name
-
     generation_num = args.generation if args.generation is not None else -1
     genome = load_best_genome(generation_num, neat_name)
     env, state = env_debug_init()
     run_game_debug(env, state, genome, 0, visualize=False)
 
-def test_genome(from_gen: int, to_gen: int):
+def test_genome(from_gen: int, to_gen: int, neat_name: str):
     for i in range(from_gen, to_gen + 1):
         print(f"Testing genome {i}...")
-        genome = load_best_genome(i)
+        genome = load_best_genome(i, neat_name)
         env, state = env_debug_init()
         fitness = run_game_debug(env, state, genome, i)
         print(fitness)
