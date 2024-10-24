@@ -4,6 +4,7 @@ from src.genetics.connection_gene import ConnectionGene
 from src.utils.config import Config
 from typing import List
 import numpy as np
+from collections import defaultdict
 
 class Traverse:
     def __init__(self, genome: Genome) -> None:
@@ -47,12 +48,12 @@ class Traverse:
         Returns a list with nodes.
         """
         order_of_traversal = []
-        in_degree = {} # How many connections are coming into the node
-        for node in self.genome.nodes:
-            in_degree[node.id] = 0
+        in_degree = defaultdict(int) # How many connections are coming into the node
+
         for connection in self.genome.connections:
             if connection.is_enabled:
                 in_degree[connection.out_node.id] += 1
+
         queue = []
         for node in self.genome.nodes:
             if in_degree[node.id] == 0:
