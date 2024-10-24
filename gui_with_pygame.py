@@ -445,11 +445,11 @@ class Game():
         ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg)
 
-        self.watch_genes_visualize = ImageSprite("genome_frames/genome_0.png", (700, 50), (600, 400))
+        self.watch_genes_visualize = ImageSprite("genome_frames/genome_0.png", (600, 100), (600, 400))
 
         ## Run button
         self.run_button = Button(600, 20, 200, 50, "Run Selected Genomes", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
-        self.watch_back_button = Button(200, 450, 200, 50, "Back", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
+        self.watch_back_button = Button(600, 600, 200, 50, "Back", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
 
         #Visualize best genome
         self.visualize_back_button = Button(50, 50, 150, 50, "Back", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
