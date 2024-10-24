@@ -67,12 +67,8 @@ class Traverse:
                         queue.append(connection.out_node)
         
             # If the topological sort includes all nodes, return it
-        final_order_of_traversal = []
         if len(order_of_traversal) == len(self.genome.nodes):
-            for node in order_of_traversal:
-                if len(node.connections_to_output) > 0 or node.type == "output":
-                    final_order_of_traversal.append(node)
-            return final_order_of_traversal
+            return order_of_traversal
         else:
             # If not all nodes are processed, there's a cycle
             # print("loop")
