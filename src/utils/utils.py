@@ -1,5 +1,8 @@
 from src.genetics.genome import Genome
 from src.utils.config import Config
+import matplotlib
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -46,20 +49,22 @@ def insert_input(genome:Genome, state: np.ndarray) -> None:
     for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
         node.value = state[i//num_columns][i % num_columns]
 
-def save_fitness(best: list, avg: list, min: list, append: bool = False):
-    os.makedirs('data/fitness', exist_ok=True)
-    with open("data/fitness/fitness_values.txt", "w") as f:
+def save_fitness(best: list, avg: list, min: list, name: str):
+    os.makedirs(f'data/{name}/fitness', exist_ok=True)
+    with open(f"data/{name}/fitness/fitness_values.txt", "w") as f:
         for i in range(len(best)):
             f.write(f"Generation: {i} - Best: {best[i]} - Avg: {avg[i]} - Min: {min[i]}\n")
 
-def save_best_genome(genome: Genome, generation: int):
-    os.makedirs('data/good_genomes', exist_ok=True)
-    with open(f'data/good_genomes/best_genome_{generation}.obj', 'wb') as f:
+def save_best_genome(genome: Genome, generation: int, name: str):
+    path = f'data/{name}/good_genomes'
+    os.makedirs(path, exist_ok=True)
+    with open(f'{path}/best_genome_{generation}.obj', 'wb') as f:
         pickle.dump(genome, f) # type: ignore
 
-def load_best_genome(generation: int):
-    if generation == -1:
-        files = os.listdir('data/good_genomes')
+def load_best_genome(generation: int, name: str) -> Genome:
+    """Loads the best genome from the given generation. If -1 is passed as argument, the latest generation is displayed."""
+    if generation == -1: # Find the genome from the latest generation.
+        files = os.listdir(f'data/{name}/good_genomes')
         pattern = re.compile(r'best_genome_(\d+).obj')
         generations = []
         for file in files:
@@ -72,31 +77,35 @@ def load_best_genome(generation: int):
         else:
             raise FileNotFoundError("No valid genome files found in 'data/good_genomes'.")
     
-    with open(f'data/good_genomes/best_genome_{generation}.obj', 'rb') as f:
+    with open(f'data/{name}/good_genomes/best_genome_{generation}.obj', 'rb') as f:
         return pickle.load(f)
 
 def save_neat(neat: 'NEAT', name: str):
-    os.makedirs('data/trained_population', exist_ok=True)
-    with open(f'data/trained_population/neat_{name}.obj', 'wb') as f:
+    os.makedirs(f'data/{name}/trained_population', exist_ok=True)
+    with open(f'data/{name}/trained_population/neat_{name}.obj', 'wb') as f:
         pickle.dump(neat, f) # type: ignore
         
 def load_neat(name: str):
     # Check if file exists first
-    if not os.path.exists(f'data/trained_population/neat_{name}.obj'):
+    if not os.path.exists(f'data/{name}/trained_population/neat_{name}.obj'):
         return None
-    with open(f'data/trained_population/neat_{name}.obj', 'rb') as f:
+    with open(f'data/{name}/trained_population/neat_{name}.obj', 'rb') as f:
         return pickle.load(f) # type: ignore
 
 # Function to read and parse the file
-def read_fitness_file(filename):
+def read_fitness_file(name: str):
+    """
+    name - Name of the neat instance.
+    """
     generations = []
     best_values = []
     avg_values = []
     min_values = []
-    os.makedirs('data/fitness', exist_ok=True)
+    filename = f'data/{name}/fitness'  # Make sure the file is named 'fitness.txt' and is in the same directory
+    os.makedirs(filename, exist_ok=True)
 
     # Open the file and extract data
-    with open(filename, 'r') as file:
+    with open(f"{filename}/fitness_values.txt", 'r') as file:
         for line in file:
             match = re.match(r"Generation: (\d+) - Best: ([\d\.]+) - Avg: ([\d\.]+) - Min: ([\d\.]+)", line)
             if match:
@@ -108,7 +117,7 @@ def read_fitness_file(filename):
     return generations, best_values, avg_values, min_values
 
 # Function to plot the data
-def plot_fitness_data(generations, best_values, avg_values, min_values, show=False):
+def plot_fitness_data(generations: list, best_values: list, avg_values: list, min_values: list, name: str, show=False):
     plt.clf()
 
     plt.plot(generations, best_values, label='Best')
@@ -121,15 +130,10 @@ def plot_fitness_data(generations, best_values, avg_values, min_values, show=Fal
     
     plt.legend()
     plt.grid(True)
-    plt.savefig('data/fitness/fitness_plot.png')
+    plt.savefig(f'data/{name}/fitness/fitness_plot.png')
     if show:
         plt.show()
 
-def save_fitness_data(show=False):
-    filename = 'data/fitness/fitness_values.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
-    generations, best_values, avg_values, min_values = read_fitness_file(filename)
-    plot_fitness_data(generations, best_values, avg_values, min_values, show=show)
-
-def get_fitnesses_from_file(f_name: str):
-    filename = f'data/fitness/{f_name}.txt'  # Make sure the file is named 'fitness.txt' and is in the same directory
-    return read_fitness_file(filename)
+def save_fitness_graph_file(name, show=False):
+    generations, best_values, avg_values, min_values = read_fitness_file(name)
+    plot_fitness_data(generations, best_values, avg_values, min_values, name, show=show)

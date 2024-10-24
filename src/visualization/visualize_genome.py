@@ -1,4 +1,6 @@
 import networkx as nx
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from src.genetics.genome import Genome
