@@ -9,11 +9,13 @@ import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 from typing import Tuple
 import numpy as np
+import warnings
 import time
 
 def env_debug_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment in human_mode"
     ENV_NAME = "SuperMarioBros-v1"
+    warnings.filterwarnings("ignore")
     env = gym_super_mario_bros.make(ENV_NAME)
     env = MarioJoypadSpace(env, SIMPLE_MOVEMENT) # Select available actions for AI
     env.metadata['render_modes'] = "rgb_array"
