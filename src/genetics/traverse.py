@@ -33,11 +33,11 @@ class Traverse:
         if not order_of_traversal:
             return 6 # if it finds a loop, choose to go left to get minimal fitness value
         for node in order_of_traversal:
+            if node.type != "input":
+                node.value = self.activation_function(node.value)
             for connection in node.connections_to_output:
                 if connection.is_enabled:
                     self.update_out_node_value(connection)
-            if node.type != "input":
-                node.value = self.activation_function(node.value)
         action = self.output()
         return action
 
