@@ -28,9 +28,6 @@ class Node:
         else:
             raise Exception("Only the input nodes should get different values!")
 
-    def update_value(self, value: float):
-        self.value += value
-
     def add_node_connection(self, nodeId: int):
         self.connected_nodes.append(nodeId)
 

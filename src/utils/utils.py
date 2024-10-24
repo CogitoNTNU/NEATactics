@@ -61,8 +61,17 @@ def load_best_genome(generation: int):
     if generation == -1:
         files = os.listdir('data/good_genomes')
         pattern = re.compile(r'best_genome_(\d+).obj')
-        generation = max([int(pattern.match(file).group(1)) for file in files])
-        print("loading best genome from generation: ", generation)
+        generations = []
+        for file in files:
+            match = pattern.match(file)
+            if match:
+                generations.append(int(match.group(1)))
+        if generations:
+            generation = max(generations)
+            print("Loading best genome from generation:", generation)
+        else:
+            raise FileNotFoundError("No valid genome files found in 'data/good_genomes'.")
+    
     with open(f'data/good_genomes/best_genome_{generation}.obj', 'rb') as f:
         return pickle.load(f)
 

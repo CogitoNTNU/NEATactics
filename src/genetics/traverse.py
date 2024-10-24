@@ -4,10 +4,13 @@ from src.genetics.connection_gene import ConnectionGene
 from src.utils.config import Config
 from typing import List
 import numpy as np
+from collections import defaultdict, deque
 
 class Traverse:
     def __init__(self, genome: Genome) -> None:
         self.genome = genome
+        if not genome.order_of_traversal:
+            genome.order_of_traversal = self.kahns_algorithm()
         self.config = Config()
         a_func = self.config.activation_func.lower() 
         if a_func == "relu":
@@ -26,19 +29,18 @@ class Traverse:
         and insuring that the node that is being traversed has 
         all its incoming connections traversed before it.
         """
-        order_of_traversal = self.kahns_algorithm()
-        # print(order_of_traversal)
+        order_of_traversal = self.genome.order_of_traversal
         if not order_of_traversal:
             return 6 # if it finds a loop, choose to go left to get minimal fitness value
         for node in order_of_traversal:
+            if node.type != "input":
+                node.value = self.activation_function(node.value)
             for connection in node.connections_to_output:
                 if connection.is_enabled:
                     self.update_out_node_value(connection)
-            if node.type != "input":
-                node.value = self.activation_function(node.value)
         action = self.output()
         return action
-    
+
     def kahns_algorithm(self) -> List[Node]:
         """
         Kahns algorithm for topological sorting of the genome
@@ -46,19 +48,16 @@ class Traverse:
         Returns a list with nodes.
         """
         order_of_traversal = []
-        in_degree = {} # How many connections are coming into the node
-        for node in self.genome.nodes:
-            in_degree[node.id] = 0
+        in_degree = defaultdict(int) # How many connections are coming into the node
+
         for connection in self.genome.connections:
             if connection.is_enabled:
                 in_degree[connection.out_node.id] += 1
-        queue = []
-        for node in self.genome.nodes:
-            if in_degree[node.id] == 0:
-                queue.append(node)
+
+        queue: deque[Node] = deque([node for node in self.genome.nodes if in_degree[node.id] == 0])
                 
         while queue:
-            current_node = queue.pop(0)
+            current_node = queue.popleft()
             order_of_traversal.append(current_node)
 
             for connection in current_node.connections_to_output:
@@ -82,7 +81,7 @@ class Traverse:
         Returns the output-node with the highest value after the traversal is done
         """
         output = 0
-        highest_value = -1000
+        highest_value = -1000.0
         for node in self.genome.output_nodes:
             if node.value > highest_value:
                 highest_value = node.value
@@ -117,8 +116,8 @@ class Traverse:
             return 0.0
         return value 
 
-    def sigmoid(self, z: float) -> float:
-        return 1/(1 + np.exp(-0.49 * z))
+    def sigmoid(self, value: float) -> float:
+        return 1/(1 + np.exp(-0.49 * value))
         
-    def tanh(self, z: float) -> float:
-        return np.tanh(z)
+    def tanh(self, value: float) -> float:
+        return np.tanh(value)

@@ -19,8 +19,7 @@ def get_node_colz(nodez: List[Node]) -> List[float]:
         if node.type == 'output':
             output_vals.append(node.value)
     
-    npout = np.array(output_vals)
-    normalize_positive_values(npout)
+    out_colz = get_weight_color(output_vals)
     hidden_colz = get_weight_color(hidden_vals)
 
     hidden_idx, output_idx = 0, 0
@@ -33,7 +32,7 @@ def get_node_colz(nodez: List[Node]) -> List[float]:
             color = hidden_colz[hidden_idx]
             hidden_idx += 1
         elif node.type == 'output':
-            color = GREEN(npout[output_idx])
+            color = out_colz[output_idx]
             output_idx += 1
         colors.append(color)
 
@@ -54,10 +53,10 @@ def get_weight_color(edge_weights: List[float]) -> List[float]:
 
     for w in edge_weights:
         if w < 0:
-            edge_colors.append(RED(norm_negative[index_neg]))  # type: ignore | Map negative weight to red shade
+            edge_colors.append(RED(norm_negative[index_neg])) # Map negative weight to red shade
             index_neg += 1
         else:
-            edge_colors.append(GREEN(norm_positive[index_pos]))  # type: ignore | positive weight to green shade
+            edge_colors.append(GREEN(norm_positive[index_pos]))  # Positive weight to green shade
             index_pos += 1
 
     return edge_colors

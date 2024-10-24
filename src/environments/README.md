@@ -46,7 +46,7 @@ To run the game without rendering (useful for training genomes), use the `run_ga
 
 ```python
 from environments.train_env import run_game
-from genetics.genome import Genome
+from src.genetics.genome import Genome
 
 fitness_score = run_game(env, initial_state, genome)
 ```
@@ -81,6 +81,7 @@ total_fitness = fitness.get_fitness()
 The fitness calculation takes into account various factors such as:
 
 - **Positive Rewards**:
+
   - Distance traveled (`move_forward`)
   - Coins collected (`coins`)
   - Winning the game (`win`)

@@ -49,7 +49,6 @@ def fitness(xpos, time):
 class Fitness:
     def __init__(self) -> None:
         self.fitness = 0.0
-        
         self.prev_lives = 2
         self.prev_pos = 0
         self.stand_still_time = 0
@@ -57,15 +56,14 @@ class Fitness:
         self.prev_num_coins = 0
         # Rewards
         self.rewards = {
-            "lose_life": -5,
+            "lose_life": -2,
             "win": 100,
-            "move_forward": 0.01,
+            "move_forward": 0.02,
             "move_backward": -0.005,
-            "dont_move_forward": -0.005,
-            "coins": 1,
-            "score": 0.001,
+            "dont_move_forward": 0,
+            "coins": 0,
+            "score": 0,
             "jump_multiple": 0,
-            "time": -0.00001,
         }
         
 
@@ -80,33 +78,25 @@ class Fitness:
         if info["flag_get"]:
             self.fitness += self.rewards["win"]
         ########################
-        
-        # Score ################
-        self.fitness += info["score"] * self.rewards["score"]
 
         # Lose #########################
         if info["life"] < self.prev_lives:
+            # print("DIED")
             self.prev_lives = info["life"]
+
             self.fitness += self.rewards["lose_life"]
         ###################################
 
         # Move x-dir ################
-        if (info["x_pos"] - self.prev_pos) < -0.001:  # Moving backward
-            self.fitness += (self.prev_pos - info["x_pos"]) * self.rewards["move_backward"]
-        elif (info["x_pos"] - self.prev_pos) < 0.001:  # Not moving forward
+        if (info["x_pos"] - self.prev_pos) < 0.001:
             self.fitness += self.rewards["dont_move_forward"]
-        else:  # Moving forward
-            self.fitness += (info["x_pos"] - self.prev_pos) * self.rewards["move_forward"]
+        else:
+            self.fitness += (info["x_pos"] - self.prev_pos)*self.rewards["move_forward"]
         self.prev_pos = info["x_pos"]
         #################################
 
-        # Time #########################
-        self.fitness += info["time"] * self.rewards["time"]
-        ###################################
-
-
         # Jump multiple times in a row ####
-        # if action == self.prev_action and (SIMPLE_MOVEMENT[action] == ["right", "A"] or SIMPLE_MOVEMENT[action] == ["A"] or SIMPLE_MOVEMENT[action] == ["right", "A", "B"]):
+        #if action == self.prev_action and (SIMPLE_MOVEMENT[action] == ["right", "A"] or SIMPLE_MOVEMENT[action] == ["A"] or SIMPLE_MOVEMENT[action] == ["right", "A", "B"]):
         #    self.fitness += self.rewards["jump_multiple"]
         #    print("JUMP MULTIPLE")
         ##############################
