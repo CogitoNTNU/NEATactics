@@ -15,11 +15,11 @@ class Genome:
     def __init__(self, id: int):
         self.id = id
         
-        self.input_nodes: list[Node] = []
-        self.output_nodes: list[Node] = []
-        self.hidden_nodes: list[Node] = []
+        self.input_nodes: List[Node] = []
+        self.output_nodes: List[Node] = []
+        self.hidden_nodes: List[Node] = []
         
-        self.connections: list[ConnectionGene] = []
+        self.connections: List[ConnectionGene] = []
         self.fitness_value: float = 0.0
         self.elite = False
 

@@ -6,7 +6,7 @@ from src.genetics.genomic_distance import *
 from src.genetics.create_base_genomes  import create_base_genomes 
 from src.genetics.connection_gene import ConnectionGene
 from src.genetics.breed_two_genomes import breed_two_genomes
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import multiprocessing
 import warnings
 import random
@@ -19,10 +19,10 @@ class NEAT:
         self.species_number = 0
         self.genome_id = 0 
         self.node_id = 208 # Because we innitialize 208 nodes
-        self.genomes: list[Genome] = []
-        self.species: list[Species] = []
-        self.connections: list[ConnectionGene] = []
-        self.connections_with_node_mutations: dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
+        self.genomes: List[Genome] = []
+        self.species: List[Species] = []
+        self.connections: List[ConnectionGene] = []
+        self.connections_with_node_mutations: Dict[ConnectionGene, Tuple[int, int]] = {} # To keep track of connections that have had a node mutation
         self.highest_found_fitness = 0.0
         self.improvement_counter = 0
         
