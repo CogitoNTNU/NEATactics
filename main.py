@@ -1,4 +1,3 @@
-from genericpath import exists
 from src.environments.debug_env import env_debug_init, run_game_debug
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
@@ -19,10 +18,7 @@ def play_genome(args):
             from_gen = 0
         test_genome(from_gen, to_gen)
 
-    if args.generation is not None:
-        generation_num = args.generation
-    else:
-        generation_num = -1
+    generation_num = args.generation if args.generation is not None else -1
     genome = load_best_genome(generation_num)
     env, state = env_debug_init()
     run_game_debug(env, state, genome, 0, visualize=False)
@@ -59,21 +55,18 @@ def main(args):
         neat_name = "latest"
     
     neat = load_neat(neat_name)
-    config_instance = Config()
-    if neat is None:
-        exists = False
+    if neat is not None: # TODO: Add option to insert new config into NEAT object.
         generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = get_fitnesses_from_file("fitness_values")
         print(f"Generation numbs: {generation_nums}")
         from_generation = generation_nums[-1] + 1
         print(f"From generation: {from_generation}")
         #config_instance = neat.config
     else:
-        exists = True
-        neat = NEAT(config_instance)
+        neat = NEAT(Config())
         neat.initiate_genomes()
         from_generation = 0
     
-    generations = (config_instance.generations) if args.n_generations == -1 else args.n_generations
+    generations = (neat.config.generations) if args.n_generations == -1 else args.n_generations
 
     print(f"Training from generation {from_generation} to generation {from_generation + generations}")
     
@@ -89,12 +82,7 @@ def main(args):
 
             save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses)
             neat.calculate_number_of_children_of_species()
-            new_genomes_list = []
-            for specie in neat.species:
-                new_genomes_list.append(neat.generate_offspring(specie))
-            
-            flattened_genomes = [genome for sublist in new_genomes_list for genome in sublist]
-            neat.genomes = flattened_genomes
+            neat.genomes = [genome for specie in neat.species for genome in neat.generate_offspring(specie)] # Generate offspring in each specie
             
             print(f"new generation size: {len(neat.genomes)}" )
                 
@@ -104,16 +92,13 @@ def main(args):
             save_fitness_data()
     except KeyboardInterrupt:
         print("\nProcess interrupted! Saving fitness data...")
-    finally:
-        # Always save fitness data before exiting, whether interrupted or completed
-        save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses, exists)
-        save_neat(neat, "latest")
+    finally: # Always save fitness data before exiting, whether interrupted or completed
+        save_fitness(best_fitnesses, avg_fitnesses, min_fitnesses)
+        save_neat(neat, args.neat_name)
         print("Fitness data saved.")
     
     profiler.disable()
-
-    # Create a stats object to print out profiling results
-    stats = pstats.Stats(profiler).sort_stats('cumtime')
+    stats = pstats.Stats(profiler).sort_stats('cumtime') # Create a stats object to print out profiling results
     stats.print_stats()
 
     return neat.genomes
@@ -147,5 +132,4 @@ def command_line_interface():
         parser.print_help()
         
 if __name__ == "__main__":
-    # main()
     command_line_interface()
