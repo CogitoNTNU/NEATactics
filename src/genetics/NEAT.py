@@ -182,7 +182,7 @@ class NEAT:
                 return
         self.improvement_counter += 1
         print(f"Improvement counter: {self.improvement_counter}")
-        if self.improvement_counter > 20:
+        if self.improvement_counter >= 20:
             print("No improvements in 20 generations - RIP")
             self.species.sort(key=lambda x: self.rank_species(x), reverse=True)
             if len(self.species) > 2:
@@ -194,6 +194,7 @@ class NEAT:
         
     def check_individual_impovements(self):
         """ Check each species if they are improving, remove the ones that are not after 15 generations"""
+        best_fitness = 0
         for specie in self.species:
             specie.genomes.sort(key=lambda x: x.fitness_value, reverse=True)
             if specie.best_genome_fitness < specie.genomes[0].fitness_value:
@@ -201,9 +202,20 @@ class NEAT:
                 specie.improvement_counter = 0
             else: 
                 specie.improvement_counter += 1
+            if specie.best_genome_fitness > best_fitness:
+                best_fitness = specie.best_genome_fitness
         for specie in self.species:
-            print(f"Specie number: {specie.species_number}, Best fitness: {specie.best_genome_fitness}, Improvement counter: {specie.improvement_counter}")
-            if specie.improvement_counter > 20:
+            print(f"Specie number: {specie.species_number}, Best fitness: {specie.best_genome_fitness}, Stagnation counter: {specie.improvement_counter}")
+            if specie.improvement_counter >= 15:
+                if specie.best_genome_fitness == best_fitness:
+                    specie.improvement_counter = 0
+                    print("Best specie is not removed")
+                    break
+                print("Specie has stagnated, removing it!")
+                self.species.remove(specie)
+                # TODO: Ludvig, kan du forklare hvorfor det er sånn? En liten specie som er shit burde vel ikke overleve videre?
+                # Bare slett kommentarene hvis det ikke skal være der.
+                """
                 if len(self.species) > 2:
                     self.species.remove(specie)
                 else:
@@ -211,6 +223,7 @@ class NEAT:
                     self.improvement_counter = 0
                     for specie in self.species:
                         specie.improvement_counter = 0
+                """
         if self.species == []:
             print("All species have been removed - RIP")
             self.initiate_genomes()
