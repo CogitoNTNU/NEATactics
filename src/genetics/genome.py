@@ -33,8 +33,10 @@ class Genome:
             self.hidden_nodes.append(node)
 
     def add_connection(self, connection: ConnectionGene):
-        """ Adds a connection to the genome. """
+        """ Adds a connection to the genome, and resets the order of traversal, as it must be calculated anew. """
         self.connections.append(connection)
+        if self.order_of_traversal:
+            self.order_of_traversal = []
         
     def disable_connection(self, connection: ConnectionGene):
         """ Disables a connection. """
