@@ -41,6 +41,7 @@ class Config:
 
     # Paper said that the max differnce in weights was about 3.0
     max_weight_difference: float = 3.0
+    SHOULD_PROFILE: bool = True
 
 
 

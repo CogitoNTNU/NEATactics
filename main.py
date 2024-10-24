@@ -53,8 +53,7 @@ def main(args):
     neat_name = args.neat_name
     print("\nTraining NEAT with name: ", neat_name)
     print()
-    profiler = cProfile.Profile()
-    profiler.enable()
+    
     min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
     
     neat = load_neat(neat_name)
@@ -66,6 +65,10 @@ def main(args):
         neat = NEAT(Config())
         neat.initiate_genomes()
         from_generation = 0
+
+    if neat.config.SHOULD_PROFILE:
+        profiler = cProfile.Profile()
+        profiler.enable()
     
     generations = (neat.config.generations) if args.n_generations == -1 else args.n_generations
 
@@ -99,9 +102,10 @@ def main(args):
         save_neat(neat, neat_name)
         print("Fitness data saved.")
     
-    profiler.disable()
-    stats = pstats.Stats(profiler).sort_stats('cumtime') # Create a stats object to print out profiling results
-    stats.print_stats()
+    if neat.config.SHOULD_PROFILE:
+        profiler.disable()
+        stats = pstats.Stats(profiler).sort_stats('cumtime') # Create a stats object to print out profiling results
+        stats.print_stats()
 
     return neat.genomes
     
