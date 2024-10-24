@@ -1,3 +1,4 @@
+import pygame.image
 import main as neat_test_file
 import pygame
 import sys
@@ -119,8 +120,8 @@ class GenomeManager:
 class Settings():
     def __init__(self):
         self.fps = 60
-        self.default_x_size = 1000
-        self.default_y_size = 500
+        self.default_x_size = 2560
+        self.default_y_size = 1600
         self.fullscreen = False
         self.fs_start_time = 0
         self.fs_is_pressed = False
@@ -128,22 +129,26 @@ class Settings():
         self.sc_selector = 0  # 0 = main, 1 = training, 2 = settings, etc.
 
         # Colors
-        self.DARK_BLUE = (8, 19, 169)
-        self.GREEN = (8, 166, 11)
-        self.YELLOW = (255, 226, 10)
-        self.LIGHT_BLUE = (173, 216, 230)
-        self.WHITE = (255, 255, 255)
-        self.GRAY = (200, 200, 200)
+        self.DARK_BLUE = (0x13, 0x39, 0x5B)
+        self.LIGHT_BLUE = (0x30, 0xB3, 0xEC)
+        self.WHITE = (0xFF, 0xFF, 0xFF)
+        self.ORANGE = (0xFF, 0x63, 0x48)
+        self.RED = (0xFF, 0x47, 0x57)
+        self.BLUE = (0x1E, 0x90, 0xFF)
 
         # Button and font settings
-        self.button_color = (100, 200, 255)
-        self.hover_color = (150, 230, 255)
-        self.pressed_color = (50, 150, 200)
-        self.text_color = (255, 255, 255)
-        self.input_field_bg = (58, 58, 58)
-        self.input_field_active_bg = (58, 58, 58) 
+        self.background_color = self.DARK_BLUE
+        self.button_color = self.BLUE
+        self.hover_color = self.LIGHT_BLUE
+        self.pressed_color = self.DARK_BLUE
+        self.text_color = self.WHITE
+        self.input_field_bg = self.ORANGE
+        self.input_field_active_bg = self.RED
         pygame.font.init()
-        self.font = pygame.font.Font(None, 36)
+        self.normal_font = pygame.font.Font(None, 36)
+        self.big_font = pygame.font.Font(None, 72)
+
+
 class SelectableListItem:
     """Represents a genome item that can be selected, with a checkbox."""
     def __init__(self, x, y, width, height, genome_id, fitness, font, text_color, bg_color, selected_color, checkbox_size=20):
@@ -178,6 +183,69 @@ class SelectableListItem:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and self.rect.collidepoint(event.pos):
                 self.selected = not self.selected
+
+
+class ScrollableList:
+    def __init__(self, x, y, width, height, items, font, text_color, bg_color, selected_color, visible_count=10, padding=10):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.items = items
+        self.font = font
+        self.text_color = text_color
+        self.bg_color = bg_color
+        self.selected_color = selected_color
+        self.visible_count = visible_count
+        self.scroll_offset = 0  # This tracks where we are in the list
+        self.padding = padding  # Distance between items
+        # Create a base list of items without positioning them
+        print(items[0])
+        self.list_items = [
+            SelectableListItem(
+                x, y, width, (height - (visible_count - 1) * padding) // visible_count,  # Adjust height to account for padding
+                
+                genome_id=item[1], fitness=item[0].fitness_value, font=font, text_color=text_color, 
+                bg_color=bg_color, selected_color=selected_color
+            ) for item in items
+        ]
+
+    def draw(self, screen):
+        # Draw only the visible items, adjusting their position based on scroll_offset and adding padding
+        for i in range(self.scroll_offset, min(self.scroll_offset + self.visible_count, len(self.list_items))):
+            list_item = self.list_items[i]
+            # Adjust y position with padding
+            list_item.rect.y = self.y + (i - self.scroll_offset) * (list_item.rect.height + self.padding)
+            list_item.checkbox_rect.y = list_item.rect.y + (list_item.rect.height - list_item.checkbox_size) // 2
+            list_item.draw(screen)
+
+    def scroll(self, direction):
+        # Scroll up (scroll_offset decreases)
+        if direction == "up" and self.scroll_offset > 0:
+            self.scroll_offset -= 1
+        # Scroll down (scroll_offset increases)
+        elif direction == "down" and self.scroll_offset < len(self.list_items) - self.visible_count:
+            self.scroll_offset += 1
+
+    def handle_event(self, event):
+        # Pass the event to all visible list items
+        for i in range(self.scroll_offset, min(self.scroll_offset + self.visible_count, len(self.list_items))):
+            list_item = self.list_items[i]
+            list_item.handle_event(event)
+
+        # Handle scrolling with arrow keys
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                self.scroll("up")
+            elif event.key == pygame.K_DOWN:
+                self.scroll("down")
+        
+        # Handle scrolling with mouse wheel
+        if event.type == pygame.MOUSEWHEEL:
+            if event.y > 0:
+                self.scroll("up")
+            elif event.y < 0:
+                self.scroll("down")
 
 
 class GenomeViewer:
@@ -387,20 +455,20 @@ class Game():
 
         # Main menu buttons
         self.main_menu_buttons = [
-            Button(140, 100, 200, 100, "Train!", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.train_scene),
-            Button(460, 100, 200, 100, "Settings", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.settings_scene),
-            Button(140, 250, 200, 100, "Watch best gene", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.watch_gene_scene),
-            Button(460, 250, 200, 100, "Visualize best genome", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.visualize_genome_scene),
-            TextDisplay(300, 30, "Neat Tactics!", st.font, st.text_color, bg_color=st.DARK_BLUE)
+            Button(140, 100, 200, 100, "Train!", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.train_scene),
+            Button(460, 100, 200, 100, "Settings", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.settings_scene),
+            Button(140, 250, 200, 100, "Watch best gene", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.watch_gene_scene),
+            Button(460, 250, 200, 100, "Visualize best genome", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.visualize_genome_scene),
+            TextDisplay(300, 30, "Neat Tactics!", st.big_font, st.DARK_BLUE, bg_color=st.LIGHT_BLUE)
         ]
 
         # Training scene UI elements
-        self.training_input_fields= [InputField(140, 100, 200, 50, st.font, st.text_color, initial_text="Population size"),
-                           InputField(140, 170, 200, 50, st.font, st.text_color, initial_text="Mutation rate"),
-                           InputField(140, 240, 200, 50, st.font, st.text_color, initial_text="Generations")]
+        self.training_input_fields= [InputField(140, 100, 200, 50, st.normal_font, st.text_color, initial_text="Population size"),
+                           InputField(140, 170, 200, 50, st.normal_font, st.text_color, initial_text="Mutation rate"),
+                           InputField(140, 240, 200, 50, st.normal_font, st.text_color, initial_text="Generations")]
         self.training_UI = [
-                           Button(460, 170, 200, 50, "Start Training", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
-                           Button(460, 300, 200, 50, "Back to Menu", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
+                           Button(460, 170, 200, 50, "Start Training", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
+                           Button(460, 300, 200, 50, "Back to Menu", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
         try:
             self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
         except:
@@ -412,25 +480,25 @@ class Game():
 
         # Settings scene
         self.settings_input_fields = [
-            InputField(200, 50, 200, 30, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.c1)),
-            InputField(200, 100, 200, 30, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.c2)),
-            InputField(200, 150, 200, 30, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.c3)),
-            InputField(200, 200, 200, 30, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.genomic_distance_threshold)),
-            InputField(200, 250, 200, 30, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.population_size)),
-            InputField(200, 300, 200, 30, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.generations))
+            InputField(200, 50, 200, 30, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.c1)),
+            InputField(200, 100, 200, 30, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.c2)),
+            InputField(200, 150, 200, 30, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.c3)),
+            InputField(200, 200, 200, 30, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.genomic_distance_threshold)),
+            InputField(200, 250, 200, 30, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.population_size)),
+            InputField(200, 300, 200, 30, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg, str(self.config.generations))
         ]
 
         
-        self.apply_button = Button(200, 350, 200, 50, "Apply Changes", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.apply_changes)
-        self.settings_back_button = Button(200, 450, 200, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
+        self.apply_button = Button(200, 350, 200, 50, "Apply Changes", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.apply_changes)
+        self.settings_back_button = Button(200, 450, 200, 50, "Back", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
         
         self.input_titles = [
-            TextDisplay(50, 50, "c1:", st.font, st.text_color),
-            TextDisplay(50, 100, "c2:", st.font, st.text_color),
-            TextDisplay(50, 150, "c3:", st.font, st.text_color),
-            TextDisplay(50, 200, "Genomic Distance Threshold:", st.font, st.text_color),
-            TextDisplay(50, 250, "Population Size:", st.font, st.text_color),
-            TextDisplay(50, 300, "Generations:", st.font, st.text_color)
+            TextDisplay(50, 50, "c1:", st.normal_font, st.text_color),
+            TextDisplay(50, 100, "c2:", st.normal_font, st.text_color),
+            TextDisplay(50, 150, "c3:", st.normal_font, st.text_color),
+            TextDisplay(50, 200, "Genomic Distance Threshold:", st.normal_font, st.text_color),
+            TextDisplay(50, 250, "Population Size:", st.normal_font, st.text_color),
+            TextDisplay(50, 300, "Generations:", st.normal_font, st.text_color)
         ]
 
 
@@ -450,19 +518,22 @@ class Game():
             print(genome)
 
         ## Genome viewer
-        self.genome_viewer = GenomeViewer(self.genomes, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg)
+        self.genome_viewer = GenomeViewer(self.genomes, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg)
 
         self.watch_genes_visualize = ImageSprite("genome_frames/genome_0.png", (700, 50), (600, 400))
 
         ## Run button
-        self.run_button = Button(600, 20, 200, 50, "Run Selected Genomes", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
-        self.watch_back_button = Button(200, 450, 200, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
+        self.run_button = Button(600, 20, 200, 50, "Run Selected Genomes", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
+        self.watch_back_button = Button(200, 450, 200, 50, "Back", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
 
         #Visualize best genome
-        self.visualize_back_button = Button(50, 50, 150, 50, "Back", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
-        self.show_visualization_button = Button(100, 350, 200, 50, "Show Visualization", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.visualize_genomes)
-        self.get_which_frames_to_show_input = InputField(400, 350, 150, 50, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, initial_text="0")
+        self.visualize_back_button = Button(50, 50, 150, 50, "Back", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)
+        self.show_visualization_button = Button(100, 350, 200, 50, "Show Visualization", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.visualize_genomes)
+        self.get_which_frames_to_show_input = InputField(400, 350, 150, 50, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg, initial_text="0")
 
+        self.scrollable_list = ScrollableList(50, 50, 500, 500, self.genomes, st.normal_font, st.text_color, st.button_color, st.hover_color, visible_count=10, padding=10)
+
+        self.logo_sprite = ImageSprite("docs/images/logo light blue name white.png", (50, 450), (200, 200))
 
     def event_handler(self):
         for event in pygame.event.get():
@@ -477,6 +548,7 @@ class Game():
                     input_field.handle_event(event)
             if st.sc_selector == 3:
                 self.genome_viewer.handle_event(event)
+                self.scrollable_list.handle_event(event)
             if st.sc_selector == 4:
                 self.get_which_frames_to_show_input.handle_event(event)
 
@@ -512,10 +584,11 @@ class Game():
 
 
     def watch_genome_scene(self):
-        self.screen.fill(st.LIGHT_BLUE)
+        self.screen.fill(st.background_color)
 
         # Draw the genome viewer list
         self.genome_viewer.draw(self.screen)
+        self.scrollable_list.draw(self.screen)
 
         # Draw the buttons
         self.run_button.draw(self.screen)
@@ -556,7 +629,7 @@ class Game():
 
     def draw_visualize_genome_scene(self):
         """Draw the 'Visualize Best Genome' scene."""
-        self.screen.fill(st.LIGHT_BLUE)
+        self.screen.fill(st.background_color)
 
         # Draw the back button
         self.visualize_back_button.draw(self.screen)
@@ -604,7 +677,7 @@ class Game():
     
 
     def draw_settings_scene(self):
-        self.screen.fill(st.LIGHT_BLUE)
+        self.screen.fill(st.background_color)
 
         # Draw titles and input fields
         for title in self.input_titles:
@@ -620,12 +693,12 @@ class Game():
     def update_screen(self):
         if st.sc_selector == 0:
             # Main menu scene
-            self.screen.fill(st.LIGHT_BLUE)
+            self.screen.fill(st.background_color)
             for button in self.main_menu_buttons:
                 button.draw(self.screen)
         elif st.sc_selector == 1:
             # Train scene
-            self.screen.fill(st.LIGHT_BLUE)
+            self.screen.fill(st.background_color)
 
             for element in self.training_input_fields:
                 element.draw(self.screen)
@@ -649,6 +722,8 @@ class Game():
             self.watch_genome_scene()
         elif st.sc_selector == 4:
             self.draw_visualize_genome_scene()
+        
+        self.logo_sprite.draw(self.screen)
 
         pygame.display.flip()
 
