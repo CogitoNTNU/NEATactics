@@ -35,7 +35,7 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
     
     while True:
         action = forward.traverse()
-        # time.sleep(0.03)
+        time.sleep(0.01)
         sr = env.step(action) # State, Reward, Done, Info
         env.render()
         # timeout = 600 + sr.info["x_pos"]

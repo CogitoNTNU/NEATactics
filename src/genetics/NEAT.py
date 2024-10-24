@@ -136,15 +136,15 @@ class NEAT:
             new_species = self.create_species()
             new_species.add_genome(genomes[0])
             self.species.append(new_species)
-            test_species_genomes = [(new_species, genomes[0])]
+            specie_representative_list = [(new_species, genomes[0])]
         else:
             # Create a list to hold representative genomes from each species if species exist
-            test_species_genomes = [(specie, specie.genomes[0]) for specie in self.species if specie.genomes]
+            specie_representative_list = [(specie, specie.genomes[0]) for specie in self.species if specie.genomes]
 
         new_species_list = []  # Temporary list to hold the new species structure
 
         # Reset the genomes in each species (prepare for the new generation)
-        for specie, _ in test_species_genomes:
+        for specie, _ in specie_representative_list:
             specie.genomes = []  # Clear genomes from previous generation
             specie.fitness_value = 0  # Reset the fitness value
 
@@ -152,7 +152,7 @@ class NEAT:
             found_species = False  # Track if the genome is assigned to a species
 
             # Compare genome to each species' representative genome
-            for specie, representative in test_species_genomes:
+            for specie, representative in specie_representative_list:
                 if genomic_distance(genome, representative, self.config) < self.config.genomic_distance_threshold:
                     # If the genome fits, add it to the correct species
                     specie.add_genome(genome)
@@ -166,7 +166,7 @@ class NEAT:
                 new_species = self.create_species()
                 new_species.add_genome(genome)
                 new_species_list.append(new_species)  # Track new species
-                test_species_genomes.append((new_species, genome))  # Use this genome as the representative for the new species
+                specie_representative_list.append((new_species, genome))  # Use this genome as the representative for the new species
 
 
         # After processing all genomes, update self.species
