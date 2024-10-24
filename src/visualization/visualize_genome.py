@@ -42,9 +42,11 @@ def add_nodes_to_graph(graph: nx.DiGraph, genome: Genome):
 
 def add_labels_to_output_nodes(pos_dict: Dict[int, Tuple[float, float]], genome: Genome, ax: Axes, movement_list: List[List[str]]) -> None:
     """Add value labels and movement [str] labels to output nodes."""
+    max_val = max(output_node.value for output_node in genome.output_nodes)
     for output_node in genome.output_nodes:
         x, y = pos_dict[output_node.id]
-        ax.text(x + 0.30, y, f'{output_node.value:.3f}', fontsize=10, fontweight='bold', color='red')  # Add label to the right    
+        color = 'green' if output_node.value == max_val else 'red'
+        ax.text(x + 0.30, y, f'{output_node.value:.3f}', fontsize=10, fontweight='bold', color=color)  # Add label to the right    
         ax.text(x, y + 0.50, '+'.join(movement_list[output_node.id]), fontsize=10, fontweight='bold', color='blue')  # Add label to the right    
 
 
