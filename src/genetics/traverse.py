@@ -8,6 +8,8 @@ import numpy as np
 class Traverse:
     def __init__(self, genome: Genome) -> None:
         self.genome = genome
+        if not genome.order_of_traversal:
+            genome.order_of_traversal = self.kahns_algorithm()
         self.config = Config()
         a_func = self.config.activation_func.lower() 
         if a_func == "relu":
@@ -26,8 +28,7 @@ class Traverse:
         and insuring that the node that is being traversed has 
         all its incoming connections traversed before it.
         """
-        order_of_traversal = self.kahns_algorithm()
-        # print(order_of_traversal)
+        order_of_traversal = self.genome.order_of_traversal
         if not order_of_traversal:
             return 6 # if it finds a loop, choose to go left to get minimal fitness value
         for node in order_of_traversal:
