@@ -58,7 +58,7 @@ def save_best_genome(genome: Genome, generation: int, name: str):
     with open(f'{path}/best_genome_{generation}.obj', 'wb') as f:
         pickle.dump(genome, f) # type: ignore
 
-def load_best_genome(generation: int, name: str) -> None:
+def load_best_genome(generation: int, name: str) -> Genome:
     """Loads the best genome from the given generation. If -1 is passed as argument, the latest generation is displayed."""
     if generation == -1: # Find the genome from the latest generation.
         files = os.listdir(f'data/{name}/good_genomes')
