@@ -143,6 +143,7 @@ class Settings():
         self.input_field_active_bg = (58, 58, 58) 
         pygame.font.init()
         self.font = pygame.font.Font(None, 36)
+
 class SelectableListItem:
     """Represents a genome item that can be selected, with a checkbox."""
     def __init__(self, x, y, width, height, genome_id, fitness, font, text_color, bg_color, selected_color, checkbox_size=20):
@@ -177,6 +178,69 @@ class SelectableListItem:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and self.rect.collidepoint(event.pos):
                 self.selected = not self.selected
+
+
+class ScrollableList:
+    def __init__(self, x, y, width, height, items, font, text_color, bg_color, selected_color, visible_count=10, padding=10):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.items = items
+        self.font = font
+        self.text_color = text_color
+        self.bg_color = bg_color
+        self.selected_color = selected_color
+        self.visible_count = visible_count
+        self.scroll_offset = 0  # This tracks where we are in the list
+        self.padding = padding  # Distance between items
+        # Create a base list of items without positioning them
+        print(items[0])
+        self.list_items = [
+            SelectableListItem(
+                x, y, width, (height - (visible_count - 1) * padding) // visible_count,  # Adjust height to account for padding
+                
+                genome_id=item[1], fitness=item[0].fitness_value, font=font, text_color=text_color, 
+                bg_color=bg_color, selected_color=selected_color
+            ) for item in items
+        ]
+
+    def draw(self, screen):
+        # Draw only the visible items, adjusting their position based on scroll_offset and adding padding
+        for i in range(self.scroll_offset, min(self.scroll_offset + self.visible_count, len(self.list_items))):
+            list_item = self.list_items[i]
+            # Adjust y position with padding
+            list_item.rect.y = self.y + (i - self.scroll_offset) * (list_item.rect.height + self.padding)
+            list_item.checkbox_rect.y = list_item.rect.y + (list_item.rect.height - list_item.checkbox_size) // 2
+            list_item.draw(screen)
+
+    def scroll(self, direction):
+        # Scroll up (scroll_offset decreases)
+        if direction == "up" and self.scroll_offset > 0:
+            self.scroll_offset -= 1
+        # Scroll down (scroll_offset increases)
+        elif direction == "down" and self.scroll_offset < len(self.list_items) - self.visible_count:
+            self.scroll_offset += 1
+
+    def handle_event(self, event):
+        # Pass the event to all visible list items
+        for i in range(self.scroll_offset, min(self.scroll_offset + self.visible_count, len(self.list_items))):
+            list_item = self.list_items[i]
+            list_item.handle_event(event)
+
+        # Handle scrolling with arrow keys
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                self.scroll("up")
+            elif event.key == pygame.K_DOWN:
+                self.scroll("down")
+        
+        # Handle scrolling with mouse wheel
+        if event.type == pygame.MOUSEWHEEL:
+            if event.y > 0:
+                self.scroll("up")
+            elif event.y < 0:
+                self.scroll("down")
 
 
 class GenomeViewer:
@@ -462,6 +526,8 @@ class Game():
         self.show_visualization_button = Button(100, 350, 200, 50, "Show Visualization", st.font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.visualize_genomes)
         self.get_which_frames_to_show_input = InputField(400, 350, 150, 50, st.font, st.text_color, st.input_field_bg, st.input_field_active_bg, initial_text="0")
 
+        self.scrollable_list = ScrollableList(50, 50, 500, 500, self.genomes, st.font, (255, 255, 255), (50, 50, 50), (0, 100, 255), visible_count=10, padding=10)
+
 
     def event_handler(self):
         for event in pygame.event.get():
@@ -476,6 +542,7 @@ class Game():
                     input_field.handle_event(event)
             if st.sc_selector == 3:
                 self.genome_viewer.handle_event(event)
+                self.scrollable_list.handle_event(event)
             if st.sc_selector == 4:
                 self.get_which_frames_to_show_input.handle_event(event)
 
@@ -515,6 +582,7 @@ class Game():
 
         # Draw the genome viewer list
         self.genome_viewer.draw(self.screen)
+        self.scrollable_list.draw(self.screen)
 
         # Draw the buttons
         self.run_button.draw(self.screen)
