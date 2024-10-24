@@ -20,6 +20,7 @@ class Genome:
         self.hidden_nodes: List[Node] = []
         
         self.connections: List[ConnectionGene] = []
+        self.order_of_traversal: List[Node] = []
         self.fitness_value: float = 0.0
         self.elite = False
 
