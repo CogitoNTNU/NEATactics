@@ -17,9 +17,13 @@ def play_genome(args):
         else:
             from_gen = 0
         test_genome(from_gen, to_gen)
+    
+    neat_name = "latest"
+    if args.neat_name != '':
+        neat_name = args.neat_name
 
     generation_num = args.generation if args.generation is not None else -1
-    genome = load_best_genome(generation_num)
+    genome = load_best_genome(generation_num, neat_name)
     env, state = env_debug_init()
     run_game_debug(env, state, genome, 0, visualize=False)
 
@@ -50,9 +54,6 @@ def main(args):
     profiler = cProfile.Profile()
     profiler.enable()
     min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
-
-    if neat_name == '':
-        neat_name = "latest"
     
     neat = load_neat(neat_name)
     if neat is not None: # TODO: Add option to insert new config into NEAT object.
@@ -109,6 +110,9 @@ def command_line_interface():
     
     subparsers = parser.add_subparsers(dest="command", help="Choose 'train', 'test', 'graph', or 'play'")
     
+    # Global arguments for all functions
+    parser.add_argument('-n', '--neat_name', type=str, default='latest', help="The name of the NEAT object to load from 'trained_population/'")
+
     # Train command (runs main())
     train_parser = subparsers.add_parser('train', help="Run the training process")
     train_parser.add_argument('-n', '--neat_name', type=str, default='', help="The name of the NEAT object to load from 'trained_population/'")
@@ -126,7 +130,7 @@ def command_line_interface():
     if args.command == "train":
         main(args) 
     elif args.command == "graph":
-        save_fitness_data(show=True)
+        save_fitness_data(args.neat_name, show=True)
     elif args.command == "play":
         play_genome(args)
     else:
