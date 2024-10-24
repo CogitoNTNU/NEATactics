@@ -88,10 +88,10 @@ def visualize_genome(genome: Genome, frame_number: int):
 
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
-    directory = "./genome_frames"
+    directory = "./data/genome_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.savefig(f'./genome_frames/genome_{frame_number}.png')
+    plt.savefig(f'./data/genome_frames/genome_{frame_number}.png')
     plt.close()
 
    
