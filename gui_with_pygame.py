@@ -400,10 +400,10 @@ class Game():
                            Button(460, 170, 200, 50, "Start Training", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
                            Button(460, 300, 200, 50, "Back to Menu", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
         try:
-            self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
+            self.fitness_graph = ImageSprite("data/latest/fitness/fitness_plot.png", (700, 100))
         except:
             print("ERROR: Could not find image path")
-            self.fitness_graph = ImageSprite("genome_frames/genome_0.png", (700, 100))
+            self.fitness_graph = ImageSprite("data/genome_frames/genome_0.png", (700, 100))
 
 
         
@@ -432,7 +432,7 @@ class Game():
         ]
 
 
-        genome_folder = 'data/good_genomes'
+        genome_folder = 'data/latest/good_genomes'
         genome_manager = GenomeManager(genome_folder)
 
         # Load all genome objects from the folder
@@ -450,7 +450,7 @@ class Game():
         ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg)
 
-        self.watch_genes_visualize = ImageSprite("genome_frames/genome_0.png", (600, 100), (600, 400))
+        self.watch_genes_visualize = ImageSprite("data/genome_frames/genome_0.png", (600, 100), (600, 400))
 
         ## Run button
         self.run_button = Button(600, 20, 200, 50, "Run Selected Genomes", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
@@ -636,7 +636,7 @@ class Game():
                 element.draw(self.screen)
             
             try:
-                self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
+                self.fitness_graph = ImageSprite("data/latest/fitness/fitness_plot.png", (700, 100))
             except:
                 pass
             self.fitness_graph.draw(self.screen)
