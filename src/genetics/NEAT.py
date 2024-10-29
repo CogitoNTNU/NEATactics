@@ -217,7 +217,6 @@ class NEAT:
                     print("Best specie is not removed")
                     break
                 print("Specie has stagnated, removing it!")
-                self.species.remove(specie)
 
                 if len(self.species) > 2:
                     self.species.remove(specie)
