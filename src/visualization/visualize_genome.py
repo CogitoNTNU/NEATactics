@@ -52,7 +52,7 @@ def add_labels_to_output_nodes(pos_dict: Dict[int, Tuple[float, float]], genome:
         ax.text(x, y + 0.50, '+'.join(movement_list[output_node.id]), fontsize=10, fontweight='bold', color='blue')  # Add label to the right    
 
 
-def visualize_genome(genome: Genome, frame_number: int):
+def visualize_genome(genome: Genome, neat_name: str, frame_number: int):
     fig = plt.figure(figsize=(15, 10))
     ax = fig.add_subplot(111)
 
@@ -88,10 +88,10 @@ def visualize_genome(genome: Genome, frame_number: int):
 
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
-    directory = "./data/genome_frames"
+    directory = f"./data/{neat_name}/genome_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.savefig(f'./data/genome_frames/genome_{frame_number}.png')
+    plt.savefig(f'{directory}/genome_{frame_number}.png')
     plt.close()
 
    
