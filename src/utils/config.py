@@ -35,3 +35,5 @@ class Config:
     remove_worst_percentage: float = 0.4 # percentage of the worst genomes are removed from the population when breeding
 
     SHOULD_PROFILE: bool = False
+
+    cores: int = -1 # -1 means all cores
