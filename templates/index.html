@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NEAT Training Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent: #3498db;
+            --accent-hover: #2980b9;
+            --error: #e74c3c;
+            --success: #2ecc71;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .panel {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        h1, h2, h3 {
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #404040;
+            border-radius: 6px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .status-panel {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: var(--bg-primary);
+            border-radius: 4px;
+        }
+
+        .chart-container {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+            height: calc(100vh - 100px);
+        }
+
+        .error-message {
+            color: var(--error);
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+
+        .success-message {
+            color: var(--success);
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel">
+            <div class="section">
+                <h2>Create New Training</h2>
+                <div class="form-group">
+                    <label>Name for new NEAT instance</label>
+                    <input type="text" id="newNeatName" placeholder="Enter name">
+                    <label>Number of generations</label>
+                    <input type="number" id="generations" value="10" min="1">
+                    <button onclick="createNewNeat()">Create & Start Training</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Select Existing Instance</h2>
+                <select id="neatSelect" onchange="loadFitnessData()">
+                    <option value="">Select instance...</option>
+                    {% for dir in neat_dirs %}
+                    <option value="{{ dir }}">{{ dir }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="section">
+                <h2>Play Genomes</h2>
+                <div class="form-group">
+                    <label>From Generation</label>
+                    <input type="number" id="fromGen" min="0" placeholder="Start generation">
+                    <label>To Generation</label>
+                    <input type="number" id="toGen" min="0" placeholder="End generation">
+                    <button onclick="playGenomes()">Play Genomes</button>
+                </div>
+            </div>
+
+            <div class="status-panel">
+                <h3>Current Status</h3>
+                <div class="status-item">
+                    <span>Generation:</span>
+                    <span id="currentGen">0</span>
+                </div>
+                <div class="status-item">
+                    <span>Best Fitness:</span>
+                    <span id="bestFitness">0</span>
+                </div>
+                <div class="status-item">
+                    <span>Average Fitness:</span>
+                    <span id="avgFitness">0</span>
+                </div>
+                <div class="status-item">
+                    <span>Min Fitness:</span>
+                    <span id="minFitness">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="fitnessChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let chart;
+        let isTraining = false;
+
+        function initChart() {
+            const ctx = document.getElementById('fitnessChart').getContext('2d');
+            Chart.defaults.color = '#b3b3b3';
+            Chart.defaults.borderColor = '#404040';
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Best Fitness',
+                        data: [],
+                        borderColor: '#2ecc71',
+                        tension: 0.1
+                    }, {
+                        label: 'Average Fitness',
+                        data: [],
+                        borderColor: '#3498db',
+                        tension: 0.1
+                    }, {
+                        label: 'Min Fitness',
+                        data: [],
+                        borderColor: '#e74c3c',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#404040'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#404040'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function createNewNeat() {
+            const neatName = document.getElementById('newNeatName').value;
+            const generations = document.getElementById('generations').value;
+            
+            if (!neatName) {
+                alert('Please enter a name for the new NEAT instance');
+                return;
+            }
+            
+            const response = await fetch('/api/create_neat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    neat_name: neatName,
+                    generations: parseInt(generations)
+                })
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                alert(data.message);
+                // Optionally, add the new NEAT instance to the dropdown without reloading
+                const neatSelect = document.getElementById('neatSelect');
+                const newOption = document.createElement('option');
+                newOption.value = neatName;
+                newOption.text = neatName;
+                neatSelect.add(newOption);
+                neatSelect.value = neatName;
+                loadFitnessData(); // Load data for the new NEAT instance
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        }
+        
+
+        async function playGenomes() {
+            const neatName = document.getElementById('neatSelect').value;
+            const fromGen = document.getElementById('fromGen').value;
+            const toGen = document.getElementById('toGen').value;
+            
+            if (!neatName || !fromGen || !toGen) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const response = await fetch('/api/play_genome', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    neat_name: neatName,
+                    from_gen: parseInt(fromGen),
+                    to_gen: parseInt(toGen)
+                })
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                alert(data.message);
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        }
+
+        async function loadFitnessData() {
+            const neatName = document.getElementById('neatSelect').value;
+            
+            if (!neatName) {
+                // Optionally, clear the chart and status display
+                chart.data.labels = [];
+                chart.data.datasets.forEach(dataset => dataset.data = []);
+                chart.update();
+                
+                document.getElementById('currentGen').textContent = '0';
+                document.getElementById('bestFitness').textContent = '0';
+                document.getElementById('avgFitness').textContent = '0';
+                document.getElementById('minFitness').textContent = '0';
+                
+                return;
+            }
+            
+            const response = await fetch(`/api/training_status?neat_name=${neatName}`);
+            const data = await response.json();
+            
+            if (data.history) {
+                // Update chart with complete history
+                chart.data.labels = data.history.generations;
+                chart.data.datasets[0].data = data.history.best_fitnesses;
+                chart.data.datasets[1].data = data.history.avg_fitnesses;
+                chart.data.datasets[2].data = data.history.min_fitnesses;
+                chart.update();
+                
+                // Update status display
+                updateStatusDisplay(data);
+            }
+        }
+
+        async function startTraining() {
+            if (isTraining) return;
+            
+            const neatName = document.getElementById('neatSelect').value;
+            const generations = document.getElementById('generations').value;
+            
+            const response = await fetch('/api/start_training', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    neat_name: neatName,
+                    generations: generations
+                })
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                isTraining = true;
+                startStatusPolling();
+            }
+        }
+
+        async function stopTraining() {
+            if (!isTraining) return;
+            
+            const response = await fetch('/api/stop_training', {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                isTraining = false;
+            }
+        }
+
+        async function updateStatus() {
+            const neatName = document.getElementById('neatSelect').value;
+            const response = await fetch(`/api/training_status?neat_name=${neatName}`);
+            const data = await response.json();
+            
+            if (data.history) {
+                chart.data.labels = data.history.generations;
+                chart.data.datasets[0].data = data.history.best_fitnesses;
+                chart.data.datasets[1].data = data.history.avg_fitnesses;
+                chart.data.datasets[2].data = data.history.min_fitnesses;
+                chart.update();
+            }
+            
+            updateStatusDisplay(data);
+            
+            if (data.is_training) {
+                setTimeout(updateStatus, 1000);
+            } else {
+                isTraining = false;
+            }
+        }
+
+        function startStatusPolling() {
+            updateStatus();
+        }
+
+        async function playGenome() {
+            const neatName = document.getElementById('neatSelect').value;
+            const generation = document.getElementById('generationNum').value;
+            
+            const response = await fetch('/api/play_genome', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    neat_name: neatName,
+                    generation: parseInt(generation)
+                })
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                alert(`Genome played! Fitness: ${data.fitness}`);
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        }
+
+        // Initialize the chart when the page loads
+        window.onload = () => {
+            initChart();
+            loadFitnessData(); // Load initial data
+        };
+    </script>
+</body>
+</html>

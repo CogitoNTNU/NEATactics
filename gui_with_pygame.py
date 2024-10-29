@@ -45,8 +45,8 @@ class GenomeManager:
 class Settings():
     def __init__(self):
         self.fps = 60
-        self.default_x_size = 2560
-        self.default_y_size = 1600
+        self.default_x_size = 1080
+        self.default_y_size = 720
         self.fullscreen = False
         self.fs_start_time = 0
         self.fs_is_pressed = False
@@ -125,7 +125,6 @@ class ScrollableList:
         self.scroll_offset = 0  # This tracks where we are in the list
         self.padding = padding  # Distance between items
         # Create a base list of items without positioning them
-        print(items[0])
         self.list_items = [
             SelectableListItem(
                 x, y, width, (height - (visible_count - 1) * padding) // visible_count,  # Adjust height to account for padding
@@ -398,10 +397,7 @@ class Game():
             self.fitness_graph = ImageSprite("data/fitness/fitness_plot.png", (700, 100))
         except:
             print("ERROR: Could not find image path")
-            self.fitness_graph = ImageSprite("genome_frames/genome_0.png", (700, 100))
-
-
-        
+            self.fitness_graph = ImageSprite("data/genome_frames/genome_0.png", (700, 100))        
 
         # Settings scene
         self.settings_input_fields = [
@@ -440,12 +436,11 @@ class Game():
         # Use the loaded genome objects (printing as an example)
         for genome in loaded_genomes:
             self.genomes.append(genome)
-            print(genome)
 
         ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg)
 
-        self.watch_genes_visualize = ImageSprite("genome_frames/genome_0.png", (600, 100), (600, 400))
+        self.watch_genes_visualize = ImageSprite("data/genome_frames/genome_0.png", (600, 100), (600, 400))
 
         ## Run button
         self.run_button = Button(600, 20, 200, 50, "Run Selected Genomes", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.run_selected_genomes)
@@ -652,7 +647,6 @@ class Game():
         self.event_handler()
         self.update_screen()
         self.clock.tick(st.fps)
-
 
 st = Settings()
 
