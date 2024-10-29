@@ -25,7 +25,7 @@ def play_genome(args):
     generation_num = args.generation if args.generation is not None else -1
     genome = load_best_genome(generation_num, neat_name)
     env, state = env_debug_init()
-    run_game_debug(env, state, genome, 0, visualize=False)
+    run_game_debug(env, state, genome, 0, visualize=True)
 
 def test_genome(from_gen: int, to_gen: int, neat_name: str):
     for i in range(from_gen, to_gen + 1):

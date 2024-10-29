@@ -59,11 +59,12 @@ class Fitness:
             "lose_life": -2,
             "win": 100,
             "move_forward": 0.02,
-            "move_backward": -0.005,
+            "move_backward": -0.02,
             "dont_move_forward": 0,
             "coins": 0,
             "score": 0,
             "jump_multiple": 0,
+            "time_penalty": -0.005,
         }
         
 
@@ -73,6 +74,9 @@ class Fitness:
         This only works for SIMPLE_MOVEMENT movement scheme.
         """
 
+
+        # Time penalty
+        self.fitness += self.rewards["time_penalty"]
 
         # Win #################
         if info["flag_get"]:

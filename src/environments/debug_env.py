@@ -39,20 +39,21 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         sr = env.step(action) # State, Reward, Done, Info
         env.render()
         # timeout = 600 + sr.info["x_pos"]
-        if visualize and i % 10 == 0:
+        if visualize and i % 10000 == 0:
             save_state_as_png(0, sr.state)
             visualize_genome(genome, 0)
         
         fitness.calculate_fitness(sr.info, action)
 
         fitness_val: float = fitness.get_fitness()
+        print(fitness_val)
         if fitness_val > last_fitness_val:
             last_fitness_val = fitness_val
             stagnation_counter = 0
         else:
             stagnation_counter += 1
 
-        if sr.info["life"] == 1 or stagnation_counter > 100:
+        if sr.info["life"] == 1 or stagnation_counter > 150:
             env.close()
             return fitness.get_fitness()
         i += 1

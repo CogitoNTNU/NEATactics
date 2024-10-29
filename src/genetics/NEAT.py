@@ -298,7 +298,8 @@ class NEAT:
             # Determine if we should perturb or assign a new random value
             if random.random() < self.config.connection_weight_perturbance_chance:
                 # Perturb the weight slightly
-                perturbation = random.uniform(0, 1.)*random.uniform(-1, 1)  # Adjust the range as needed
+                perturbation = np.random.normal(0, 0.3)
+                #random.uniform(0, 1.)*random.uniform(-1, 1)  # Adjust the range as needed
                 connection.weight += perturbation
             else:
                 # Assign a new random weight
@@ -306,9 +307,9 @@ class NEAT:
         
         # 2. Determine whether to add a node mutation (based on population size)
         if self.config.population_size <= 150:  # This threshold is adjustable based on your problem's requirements
-            node_mutation_chance = self.config.new_node_small_pop_chance
+            node_mutation_chance = self.config.small_population_new_node_chance
         else:
-            node_mutation_chance = self.config.new_node_big_pop_chance
+            node_mutation_chance = self.config.large_population_new_node_chance
 
         if random.random() < node_mutation_chance:
             self.add_node_mutation(genome)
