@@ -56,13 +56,15 @@ def main(args):
     
     min_fitnesses, avg_fitnesses, best_fitnesses = [], [], []
     
+    config_instance = Config(cores=args.cores)
+    
     neat = load_neat(neat_name)
     if neat is not None: # TODO: Add option to insert new config into NEAT object.
         generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = read_fitness_file(neat_name)
         from_generation = generation_nums[-1] + 1
-        #config_instance = neat.config
+        neat.config = config_instance
     else:
-        neat = NEAT(Config())
+        neat = NEAT(config_instance)
         neat.initiate_genomes()
         from_generation = 0
 
@@ -120,6 +122,7 @@ def command_line_interface():
     # Train command (runs main())
     train_parser = subparsers.add_parser('train', help="Run the training process")
     train_parser.add_argument('-g', '--n_generations', type=int, default=-1, help="The number of generations to train for")
+    train_parser.add_argument('-c', '--cores', type=int, default=-1, help="Number of cores that is used in training. Defaults to the max amount of cores available.")
 
     graph_parser = subparsers.add_parser('graph', help="Graph the fitness data")
     
