@@ -14,12 +14,12 @@ if TYPE_CHECKING:
     # These imports will only be used for type hinting, not at runtime
     from src.genetics.NEAT import NEAT
 
-def save_state_as_png(i, state: np.ndarray) -> None:
+def save_state_as_png(i, state: np.ndarray, neat_name: str) -> None:
     """Save a frame."""
-    directory = "./data/mario_frames"
+    directory = f"./data/{neat_name}/mario_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.imsave(f"./data/mario_frames/frame{i}.png", state, cmap='gray', vmin=0, vmax=1)
+    plt.imsave(f"{directory}/frame{i}.png", state, cmap='gray', vmin=0, vmax=1)
 
 def normalize_positive_values(positive_vals: np.ndarray) -> None:
     """Takes an ndarray with positive floats as inputs,
@@ -61,22 +61,20 @@ def save_best_genome(genome: Genome, generation: int, name: str):
     with open(f'{path}/best_genome_{generation}.obj', 'wb') as f:
         pickle.dump(genome, f) # type: ignore
 
+def get_latest_generation(name: str) -> int:
+    """Finds the latest generation number from saved genomes for a given NEAT name."""
+    files = os.listdir(f'data/{name}/good_genomes')
+    pattern = re.compile(r'best_genome_(\d+).obj')
+    generations = [int(match.group(1)) for file in files if (match := pattern.match(file))]
+    if not generations:
+        raise FileNotFoundError("No valid genome files found in 'data/good_genomes'.")
+    return max(generations)
+
 def load_best_genome(generation: int, name: str) -> Genome:
-    """Loads the best genome from the given generation. If -1 is passed as argument, the latest generation is displayed."""
-    if generation == -1: # Find the genome from the latest generation.
-        files = os.listdir(f'data/{name}/good_genomes')
-        pattern = re.compile(r'best_genome_(\d+).obj')
-        generations = []
-        for file in files:
-            match = pattern.match(file)
-            if match:
-                generations.append(int(match.group(1)))
-        if generations:
-            generation = max(generations)
-            print("Loading best genome from generation:", generation)
-        else:
-            raise FileNotFoundError("No valid genome files found in 'data/good_genomes'.")
-    
+    """Loads the best genome from a given generation or the latest if -1 is provided."""
+    if generation == -1:
+        generation = get_latest_generation(name)
+        print(f"Loading best genome from generation: {generation}")
     with open(f'data/{name}/good_genomes/best_genome_{generation}.obj', 'rb') as f:
         return pickle.load(f)
 
