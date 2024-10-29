@@ -304,13 +304,7 @@ class NEAT:
                 # Assign a new random weight
                 connection.weight = random.uniform(-1, 1)  # Adjust the range as needed
         
-        # 2. Disable connection if one parent has it disabled
-        if not connection.is_enabled and random.random() < self.config.connection_disable_if_one_parent_disable_chance:
-            connection.is_enabled = False
-        else:
-            connection.is_enabled = True
-
-        # 3. Determine whether to add a node mutation (based on population size)
+        # 2. Determine whether to add a node mutation (based on population size)
         if self.config.population_size <= 150:  # This threshold is adjustable based on your problem's requirements
             node_mutation_chance = self.config.new_node_small_pop_chance
         else:
@@ -319,7 +313,7 @@ class NEAT:
         if random.random() < node_mutation_chance:
             self.add_node_mutation(genome)
 
-        # 4. Add Connection Mutation
+        # 3. Add Connection Mutation
         if random.random() < self.config.new_connection_chance:
             self.add_connection_mutation(genome)
 
