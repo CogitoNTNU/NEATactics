@@ -218,9 +218,7 @@ class NEAT:
                     break
                 print("Specie has stagnated, removing it!")
                 self.species.remove(specie)
-                # TODO: Ludvig, kan du forklare hvorfor det er sånn? En liten specie som er shit burde vel ikke overleve videre?
-                # Bare slett kommentarene hvis det ikke skal være der.
-                """
+
                 if len(self.species) > 2:
                     self.species.remove(specie)
                 else:
@@ -228,7 +226,6 @@ class NEAT:
                     self.improvement_counter = 0
                     for specie in self.species:
                         specie.improvement_counter = 0
-                """
         if self.species == []:
             print("All species have been removed - RIP")
             self.initiate_genomes()
