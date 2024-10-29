@@ -61,7 +61,10 @@ def main(args):
     neat = load_neat(neat_name)
     if neat is not None: # TODO: Add option to insert new config into NEAT object.
         generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = read_fitness_file(neat_name)
-        from_generation = generation_nums[-1] + 1
+        if len(generation_nums) == 0:
+            from_generation = 0
+        else:
+            from_generation = generation_nums[-1] + 1
         neat.config = config_instance
     else:
         neat = NEAT(config_instance)
