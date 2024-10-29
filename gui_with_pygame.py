@@ -399,10 +399,10 @@ class Game():
                            Button(460, 170, 200, 50, "Start Training", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
                            Button(460, 300, 200, 50, "Back to Menu", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
         try:
-            self.fitness_graph = ImageSprite("data/latest/fitness/fitness_plot.png", (700, 100))
+            self.fitness_graph = ImageSprite("data/latest/latest/fitness/fitness_plot.png", (700, 100))
         except:
             print("ERROR: Could not find image path")
-            self.fitness_graph = ImageSprite("data/data/genome_frames/genome_0.png", (700, 100))        
+            self.fitness_graph = ImageSprite("data/data/data/genome_frames/genome_0.png", (700, 100))        
 
         # Settings scene
         self.settings_input_fields = [
