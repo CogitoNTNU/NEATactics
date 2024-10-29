@@ -505,7 +505,7 @@ class Game():
         for i in selected_genomes:
             from_gen = i
             to_gen = i
-            neat_test_file.test_genome(from_gen, to_gen)
+            neat_test_file.test_genome(from_gen, to_gen, "")
 
 
     def watch_genome_scene(self):
