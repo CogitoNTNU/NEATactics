@@ -33,4 +33,4 @@ def test_visualize_genome():
     set_input_node_values(state, genome.nodes)
     traverse = Traverse(genome)
     traverse.traverse()
-    visualize_genome(genome, -1)
+    visualize_genome(genome, "test", -1)
