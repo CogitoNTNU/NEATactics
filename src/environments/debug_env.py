@@ -1,10 +1,6 @@
 import numpy as np
 import warnings
 import time
-import base64
-from PIL import Image
-from io import BytesIO
-from tkinter import Image
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 from typing import Tuple
