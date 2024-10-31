@@ -6,7 +6,6 @@ from typing import Tuple
 from src.utils.utils import insert_input
 from src.genetics.genome import Genome
 from src.genetics.traverse import Traverse
-import numpy as np
 from src.environments.fitness_function import Fitness
 import warnings
 

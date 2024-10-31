@@ -24,6 +24,7 @@ def play_genome(args):
     
     generation_num = args.generation if args.generation is not None else -1
     genome = load_best_genome(generation_num, neat_name)
+    
     env, state = env_debug_init()
     run_game_debug(env, state, genome, 0, visualize=False)
 
@@ -90,9 +91,12 @@ def main(args):
             
             print(f"new generation size: {len(neat.genomes)}" )
                 
+            i = 0
             for genome in neat.genomes:
                 if not genome.elite:
+                    i += 1
                     neat.add_mutation(genome)
+            print(f"{i} Genomes not elite, mutating!!")
             save_fitness_graph_file(neat_name)
     except KeyboardInterrupt:
         print("\nProcess interrupted! Saving fitness data...")

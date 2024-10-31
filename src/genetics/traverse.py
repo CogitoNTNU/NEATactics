@@ -26,7 +26,7 @@ class Traverse:
         """
         Traverse through the genome and returns an action
         Using Kahns alorithm to traverse through the genome 
-        and insuring that the node that is being traversed has 
+        and ensuring that the node that is being traversed has 
         all its incoming connections traversed before it.
         """
         order_of_traversal = self.genome.order_of_traversal

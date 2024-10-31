@@ -4,7 +4,7 @@ from src.genetics.genome import Genome
 from src.genetics.create_base_genomes import create_base_genomes
 import random
 
-def add_connection_to_new_genome(new_genome, new_nodes_dict, connection):
+def add_connection_to_new_genome(new_genome: Genome, new_nodes_dict: dict, connection: ConnectionGene):
         """
         Helper function to add a connection to the new genome.
         This will handle creating missing nodes if they don't exist.
