@@ -8,6 +8,7 @@ from gym.core import ObservationWrapper
 import numpy as np
 import cv2
 from skimage.transform import resize
+from src.utils.config import Config
 
 class StepResult(NamedTuple):
     """A namedtuple-like class representing the result of an environment step.
@@ -43,6 +44,7 @@ class MarioJoypadSpace(JoypadSpace):
 
     def __init__(self, env, actions):
         super().__init__(env, actions)
+        self.config = Config()
         # Potentially add extra variables here.
 
     def reset(self) -> np.ndarray:
@@ -69,7 +71,7 @@ class MarioJoypadSpace(JoypadSpace):
         state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140]) # Convert to grayscale
         state = state.astype(np.uint8) # Ensure valid grayscale value (can't be float)
         
-        state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8) # Reduce pixel count.
+        state = resize(state, (self.config.input_shape[0], self.config.input_shape[1]), anti_aliasing=True, preserve_range=True).astype(np.uint8) # Reduce pixel count.
         
         state = np.array(state)
         grayscale_pixel_values = state / MAX_COLOR

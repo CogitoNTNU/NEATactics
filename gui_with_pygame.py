@@ -45,8 +45,8 @@ class GenomeManager:
 class Settings():
     def __init__(self):
         self.fps = 60
-        self.default_x_size = 2560
-        self.default_y_size = 1600
+        self.default_x_size = 1080
+        self.default_y_size = 720
         self.fullscreen = False
         self.fs_start_time = 0
         self.fs_is_pressed = False
@@ -125,7 +125,7 @@ class ScrollableList:
         self.scroll_offset = 0  # This tracks where we are in the list
         self.padding = padding  # Distance between items
         # Create a base list of items without positioning them
-
+        
         self.list_items = [
             SelectableListItem(
                 x, y, width, (height - (visible_count - 1) * padding) // visible_count,  # Adjust height to account for padding
@@ -400,7 +400,7 @@ class Game():
                            Button(460, 170, 200, 50, "Start Training", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.start_training_process),
                            Button(460, 300, 200, 50, "Back to Menu", st.normal_font, st.text_color, st.button_color, st.hover_color, st.pressed_color, self.main_menu_scene)]
         try:
-            self.fitness_graph = ImageSprite("data/latest/fitness/fitness_plot.png", (700, 100))
+            self.fitness_graph = ImageSprite("data/latest/latest/fitness/fitness_plot.png", (700, 100))
         except:
             print("ERROR: Could not find image path")
             self.fitness_graph = ImageSprite("data/genome_frames/genome_0.png", (700, 100))
@@ -445,7 +445,6 @@ class Game():
         # Use the loaded genome objects (printing as an example)
         for genome in loaded_genomes:
             self.genomes.append(genome)
-            print(genome)
 
         ## Genome viewer
         self.genome_viewer = GenomeViewer(self.genomes, st.normal_font, st.text_color, st.input_field_bg, st.input_field_active_bg)
@@ -657,7 +656,6 @@ class Game():
         self.event_handler()
         self.update_screen()
         self.clock.tick(st.fps)
-
 
 st = Settings()
 
