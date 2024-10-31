@@ -291,7 +291,7 @@ def play_genome_wrapper(neat_name, from_gen, to_gen):
                 env, initial_state = env_debug_init()
 
                 # Run the game and capture frames
-                fitness_value = run_game_debug(env, initial_state, genome, num=gen, visualize=True, frame_queue=frame_queues.get(neat_name))
+                fitness_value = run_game_debug(env, initial_state, genome, neat_name, visualize=True, frame_queue=frame_queues.get(neat_name))
                 logging.info(f"Game run completed for generation {gen} with fitness: {fitness_value}")
 
                 # Optional: Introduce a delay between genomes
@@ -361,7 +361,7 @@ def load_genome(neat_name, generation):
     return genome
 
 # Modified run_game_debug function
-def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome, num: int, visualize: bool = True, frame_queue=None) -> float:
+def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome, neat_name: str, visualize: bool = True, frame_queue=None) -> float:
     forward = Traverse(genome)
     fitness = Fitness()
     insert_input(genome, initial_state)
@@ -394,8 +394,8 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         
         # Optional visualization
         if visualize and i % 10000 == 0:
-            save_state_as_png(0, sr.state)
-            visualize_genome(genome, 0)
+            save_state_as_png(0, sr.state, neat_name)
+            visualize_genome(genome, neat_name, 0)
         
         # Calculate fitness
         fitness.calculate_fitness(sr.info, action)
@@ -409,7 +409,7 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         
         if sr.info["life"] == 1 or stagnation_counter > 150:
             env.close()
-            logging.info(f"Exiting game loop for NEAT {num} with fitness {fitness_val}")
+            logging.info(f"Exiting game loop for NEAT {neat_name} with fitness {fitness_val}")
             return fitness.get_fitness()
         
         i += 1
