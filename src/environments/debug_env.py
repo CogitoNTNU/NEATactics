@@ -1,10 +1,6 @@
 import numpy as np
 import warnings
 import time
-import base64
-from PIL import Image
-from io import BytesIO
-from tkinter import Image
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 from typing import Tuple
@@ -43,22 +39,8 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         time.sleep(0.01)
         sr = env.step(action) # State, Reward, Done, Info
         
-        # Capture frame as RGB array
-        frame = env.render(mode='rgb_array')
-
-        # Encode frame as JPEG
-        img = Image.fromarray(frame) # type: ignore
-        buffer = BytesIO()
-        img.save(buffer, format='JPEG')
-        frame_data = buffer.getvalue()
-        base64_frame = base64.b64encode(frame_data).decode('utf-8')
-
-        # Send frame to the frontend via frame_queue
-        if frame_queue is not None:
-            frame_queue.put(base64_frame)
-        
         # timeout = 600 + sr.info["x_pos"]
-        if visualize and i % 10000 == 0:
+        if visualize and i % 1000 == 0:
             save_state_as_png(i, sr.state, neat_name)
             visualize_genome(genome, neat_name, i)
         
@@ -75,5 +57,7 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         if sr.info["life"] == 1 or stagnation_counter > 150:
             env.close()
             return fitness.get_fitness()
+        env.render()
+        print(f"Frame number: {i}")
         i += 1
         insert_input(genome, sr.state)
