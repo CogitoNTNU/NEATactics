@@ -25,6 +25,7 @@ def env_debug_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
 
+
 def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome, neat_name: str, visualize: bool = True, frame_queue=None) -> float:
     
     forward = Traverse(genome)

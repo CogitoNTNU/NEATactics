@@ -125,6 +125,7 @@ class ScrollableList:
         self.scroll_offset = 0  # This tracks where we are in the list
         self.padding = padding  # Distance between items
         # Create a base list of items without positioning them
+        
         self.list_items = [
             SelectableListItem(
                 x, y, width, (height - (visible_count - 1) * padding) // visible_count,  # Adjust height to account for padding
@@ -402,7 +403,10 @@ class Game():
             self.fitness_graph = ImageSprite("data/latest/latest/fitness/fitness_plot.png", (700, 100))
         except:
             print("ERROR: Could not find image path")
-            self.fitness_graph = ImageSprite("data/data/data/genome_frames/genome_0.png", (700, 100))        
+            self.fitness_graph = ImageSprite("data/genome_frames/genome_0.png", (700, 100))
+
+
+        
 
         # Settings scene
         self.settings_input_fields = [
