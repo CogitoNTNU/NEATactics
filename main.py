@@ -98,6 +98,7 @@ def main(args):
                 if not genome.elite:
                     neat.add_mutation(genome)
             save_fitness_graph_file(neat_name)
+            save_neat(neat, neat_name)
     except KeyboardInterrupt:
         print("\nProcess interrupted! Saving fitness data...")
     finally:
