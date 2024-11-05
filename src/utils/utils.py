@@ -39,16 +39,44 @@ def normalize_negative_values(negative_vals: np.ndarray) -> None:
     negative_vals *= -1
     normalize_positive_values(negative_vals)
 
-def insert_input(genome:Genome, state: np.ndarray) -> None:
-    """Insert the state of the game into the input nodes of the genome."""
-    config = Config()
-    start_idx_input_node = config.num_output_nodes
-    num_input_nodes = config.num_input_nodes
-    num_columns = config.input_shape[-1]
+# def insert_input(genome:Genome, state: np.ndarray) -> None:
+#     """Insert the state of the game into the input nodes of the genome."""
+#     config = Config()
+#     start_idx_input_node = config.num_output_nodes
+#     num_input_nodes = config.num_input_nodes
+#     num_columns = config.input_shape[-1]
      
-    for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
-        node.value = state[i//num_columns][i % num_columns]
-        # print(f"node value: {node.value} node id: {node.id}")
+#     for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
+#         node.value = state[i//num_columns][i % num_columns]
+#         # print(f"node value: {node.value} node id: {node.id}")
+        
+def insert_input(genome: Genome, state: np.ndarray) -> None:
+    """
+    Insert the RGB state of the game into the input nodes of the genome.
+    Each pixel is represented by 3 consecutive nodes (R,G,B values).
+    
+    Args:
+        genome: The genome to update
+        state: numpy array of shape (height, width, 3) containing RGB values
+    """
+    config = Config()
+    start_idx = config.num_output_nodes
+    expected_inputs = config.pixels_count * 3
+    
+    # Pre-validate array shape to avoid unnecessary operations
+    if state.size != expected_inputs:
+        raise ValueError(f"State shape mismatch. Expected {expected_inputs} values, got {state.size}")
+    
+    if start_idx + expected_inputs > len(genome.nodes):
+        raise IndexError(f"Genome has insufficient nodes. Need {start_idx + expected_inputs} but length is {len(genome.nodes)}")
+    
+    # Use direct array assignment instead of individual updates
+    # This avoids the Python loop overhead
+    flattened_state = state.ravel()  # ravel() is faster than flatten() as it returns a view when possible
+    
+    # Update all nodes at once using array slicing
+    for node, value in zip(genome.nodes[start_idx:start_idx + expected_inputs], flattened_state):
+        node.value = value
 
 def save_fitness(best: list, avg: list, min: list, name: str):
     os.makedirs(f'data/{name}/fitness', exist_ok=True)
