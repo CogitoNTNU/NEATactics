@@ -1,0 +1,2 @@
+gym==0.8.0
+git+ssh://git@github.com/absolutelyNoWarranty/gym-pull.git
