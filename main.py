@@ -88,7 +88,7 @@ def main(args):
     if neat is not None: # TODO: Add option to insert new config into NEAT object.
         generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = read_fitness_file(neat_name)
         from_generation = generation_nums[-1] + 1
-        #config_instance = neat.config
+        config_instance = neat.config
     else:
         neat = NEAT(Config())
         neat.initiate_genomes()
