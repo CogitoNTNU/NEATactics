@@ -24,6 +24,8 @@ class Genome:
         self.fitness_value: float = 0.0
         self.elite = False
 
+        self.actions = []
+
     def add_node(self, node: Node):
         if node.type == 'input':
             self.input_nodes.append(node)
@@ -136,6 +138,9 @@ class Genome:
                 return connection
         return None
     
+    def add_action(self, action):
+        self.actions.append(action)
+    
     @property
     def nodes(self) -> List[Node]:
         """ Returns all nodes in the genome. """
@@ -143,5 +148,5 @@ class Genome:
     
     def __repr__(self):
         return (f"Genome(id={self.id}, hidden nodes={[node.id for node in self.hidden_nodes]}, "
-                f"connections={[connection for connection in self.connections]}, fitness_value={self.fitness_value})")
+                f"connections={[connection for connection in self.connections]}, fitness_value={self.fitness_value}, actions={self.actions})")
 

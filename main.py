@@ -1,4 +1,5 @@
 from src.environments.debug_env import env_debug_init, run_game_debug
+from src.environments.playback_env import env_playback_init, run_game_playback
 from src.utils.config import Config
 from src.genetics.NEAT import NEAT
 from src.utils.utils import read_fitness_file, save_fitness, save_best_genome, load_best_genome, save_neat, load_neat, save_fitness_graph_file, get_latest_generation
@@ -33,6 +34,34 @@ def test_genome(from_gen: int, to_gen: int, neat_name: str):
         env, state = env_debug_init()
         fitness = run_game_debug(env, state, genome, neat_name)
         print(fitness)
+
+
+def playback_genomes(args):
+    neat_name = args.neat_name if args.neat_name != '' else 'latest'
+
+    if args.to_gen is not None:
+        from_gen = args.from_gen if args.from_gen is not None else 0
+        playback_genome(from_gen, args.to_gen, neat_name, args.environment)
+        return
+    
+    if args.from_gen is not None:
+        latest_gen = get_latest_generation(neat_name)
+        playback_genome(args.from_gen, latest_gen, neat_name, args.environment)
+        return
+    
+    genome = load_best_genome(args.generation if args.generation is not None else -1, neat_name)
+    env, state = env_playback_init(args.environment)
+    run_game_playback(env, state, genome, neat_name, visualize=False)
+
+def playback_genome(from_gen: int, to_gen: int, neat_name: str, environment: int):
+    for i in range(from_gen, to_gen + 1):
+        print(f"Playback genome {i}...")
+        genome = load_best_genome(i, neat_name)
+        env, state = env_playback_init(environment)
+        fitness = run_game_playback(env, state, genome, neat_name)
+        print(fitness)
+
+
 
 def collect_fitnesses(genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses, neat_name):
     fitnesses = [genome.fitness_value for genome in genomes]
@@ -133,6 +162,12 @@ def command_line_interface():
     play_parser.add_argument('-g', '--generation', type=int, help="The generation of the genome to play")
     play_parser.add_argument('-f', '--from_gen', type=int, help="The starting genome to test")
     play_parser.add_argument('-t', '--to_gen', type=int, help="The ending genome to test (exclusive)")
+
+    playback_parser = subparsers.add_parser('playback', help="Play back the best genome from the lastest generation on an environment of your choice")
+    playback_parser.add_argument('-g', '--generation', type=int, help="The generation of the genome to play")
+    playback_parser.add_argument('-f', '--from_gen', type=int, help="The starting genome to test")
+    playback_parser.add_argument('-t', '--to_gen', type=int, help="The ending genome to test (exclusive)")
+    playback_parser.add_argument('-e', '--environment', type=int, help="The environment to play back the actions (0,1,2,3)")
     
     args = parser.parse_args()
     
@@ -142,6 +177,8 @@ def command_line_interface():
         save_fitness_graph_file(args.neat_name, show=True)
     elif args.command == "play":
         play_genome(args)
+    elif args.command == "playback":
+        playback_genomes(args)
     else:
         parser.print_help()
         

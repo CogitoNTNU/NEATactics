@@ -37,6 +37,7 @@ def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
         action = forward.traverse()
         # time.sleep(0.001)
         sr = env.step(action) # State, Reward, Done, Info
+        genome.add_action(action)
         
         fitness.calculate_fitness(sr.info, action)
 
@@ -49,6 +50,6 @@ def run_game(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome):
 
         if sr.info["life"] == 1 or stagnation_counter > 150:
             env.close()
-            return fitness.get_fitness()
+            return fitness.get_fitness(), genome.actions
             
         insert_input(genome, sr.state)
