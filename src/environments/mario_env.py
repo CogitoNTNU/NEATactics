@@ -95,7 +95,7 @@ class MarioJoypadSpace(JoypadSpace):
         # Resize while preserving RGB channels
         state = resize(
             state, 
-            (self.config.input_shape[0], self.config.input_shape[1], 3),
+            (self.config.input_shape[0], self.config.input_shape[1], self.config.input_channels),
             anti_aliasing=True,
             preserve_range=True
         ).astype(np.uint8)

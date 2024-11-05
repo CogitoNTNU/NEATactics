@@ -7,8 +7,8 @@ class Config:
     c2: float = 1.5
     c3: float = 0.4
     genomic_distance_threshold: float = 2.69
-    population_size: int = 40 # 56 cores on IDUN
-    generations: int = 2 # A bunch of iterations 
+    population_size: int = 560 # 56 cores on IDUN
+    generations: int = 10 # A bunch of iterations 
 
     connection_weight_mutation_chance: float = 0.8
 
@@ -24,9 +24,9 @@ class Config:
     # Connections should be added way more often than nodes
 
     num_output_nodes: int = 7
-    input_shape: Tuple[int, int] = (20, 40)
+    input_shape: Tuple[int, int] = (10, 20)
 
-    input_channels: int = 3
+    input_channels: int = 1
     """If using RGB, value should be 3, if using grayscale, value should be 1"""
     num_input_nodes: int = input_shape[0] * input_shape[1] * input_channels
 
