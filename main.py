@@ -138,8 +138,17 @@ def main(args):
     
     if neat.config.SHOULD_PROFILE:
         profiler.disable()
-        stats = pstats.Stats(profiler).sort_stats('cumtime') # Create a stats object to print out profiling results
+        
+        # Create a stats object to format the profiling results
+        stats = pstats.Stats(profiler).sort_stats('cumtime')
+        
+        # Print stats to terminal (optional, you may remove if too verbose)
         stats.print_stats()
+        
+        # Write human-readable stats to a text file
+        with open("profile_output.txt", "w") as f:
+            stats = pstats.Stats(profiler, stream=f)
+            stats.sort_stats('cumtime').print_stats()
 
     return neat.genomes
     

@@ -41,7 +41,7 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         sr = env.step(action) # State, Reward, Done, Info
         
         # timeout = 600 + sr.info["x_pos"]
-        if visualize and i % 1 == 0:
+        if visualize and i % 10 == 0:
             save_state_as_png(i, sr.state, neat_name)
             visualize_genome(genome, neat_name, 0)
         
