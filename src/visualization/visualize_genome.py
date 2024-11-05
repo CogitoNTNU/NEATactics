@@ -8,7 +8,7 @@ import os
 from typing import List, Dict, Tuple
 from src.visualization.colors_visualization import get_weight_color, get_node_colz
 from src.visualization.visualization_position_utils import get_position_dict
-from src.visualization.viz_config import GRAPH_XMIN, GRAPH_XMAX, GRAPH_YMIN, GRAPH_YMAX
+from src.visualization.viz_config import GRAPH_XMIN, GRAPH_XMAX, GRAPH_YMIN, GRAPH_YMAX, NODE_SIZE, FONT_SIZE
 
 def get_node_in_layers(genome: Genome) -> List[List[int]]:
     """
@@ -52,7 +52,7 @@ def add_labels_to_output_nodes(pos_dict: Dict[int, Tuple[float, float]], genome:
         ax.text(x, y + 0.50, '+'.join(movement_list[output_node.id]), fontsize=10, fontweight='bold', color='blue')  # Add label to the right    
 
 
-def visualize_genome(genome: Genome, frame_number: int):
+def visualize_genome(genome: Genome, neat_name: str, frame_number: int):
     fig = plt.figure(figsize=(15, 10))
     ax = fig.add_subplot(111)
 
@@ -74,8 +74,8 @@ def visualize_genome(genome: Genome, frame_number: int):
     layers = get_node_in_layers(genome)
     pos_dict = get_position_dict(layers)
     
-    nx.draw(G, pos_dict, with_labels=True, edgelist=edges, edge_color=edge_colz, node_size=500,
-            font_size=8, font_color='y', font_weight='bold',
+    nx.draw(G, pos_dict, with_labels=True, edgelist=edges, edge_color=edge_colz, node_size=NODE_SIZE,
+            font_size=FONT_SIZE, font_color='y', font_weight='bold',
             node_color=node_colz, ax=ax)
 
     fig.set_facecolor('#d4e6f1') # Background color of network popup.
@@ -88,10 +88,10 @@ def visualize_genome(genome: Genome, frame_number: int):
 
     plt.xlim(GRAPH_XMIN, GRAPH_XMAX)
     plt.ylim(GRAPH_YMIN, GRAPH_YMAX)
-    directory = "./data/genome_frames"
+    directory = f"./data/{neat_name}/genome_frames"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.savefig(f'./data/genome_frames/genome_{frame_number}.png')
+    plt.savefig(f'{directory}/genome_{frame_number}.png')
     plt.close()
 
    

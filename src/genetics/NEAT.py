@@ -100,8 +100,8 @@ class NEAT:
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=UserWarning, message=".*Gym version v0.24.")
             env, state = env_init()
-            fitness = run_game(env, state, genome)
-            return genome.id, fitness  # Return the genome's ID and its fitness
+            fitness, actions = run_game(env, state, genome)
+            return genome.id, fitness, actions  # Return the genome's ID and its fitness
         
     def rank_species(self, specie: Species) -> float:
         """Combine best genome fitness and average fitness to rank species."""
@@ -118,10 +118,11 @@ class NEAT:
         
         # results = [self.train_genome(genome) for genome in self.genomes] # Uncomment for single process
         
-        for genome_id, fitness in results: # Update genomes with the returned fitness values
+        for genome_id, fitness, actions in results: # Update genomes with the returned fitness values
             for genome in self.genomes:
                if genome.id == genome_id:  # Match the genome by its ID
                     genome.fitness_value = fitness  # Assign the fitness value
+                    genome.actions = actions
                     break  # Move to the next result once a match is found
     
     def sort_species(self, genomes: List[Genome]):
@@ -212,10 +213,7 @@ class NEAT:
                     print("Best specie is not removed")
                     break
                 print("Specie has stagnated, removing it!")
-                self.species.remove(specie)
-                # TODO: Ludvig, kan du forklare hvorfor det er sånn? En liten specie som er shit burde vel ikke overleve videre?
-                # Bare slett kommentarene hvis det ikke skal være der.
-                """
+
                 if len(self.species) > 2:
                     self.species.remove(specie)
                 else:
@@ -223,7 +221,6 @@ class NEAT:
                     self.improvement_counter = 0
                     for specie in self.species:
                         specie.improvement_counter = 0
-                """
         if self.species == []:
             print("All species have been removed - RIP")
             self.initiate_genomes()

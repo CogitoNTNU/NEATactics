@@ -8,6 +8,7 @@ from gym.core import ObservationWrapper
 import numpy as np
 import cv2
 from skimage.transform import resize
+from src.utils.config import Config
 
 class StepResult(NamedTuple):
     """A namedtuple-like class representing the result of an environment step.
@@ -43,6 +44,7 @@ class MarioJoypadSpace(JoypadSpace):
 
     def __init__(self, env, actions):
         super().__init__(env, actions)
+        self.config = Config()
         # Potentially add extra variables here.
 
     def reset(self) -> np.ndarray:
@@ -56,24 +58,50 @@ class MarioJoypadSpace(JoypadSpace):
         state = self.interpret_state(state)
         return StepResult(state, reward, done, info)
     
+    # def interpret_state(self, state: np.ndarray) -> np.ndarray:
+    #     """
+    #     Preprocessing of state:\n
+    #     Input:
+    #     - ndarray with shape (240, 256, 3)\n
+    #     Output:
+    #     - ndarray with shape (20, 40)        
+    #     """
+    #     MAX_COLOR = 255
+    #     state = state[80:216] # Cut the picture
+        
+    #     # Example: Limit to 4 colors
+    #     state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140]) # Convert to grayscale
+    #     state = state.astype(np.uint8) # Ensure valid grayscale value (can't be float)
+        
+    #     state = resize(state, (self.config.input_shape[0], self.config.input_shape[1]), anti_aliasing=True, preserve_range=True).astype(np.uint8) # Reduce pixel count.
+        
+    #     state = np.array(state)
+    #     grayscale_pixel_values = state / MAX_COLOR
+    #     return grayscale_pixel_values
+    
     def interpret_state(self, state: np.ndarray) -> np.ndarray:
         """
-        Preprocessing of state:\n
+        Preprocessing of state:
         Input:
-        - ndarray with shape (240, 256, 3)\n
+        - ndarray with shape (240, 256, 3)
         Output:
-        - ndarray with shape (10, 20)        
+        - ndarray with shape (20, 40, 3)
         """
         MAX_COLOR = 255
-        state = state[80:216] # Cut the picture
-        state = np.dot(state[..., :3], [0.2989, 0.5870, 0.1140]) # Convert to grayscale
-        state = state.astype(np.uint8) # Ensure valid grayscale value (can't be float)
         
-        state = resize(state, (10, 20), anti_aliasing=False, preserve_range=True).astype(np.uint8) # Reduce pixel count.
+        # Cut the picture
+        state = state[80:216]
         
-        state = np.array(state)
-        grayscale_pixel_values = state / MAX_COLOR
-        return grayscale_pixel_values
+        # Resize while preserving RGB channels
+        state = resize(
+            state, 
+            (self.config.input_shape[0], self.config.input_shape[1], 3),
+            anti_aliasing=True,
+            preserve_range=True
+        ).astype(np.uint8)
+        
+        # Normalize to [0,1] range
+        return state / MAX_COLOR
 
 class ResizeEnv(ObservationWrapper):
     def __init__(self, env, size):
