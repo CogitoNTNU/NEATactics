@@ -25,15 +25,10 @@ class Config:
 
     num_output_nodes: int = 7
     input_shape: Tuple[int, int] = (20, 40)
-    num_input_nodes: int = input_shape[0] * input_shape[1] * 3
-    
-    @property
-    def input_channels(self) -> int:
-        return 3  # RGB channels
-    
-    @property
-    def pixels_count(self) -> int:
-        return self.input_shape[0] * self.input_shape[1]
+
+    input_channels: int = 3
+    """If using RGB, value should be 3, if using grayscale, value should be 1"""
+    num_input_nodes: int = input_shape[0] * input_shape[1] * input_channels
 
     # Activation function
     # Paper: 1/(1+exp(-0.49*x))

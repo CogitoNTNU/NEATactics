@@ -61,7 +61,7 @@ def insert_input(genome: Genome, state: np.ndarray) -> None:
     """
     config = Config()
     start_idx = config.num_output_nodes
-    expected_inputs = config.pixels_count * 3
+    expected_inputs = config.num_input_nodes
     
     # Pre-validate array shape to avoid unnecessary operations
     if state.size != expected_inputs:
