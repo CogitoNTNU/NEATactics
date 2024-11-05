@@ -1,3 +1,9 @@
+import numpy as np
+import warnings
+import time
+import gym_super_mario_bros
+from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
+from typing import Tuple
 from src.genetics.genome import Genome
 from src.genetics.traverse import Traverse
 from src.environments.fitness_function import Fitness
@@ -5,12 +11,7 @@ from src.environments.mario_env import MarioJoypadSpace
 from src.visualization.visualize_genome import visualize_genome
 from src.utils.utils import save_state_as_png
 from src.utils.utils import insert_input
-import gym_super_mario_bros
-from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
-from typing import Tuple
-import numpy as np
-import warnings
-import time
+
 
 def env_debug_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     "Initialize the super-mario environment in human_mode"
@@ -24,7 +25,8 @@ def env_debug_init() -> Tuple[MarioJoypadSpace, np.ndarray]:
     state = env.reset() # Good practice to reset the env before using it.
     return env, state
 
-def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome, neat_name: str, visualize: bool = True) -> float:
+
+def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Genome, neat_name: str, visualize: bool = True, frame_queue=None) -> float:
     
     forward = Traverse(genome)
     fitness = Fitness()
@@ -37,11 +39,11 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         action = forward.traverse()
         time.sleep(0.01)
         sr = env.step(action) # State, Reward, Done, Info
-        env.render()
+        
         # timeout = 600 + sr.info["x_pos"]
-        if visualize and i % 10000 == 0:
+        if visualize and i % 1 == 0:
             save_state_as_png(i, sr.state, neat_name)
-            visualize_genome(genome, neat_name, i)
+            visualize_genome(genome, neat_name, 0)
         
         fitness.calculate_fitness(sr.info, action)
 
@@ -56,5 +58,6 @@ def run_game_debug(env: MarioJoypadSpace, initial_state: np.ndarray, genome: Gen
         if sr.info["life"] == 1 or stagnation_counter > 150:
             env.close()
             return fitness.get_fitness()
+        env.render()
         i += 1
         insert_input(genome, sr.state)

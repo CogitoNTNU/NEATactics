@@ -48,3 +48,6 @@ tqdm
 
 typing_extensions==4.12.2
 zipp==3.20.2
+flask-socketio 
+eventlet
+watchdog

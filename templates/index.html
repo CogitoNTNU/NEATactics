@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NEAT Training Interface</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Socket.IO client library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        /* CSS goes here */
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent: #3498db;
+            --accent-hover: #2980b9;
+            --error: #e74c3c;
+            --success: #2ecc71;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .main-content {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input, select {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--text-secondary);
+            color: var(--text-primary);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button {
+            background-color: var(--accent);
+            color: var(--text-primary);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button:disabled {
+            background-color: var(--bg-secondary);
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: var(--error);
+        }
+
+        .success-message {
+            color: var(--success);
+        }
+
+        .status-panel {
+            background-color: var(--bg-primary);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .status-panel h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .status-item span:first-child {
+            font-weight: bold;
+            color: var(--text-secondary);
+        }
+
+        .status-item span:last-child {
+            font-weight: bold;
+        }
+
+        .chart-container {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            height: 500px;
+            margin-bottom: 20px;
+        }
+
+        #fitnessChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        #gameCanvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 20px auto;
+            width: 100%;
+            max-width: 512px;
+            height: auto;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            display: none;
+        }
+
+        .alert.error {
+            background-color: var(--error);
+            color: white;
+        }
+
+        .alert.success {
+            background-color: var(--success);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="section">
+                <h2>Create New Training</h2>
+                <div class="form-group">
+                    <label for="newNeatName">Name for new NEAT instance</label>
+                    <input type="text" id="newNeatName" placeholder="Enter name">
+                    <label for="generations">Number of generations</label>
+                    <input type="number" id="generations" value="10" min="1">
+                    <button onclick="createNewNeat()">Create & Start Training</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Select Existing Instance</h2>
+                <div class="form-group">
+                    <label for="neatSelect">Existing NEAT Instances</label>
+                    <select id="neatSelect" onchange="loadFitnessData()">
+                        <option value="">Select instance...</option>
+                        {% for dir in neat_dirs %}
+                        <option value="{{ dir }}">{{ dir }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Play Genomes</h2>
+                <div class="form-group">
+                    <label for="fromGen">From Generation</label>
+                    <input type="number" id="fromGen" min="0" placeholder="Start generation">
+                    <label for="toGen">To Generation</label>
+                    <input type="number" id="toGen" min="0" placeholder="End generation">
+                    <button onclick="playGenomes()">Play Genomes</button>
+                </div>
+            </div>
+
+            <!-- Status Message -->
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+
+        <div class="main-content">
+            <!-- Status Panel -->
+            <div class="status-panel">
+                <h3>Current Status</h3>
+                <div class="status-item">
+                    <span>Generation:</span>
+                    <span id="currentGen">0</span>
+                </div>
+                <div class="status-item">
+                    <span>Best Fitness:</span>
+                    <span id="bestFitness">0</span>
+                </div>
+                <div class="status-item">
+                    <span>Average Fitness:</span>
+                    <span id="avgFitness">0</span>
+                </div>
+                <div class="status-item">
+                    <span>Min Fitness:</span>
+                    <span id="minFitness">0</span>
+                </div>
+            </div>
+
+            <!-- Fitness Chart -->
+            <div class="chart-container">
+                <canvas id="fitnessChart"></canvas>
+            </div>
+
+            <!-- Game Rendering -->
+            <div class="section">
+                <h2>Game Rendering</h2>
+                <canvas id="gameCanvas" width="256" height="240" style="background-color: #000; image-rendering: pixelated;"></canvas>
+                <div id="statusMessageGame" class="status-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your existing scripts -->
+    <script>
+        let chart;
+        let socket;
+        let canvas, ctx;
+        let currentNeatName = '';
+    
+        window.onload = () => {
+            initChart();
+            initCanvas();
+            connectSocket();
+        };
+    
+        function initChart() {
+            const canvasElement = document.getElementById('fitnessChart');
+            if (!canvasElement) {
+                console.error("Canvas with id 'fitnessChart' not found.");
+                return;
+            }
+            const ctx = canvasElement.getContext('2d');
+            if (!ctx) {
+                console.error("Unable to get 2D context from 'fitnessChart' canvas.");
+                return;
+            }
+    
+            Chart.defaults.color = '#b3b3b3';
+            Chart.defaults.borderColor = '#404040';
+    
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Best Fitness',
+                        data: [],
+                        borderColor: '#2ecc71',
+                        tension: 0.1
+                    }, {
+                        label: 'Average Fitness',
+                        data: [],
+                        borderColor: '#3498db',
+                        tension: 0.1
+                    }, {
+                        label: 'Min Fitness',
+                        data: [],
+                        borderColor: '#e74c3c',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#404040'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#404040'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    
+        function initCanvas() {
+            canvas = document.getElementById('gameCanvas');
+            if (!canvas) {
+                console.error("Canvas with id 'gameCanvas' not found.");
+                return;
+            }
+            ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error("Unable to get 2D context from canvas.");
+                return;
+            }
+            console.log("Canvas initialized successfully", {
+                width: canvas.width,
+                height: canvas.height
+            });
+        }
+    
+        function connectSocket() {
+            socket = io.connect('http://localhost:5000');
+        
+            socket.on('connect', () => {
+                console.log('Connected to server via SocketIO');
+                displayStatusMessage('Connected to the server.', false);
+                loadFitnessData();
+            });
+        
+            socket.on('frame', (data) => {
+                console.log('Received frame data', { dataLength: data.data.length });
+                
+                // Create a new image
+                const img = new Image();
+                
+                // Set up error handling for image loading
+                img.onerror = (err) => {
+                    console.error('Error loading image:', err);
+                };
+                
+                img.onload = () => {
+                    console.log('Image loaded successfully', {
+                        imgWidth: img.width,
+                        imgHeight: img.height,
+                        canvasWidth: canvas.width,
+                        canvasHeight: canvas.height
+                    });
+                    
+                    // Clear the canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    try {
+                        // Draw the new frame
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        console.log('Frame drawn to canvas');
+                    } catch (err) {
+                        console.error('Error drawing to canvas:', err);
+                    }
+                };
+        
+                // Set the image source
+                try {
+                    img.src = 'data:image/jpeg;base64,' + data.data;
+                } catch (err) {
+                    console.error('Error setting image source:', err);
+                }
+            });
+        
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+                displayStatusMessage('Disconnected from the server.', true);
+            });
+
+            socket.on('training_status_update', (data) => {
+                console.log('Received training status update:', data);
+                
+                // Update status display
+                document.getElementById('currentGen').textContent = data.current_generation;
+                document.getElementById('bestFitness').textContent = data.best_fitness.toFixed(2);
+                document.getElementById('avgFitness').textContent = data.avg_fitness.toFixed(2);
+                document.getElementById('minFitness').textContent = data.min_fitness.toFixed(2);
+                
+                // Update chart
+                if (chart && data.history) {
+                    chart.data.labels = data.history.generations;
+                    chart.data.datasets[0].data = data.history.best_fitnesses;
+                    chart.data.datasets[1].data = data.history.avg_fitnesses;
+                    chart.data.datasets[2].data = data.history.min_fitnesses;
+                    chart.update();
+                }
+            });
+        }
+    
+        async function createNewNeat() {
+            const neatName = document.getElementById('newNeatName').value;
+            const generations = document.getElementById('generations').value;
+    
+            if (!neatName) {
+                displayStatusMessage('Please enter a name for the new NEAT instance.', true);
+                return;
+            }
+    
+            const response = await fetch('/api/create_neat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    neat_name: neatName,
+                    generations: parseInt(generations)
+                })
+            });
+    
+            const data = await response.json();
+            if (data.status === 'success') {
+                displayStatusMessage(data.message, false);
+                // Add the new NEAT instance to the dropdown
+                const neatSelect = document.getElementById('neatSelect');
+                const newOption = document.createElement('option');
+                newOption.value = neatName;
+                newOption.text = neatName;
+                neatSelect.add(newOption);
+                neatSelect.value = neatName;
+                loadFitnessData(); // Load data for the new NEAT instance
+            } else {
+                displayStatusMessage(`Error: ${data.message}`, true);
+            }
+        }
+    
+        async function playGenomes() {
+            console.log('Starting playGenomes...');
+            const playButton = document.querySelector('.section button:last-of-type');
+            playButton.disabled = true;
+        
+            const neatName = document.getElementById('neatSelect').value;
+            const fromGen = document.getElementById('fromGen').value;
+            const toGen = document.getElementById('toGen').value;
+        
+            console.log('Play parameters:', { neatName, fromGen, toGen });
+        
+            if (!neatName || !fromGen || !toGen) {
+                displayStatusMessage('Please fill in all fields.', true);
+                playButton.disabled = false;
+                return;
+            }
+        
+            displayStatusMessage('Playing genomes...', false);
+        
+            try {
+                // Clear the canvas before starting
+                if (ctx) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // Draw a background or loading message
+                    ctx.fillStyle = '#2d2d2d';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Loading game...', canvas.width / 2, canvas.height / 2);
+                }
+        
+                const response = await fetch('/api/play_genome', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        neat_name: neatName,
+                        from_gen: parseInt(fromGen),
+                        to_gen: parseInt(toGen)
+                    })
+                });
+        
+                const data = await response.json();
+                console.log('Server response:', data);
+        
+                if (data.status === 'success') {
+                    displayStatusMessage(data.message, false);
+                } else {
+                    displayStatusMessage(`Error: ${data.message}`, true);
+                }
+            } catch (error) {
+                console.error('Error playing genomes:', error);
+                displayStatusMessage('An unexpected error occurred while playing genomes.', true);
+            } finally {
+                playButton.disabled = false;
+            }
+        }
+    
+        async function loadFitnessData() {
+            const neatName = document.getElementById('neatSelect').value;
+    
+            console.log(`Selected NEAT Name: ${neatName}`); // Debugging
+    
+            if (!neatName) {
+                // Clear the chart and status display
+                if (chart) {
+                    chart.data.labels = [];
+                    chart.data.datasets.forEach(dataset => dataset.data = []);
+                    chart.update();
+                }
+    
+                document.getElementById('currentGen').textContent = '0';
+                document.getElementById('bestFitness').textContent = '0';
+                document.getElementById('avgFitness').textContent = '0';
+                document.getElementById('minFitness').textContent = '0';
+    
+                displayStatusMessage('');
+    
+                // Leave the previous NEAT room if any
+                if (currentNeatName) {
+                    socket.emit('leave_neat_room', { neat_name: currentNeatName });
+                    currentNeatName = '';
+                }
+    
+                return;
+            }
+    
+            try {
+                // Fetch initial data
+                const response = await fetch(`/api/training_status?neat_name=${encodeURIComponent(neatName)}`);
+                const data = await response.json();
+    
+                console.log('Received Data:', data); // Debugging
+    
+                if (data.history) {
+                    // Update chart with complete history
+                    chart.data.labels = data.history.generations;
+                    chart.data.datasets[0].data = data.history.best_fitnesses;
+                    chart.data.datasets[1].data = data.history.avg_fitnesses;
+                    chart.data.datasets[2].data = data.history.min_fitnesses;
+                    chart.update();
+    
+                    // Update status display
+                    updateStatusDisplay(data);
+    
+                    // Clear any previous status messages
+                    displayStatusMessage('');
+                } else if (data.status === 'error') {
+                    displayStatusMessage(data.message, true);
+                } else {
+                    displayStatusMessage('Unexpected response from the server.', true);
+                }
+    
+                // Leave the previous NEAT room if any
+                if (currentNeatName && currentNeatName !== neatName) {
+                    socket.emit('leave_neat_room', { neat_name: currentNeatName });
+                }
+    
+                // Join the new NEAT room
+                currentNeatName = neatName;
+                socket.emit('join_neat_room', { neat_name: neatName });
+    
+            } catch (error) {
+                console.error('Error fetching training status:', error);
+                displayStatusMessage('Failed to fetch training status. Please try again later.', true);
+            }
+        }
+    
+        function updateStatusDisplay(data) {
+            document.getElementById('currentGen').textContent = data.current_generation;
+            document.getElementById('bestFitness').textContent = data.best_fitness.toFixed(2);
+            document.getElementById('avgFitness').textContent = data.avg_fitness.toFixed(2);
+            document.getElementById('minFitness').textContent = data.min_fitness.toFixed(2);
+        }
+    
+        function displayStatusMessage(message, isError = false) {
+            const statusMessage = document.getElementById('statusMessage');
+            if (statusMessage) {
+                statusMessage.textContent = message;
+                statusMessage.className = isError ? 'error-message' : 'success-message';
+            } else {
+                // Fallback to alert if statusMessage element is not present
+                alert(message);
+            }
+        }
+    </script>
+</body>
+</html>

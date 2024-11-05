@@ -45,9 +45,10 @@ def insert_input(genome:Genome, state: np.ndarray) -> None:
     start_idx_input_node = config.num_output_nodes
     num_input_nodes = config.num_input_nodes
     num_columns = config.input_shape[-1]
-    
+     
     for i, node in enumerate(genome.nodes[start_idx_input_node:start_idx_input_node+num_input_nodes]): # get all input nodes
         node.value = state[i//num_columns][i % num_columns]
+        # print(f"node value: {node.value} node id: {node.id}")
 
 def save_fitness(best: list, avg: list, min: list, name: str):
     os.makedirs(f'data/{name}/fitness', exist_ok=True)
