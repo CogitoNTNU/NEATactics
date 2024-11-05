@@ -60,7 +60,7 @@ class Fitness:
             "win": 100,
             "move_forward": 0.02,
             "move_backward": -0.02,
-            "dont_move_forward": 0,
+            "dont_move_forward": -0.02,
             "coins": 0,
             "score": 0,
             "jump_multiple": 0,
