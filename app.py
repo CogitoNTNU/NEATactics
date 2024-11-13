@@ -437,7 +437,7 @@ def create_neat():
 
             # Run the training process
             python_executable = sys.executable
-            main_py_path = os.path.join(os.path.dirname(os.path.abspath(file)), 'main.py')
+            main_py_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'main.py')
             if not os.path.isfile(main_py_path):
                 logging.error(f"main.py not found at {main_py_path}")
                 return
