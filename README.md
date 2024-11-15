@@ -15,6 +15,7 @@
 <summary><b>📋 Table of contents </b></summary>
 
 - [NEATtactics](#neattactics)
+  - [Watch Mario Clear the First Level](#watch-mario-clear-the-first-level)
   - [Description](#description)
   - [Getting started](#getting-started)
     - [Note on venv](#note-on-venv)
@@ -33,6 +34,12 @@
     - [License](#license)
 
 </details>
+
+## Watch Mario Clear the First Level
+
+<div align="center">
+  <img src="docs/images/mario-clears-first-level.gif" width="80%" alt="Mario clears the first level">
+</div>
 
 ## Description
 

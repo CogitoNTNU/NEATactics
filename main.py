@@ -61,8 +61,6 @@ def playback_genome(from_gen: int, to_gen: int, neat_name: str, environment: int
         fitness = run_game_playback(env, state, genome, neat_name)
         print(fitness)
 
-
-
 def collect_fitnesses(genomes, generation, min_fitnesses, avg_fitnesses, best_fitnesses, neat_name):
     fitnesses = [genome.fitness_value for genome in genomes]
 
@@ -76,7 +74,6 @@ def collect_fitnesses(genomes, generation, min_fitnesses, avg_fitnesses, best_fi
 
     print(f"Generation: {generation} - Best: {max_fitness} - Avg: {avg_fitness} - Min: {min_fitness}")
 
-
 def main(args):
     neat_name = args.neat_name
     print("\nTraining NEAT with name: ", neat_name)
@@ -87,8 +84,8 @@ def main(args):
     neat = load_neat(neat_name)
     if neat is not None: # TODO: Add option to insert new config into NEAT object.
         generation_nums, best_fitnesses, avg_fitnesses, min_fitnesses = read_fitness_file(neat_name)
-        from_generation = generation_nums[-1] + 1
-        config_instance = neat.config
+        from_generation = generation_nums[-1] + 1 if generation_nums else 0
+        neat.config = config_instance
     else:
         neat = NEAT(Config())
         neat.initiate_genomes()
