@@ -6,7 +6,7 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/CogitoNTNU/NEATtactics)
 ![GitHub language count](https://img.shields.io/github/languages/count/CogitoNTNU/NEATtactics)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Project Version](https://img.shields.io/badge/version-0.0.1-blue)](https://img.shields.io/badge/version-0.0.1-blue)
+[![Project Version](https://img.shields.io/badge/version-1.0.0-blue)](https://img.shields.io/badge/version-1.0.0-blue)
 
 <img src="docs/images/logo.png" width="50%" alt="Cogito Project Logo" style="display: block; margin-left: auto; margin-right: auto;">
 </div>
@@ -17,9 +17,9 @@
 - [NEATtactics](#neattactics)
   - [Watch Mario Clear the First Level](#watch-mario-clear-the-first-level)
   - [Description](#description)
+    - [Prerequisites](#prerequisites)
   - [Getting started](#getting-started)
     - [Note on venv](#note-on-venv)
-    - [Prerequisites](#prerequisites)
   - [Usage](#usage)
     - [Basic Command](#basic-command)
     - [Example Commands](#example-commands)
@@ -30,6 +30,7 @@
       - [Play](#play)
   - [Testing](#testing)
     - [Test execution environment](#test-execution-environment)
+  - [📚 Documentation](#-documentation)
   - [Team](#team)
     - [License](#license)
 
@@ -45,7 +46,7 @@
 
 NEATtactics is a project that aims to implement the NEAT (NeuroEvolution of Augmenting Topologies) algorithm to train a neural network to play a classic platformer game inspired by Super Mario. The idea is to evolve a neural network using NEAT, allowing an AI agent to learn and improve its gameplay strategies over time, starting from scratch and evolving through generations.
 
-Our project takes inspiration from SethBling's MarI/O video, where he demonstrates a neural network learning to play Super Mario World using the NEAT algorithm. You can watch the video [here](https://www.youtube.com/watch?v=qv6UVOQ0F44) [here] (https://www.youtube.com/watch?v=CI3FRsSAa_U&t=468s) to get a better understanding of the principles behind our approach.
+Our project takes inspiration from SethBling's MarI/O video, where he demonstrates a neural network learning to play Super Mario World using the NEAT algorithm. You can watch [SethBling video here](https://www.youtube.com/watch?v=qv6UVOQ0F44) and [Chrispresso video here](https://www.youtube.com/watch?v=CI3FRsSAa_U&t=468s) to get a better understanding of the principles behind our approach.
 
 To implement this, we are basing our work on the [research paper](https://nn.cs.utexas.edu/downloads/papers/stanley.cec02.pdf) "Evolving Neural Networks through Augmenting Topologies" by Kenneth O. Stanley and Risto Miikkulainen. This paper introduces the NEAT algorithm, which evolves neural network topologies along with weights to create more efficient and sophisticated solutions.
 
@@ -56,6 +57,12 @@ In this project, we will:
 - Continuously evolve the agent's neural network to enhance its performance, aiming for progressively better gameplay as it learns from experience.
 
 Join us in exploring the fascinating world of neuroevolution and AI-driven gameplay!
+
+
+### Prerequisites
+
+- Ensure that git is installed on your machine. [Download Git](https://git-scm.com/downloads)
+- Ensure that you are using python version==3.8.x. [Download Python](https://www.python.org/downloads/)
 
 ## Getting started
 
@@ -106,11 +113,6 @@ running the following command:
 ```bash
 deactivate
 ```
-
-### Prerequisites
-
-- Ensure that git is installed on your machine. [Download Git](https://git-scm.com/downloads)
-- Ensure that you are using python version==3.8.x. [Download Python](https://www.python.org/downloads/)
 
 ## Usage
 
@@ -264,6 +266,13 @@ pytest -m "environment"
 
 Which will check for CUDA compatibility and the current OS.
 Specifically, if you are running on Windows, you might have troubles installing the `gym_super_mario_bros` package.
+
+
+## 📚 Documentation 
+- 🛠️ [Developer setup](docs/manuals/developer_setup.md)
+- 🎤 [Final presentation](docs/final-presentation/deeptactics-avsluttende-presentasjon.pdf)
+- 📄 [Research paper: Efﬁcient Evolution of Neural Network Topologies](docs/theory/efficient_evolution_of_neural_network_topologies.pdf)
+- 📄 [Research paper: Evolving Neural Networks through Augmenting Topologies](docs/theory/evolving_neural_networks_through_augmenting_topologies.pdf)
 
 ## Team
 
