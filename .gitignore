@@ -271,3 +271,4 @@ trained_population
 fitness_values.txt
 
 data/*
+.lprof
